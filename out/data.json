@@ -1,0 +1,375 @@
+{
+    "project": {},
+    "files": {
+        "js\\button.js": {
+            "name": "js\\button.js",
+            "modules": {
+                "BattleShips": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js\\data.js": {
+            "name": "js\\data.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js\\game.js": {
+            "name": "js\\game.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js\\preloader.js": {
+            "name": "js\\preloader.js",
+            "modules": {},
+            "classes": {
+                "bts.Preloader": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "bts": 1
+            }
+        },
+        "js\\section.js": {
+            "name": "js\\section.js",
+            "modules": {},
+            "classes": {
+                "bts.Section": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "bts": 1
+            }
+        },
+        "js\\ship.js": {
+            "name": "js\\ship.js",
+            "modules": {},
+            "classes": {
+                "bts.Ship": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "bts": 1
+            }
+        },
+        "js\\socket.js": {
+            "name": "js\\socket.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "BattleShips": {
+            "name": "BattleShips",
+            "submodules": {},
+            "elements": {},
+            "classes": {
+                "bts.Preloader": 1,
+                "bts.Section": 1,
+                "bts.Ship": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "bts": 1
+            },
+            "tag": "module",
+            "file": "js\\ship.js",
+            "line": 8
+        }
+    },
+    "classes": {
+        "bts.Preloader": {
+            "name": "bts.Preloader",
+            "shortname": "bts.Preloader",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "BattleShips",
+            "namespace": "bts",
+            "file": "js\\preloader.js",
+            "line": 5,
+            "extends": "{createjs.Container}",
+            "is_constructor": 1
+        },
+        "bts.Section": {
+            "name": "bts.Section",
+            "shortname": "bts.Section",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "BattleShips",
+            "namespace": "bts",
+            "file": "js\\section.js",
+            "line": 8,
+            "extends": "{createjs.Container}",
+            "is_constructor": 1
+        },
+        "bts.Ship": {
+            "name": "bts.Ship",
+            "shortname": "bts.Ship",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "BattleShips",
+            "namespace": "bts",
+            "file": "js\\ship.js",
+            "line": 8,
+            "extends": "{createjs.Container}",
+            "is_constructor": 1
+        }
+    },
+    "elements": {},
+    "classitems": [
+        {
+            "file": "js\\game.js",
+            "line": 9,
+            "description": "Initialize the game",
+            "itemtype": "method",
+            "name": "init",
+            "class": "bts.Preloader",
+            "module": "BattleShips"
+        },
+        {
+            "file": "js\\preloader.js",
+            "line": 25,
+            "description": "Initialize the preloader",
+            "itemtype": "method",
+            "name": "init",
+            "class": "bts.Preloader",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\section.js",
+            "line": 25,
+            "description": "Initialize the section",
+            "itemtype": "method",
+            "name": "init",
+            "class": "bts.Section",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\section.js",
+            "line": 133,
+            "description": "Get section by given row and line.",
+            "itemtype": "method",
+            "name": "getSectionByPosition",
+            "params": [
+                {
+                    "name": "row",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "line",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Section"
+            },
+            "class": "bts.Section",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\section.js",
+            "line": 154,
+            "description": "Checks if the position is free for the ship to be placed in",
+            "itemtype": "method",
+            "name": "isPositionOccupied",
+            "params": [
+                {
+                    "name": "position",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "bts.Section",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\ship.js",
+            "line": 29,
+            "description": "Initialize the ship",
+            "itemtype": "method",
+            "name": "init",
+            "class": "bts.Ship",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\ship.js",
+            "line": 59,
+            "description": "Add Drag and Rotate event listeners",
+            "itemtype": "method",
+            "name": "addDragAndRotateEvents",
+            "params": [
+                {
+                    "name": "Start",
+                    "description": "to move ship event",
+                    "type": "Object"
+                }
+            ],
+            "class": "bts.Ship",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\ship.js",
+            "line": 95,
+            "description": "Initial placement of the ship on field",
+            "itemtype": "method",
+            "name": "placeOnField",
+            "params": [
+                {
+                    "name": "Click",
+                    "description": "on ship event",
+                    "type": "Object"
+                }
+            ],
+            "class": "bts.Ship",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\ship.js",
+            "line": 138,
+            "description": "Checks if ship is inside field bounderies \naccording to the orientation of the ship",
+            "itemtype": "method",
+            "name": "isShipInPlayerField",
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "bts.Ship",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\ship.js",
+            "line": 169,
+            "description": "Keeps the ship is inside field bounderies \nby assigning new valid position",
+            "itemtype": "method",
+            "name": "keepShipInPlayerField",
+            "class": "bts.Ship",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\ship.js",
+            "line": 199,
+            "description": "Sets aditional information to the position\nfrom given x,y coordinates",
+            "itemtype": "method",
+            "name": "setPostion",
+            "params": [
+                {
+                    "name": "position",
+                    "description": "Object containing x,y coordinates",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "Object with all aditional properties",
+                "type": "Object"
+            },
+            "class": "bts.Ship",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\ship.js",
+            "line": 231,
+            "description": "Checks if position is free and places the ship there if it is\nor returns it to previous position if not.\nSets occupied sections.",
+            "itemtype": "method",
+            "name": "positionShip",
+            "class": "bts.Ship",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\ship.js",
+            "line": 281,
+            "description": "Checks the ship orientation and returns number of lines ship occupies",
+            "itemtype": "method",
+            "name": "getOccupiedLines",
+            "return": {
+                "description": "Number of lines ship occupies",
+                "type": "Number"
+            },
+            "class": "bts.Ship",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\ship.js",
+            "line": 295,
+            "description": "Checks the ship orientation and returns number of rows ship occupies",
+            "itemtype": "method",
+            "name": "getOccupiedRows",
+            "return": {
+                "description": "Number of rows ship occupies",
+                "type": "Number"
+            },
+            "class": "bts.Ship",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\ship.js",
+            "line": 309,
+            "description": "Sets the sections occupied property and adds them to ship's occupiedSections property",
+            "itemtype": "method",
+            "name": "setOccupiedSections",
+            "params": [
+                {
+                    "name": "position",
+                    "description": "Extended position object",
+                    "type": "Object"
+                }
+            ],
+            "class": "bts.Ship",
+            "module": "BattleShips",
+            "namespace": "bts"
+        },
+        {
+            "file": "js\\ship.js",
+            "line": 337,
+            "description": "Sets the sections' occupied property and removes them from ship's occupiedSections property",
+            "itemtype": "method",
+            "name": "freeOccupiedSections",
+            "params": [
+                {
+                    "name": "position",
+                    "description": "Extended position object",
+                    "type": "Object"
+                }
+            ],
+            "class": "bts.Ship",
+            "module": "BattleShips",
+            "namespace": "bts"
+        }
+    ],
+    "warnings": []
+}

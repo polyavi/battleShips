@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>js\button.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/bts.Preloader.html">bts.Preloader</a></li>
+                                <li><a href="../classes/bts.Section.html">bts.Section</a></li>
+                                <li><a href="../classes/bts.Ship.html">bts.Ship</a></li>
+                            </ul>
+                
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/BattleShips.html">BattleShips</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: js\button.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+* @module BattleShips
+*/
+this.bts = this.bts || {};
+
+(function () {
+	&#x27;use strict&#x27;;
+
+	let Button = function (props) {
+		this.height = props.height;
+		this.width = props.width;
+		this.label = props.labelTxt;
+		this.fontSize = props.fontSize;
+		this.color = props.color;
+		this.backgroundColor = props.backgroundColor;
+		this.hoverColor = props.hoverColor;
+		this.inactiveColor = props.inactiveColor;
+
+		this.initialize();
+	}
+
+	let p = Button.prototype = new createjs.Container();
+	p.Container_initialize = p.initialize;
+
+	p.initialize = function () {
+		this.Container_initialize();
+		this.drawButton(this.inactiveColor);
+	}
+
+	p.drawButton = function(backgroundColor){
+		this.removeAllChildren();
+		this.labelTxt = new createjs.Text(this.label, this.fontSize + &#x27;px Arial&#x27;, this.color);
+		this.labelTxt.textAlign = &#x27;center&#x27;;
+		this.labelTxt.textBaseline = &#x27;top&#x27;;
+
+		this.labelTxt.x = this.width / 2;
+		this.labelTxt.y = 10;
+
+		this.background = new createjs.Shape();
+		this.background.graphics.beginStroke(this.color)
+		.beginFill(backgroundColor)
+		.drawRect(0,0,this.width,this.height);
+
+		this.addChild(this.background,this.labelTxt);
+	}
+
+	p.setButtonListeners = function(){
+		this.cursor = &#x27;pointer&#x27;;
+		this.on(&#x27;rollover&#x27;,this.onButtonOver);
+		this.on(&#x27;rollout&#x27;,this.onButtonOut);
+		this.on(&#x27;click&#x27;, this.onButtonClick);
+
+		this.drawButton(this.backgroundColor);
+	}
+
+	p.onButtonOver = function(){
+		this.drawButton(this.hoverColor);
+	}
+
+	p.onButtonOut = function(){
+		this.drawButton(this.backgroundColor);
+	}
+
+	p.onButtonClick = function(){
+		this.removeAllEventListeners();
+		bts.stage.removeChild(this);
+
+		bts.socket.emit(&#x27;start game&#x27;, bts.getShipsCoordinates());
+		bts.readyToStart = true;
+		bts.stage.children.forEach(child =&gt; {
+			if(child instanceof bts.Ship){
+				child.removeAllEventListeners();
+			}
+		});
+		if(bts.opponentShipsPositions){
+			bts.startGame();
+		}
+	}
+
+	bts.Button = Button;
+}());
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

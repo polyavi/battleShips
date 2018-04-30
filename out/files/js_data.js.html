@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>js\data.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/bts.Preloader.html">bts.Preloader</a></li>
+                                <li><a href="../classes/bts.Section.html">bts.Section</a></li>
+                                <li><a href="../classes/bts.Ship.html">bts.Ship</a></li>
+                            </ul>
+                
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/BattleShips.html">BattleShips</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: js\data.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @module BattleShips
+ */
+this.bts = this.bts || {};
+
+(function () {
+	&#x27;use strict&#x27;;
+
+	bts.SCORE_BOARD_HEIGHT = 100;
+	bts.SCORE_BOARD_WIDTH = 200;
+	bts.LINE_HEIGHT = 50;
+	bts.SECTION_SIZE = 65;
+	bts.FIELD_HEIGHT = 455;
+	bts.FIELD_WIDTH = 780;
+	bts.FIELD_SEPARATOR_POSITION = bts.SCORE_BOARD_WIDTH + bts.FIELD_WIDTH/2;
+	bts.LINES = Math.round(bts.FIELD_HEIGHT/bts.SECTION_SIZE);
+	bts.ROWS = Math.round(bts.FIELD_WIDTH/bts.SECTION_SIZE);
+	bts.BIG_SHIPS_COUNT = 1;
+	bts.MEDIUM_SHIPS = 2;
+	bts.SMALL_SHIPS = 3
+
+	bts.images = [
+		{
+			id:&#x27;ships&#x27;, 
+			src:&#x27;images/ships.png&#x27;
+		},
+		{
+			id:&#x27;water&#x27;, 
+			src:&#x27;images/water1.jpg&#x27;
+		},{
+			id:&quot;explosion&quot;, 
+			src:&#x27;images/explosion.png&#x27;
+		}
+	];
+
+	bts.buttonsProps = {
+		height: 40,
+		width: 150,
+		fontSize: 16,
+		color: &#x27;#666&#x27;,
+		backgroundColor: &#x27;#cdcdcd&#x27;,
+		hoverColor: &#x27;#eee&#x27;,
+		inactiveColor: &#x27;#333&#x27;
+	};
+
+	bts.shipsData = {
+		smallShip : {
+			name: &#x27;smallShip&#x27;,
+			y : bts.SCORE_BOARD_HEIGHT,
+			x : 150,
+			scale : 0.5,
+			size: 1
+		},
+		mediumShip : {
+			name: &#x27;mediumShip&#x27;,
+			y : bts.SCORE_BOARD_HEIGHT,
+			x : 100,
+			scale : 0.7,
+			size: 2
+		},
+		bigShip : {
+			name: &#x27;bigShip&#x27;,
+			y : bts.SCORE_BOARD_HEIGHT,
+			x : 20,
+			scale : 0.5,
+			size: 3
+		}
+	};
+
+	bts.shipsSpritesheetData = {
+		frames: [
+		//initial ships
+			[445, 0 , 130, 360],
+			[130, 405 , 65, 180],
+			[630, 135, 55, 110],
+		// hit ships
+			[320, 0, 130, 360],
+			[65, 405, 65, 180],
+			[570, 135 , 55, 110]
+		],
+    animations: {
+    	bigShip: [0],
+    	mediumShip: [1],
+    	smallShip: [2],
+    	hitBigShip: [3],
+    	hitMediumShip: [4],
+    	hitSmallShip: [5]
+    }
+	};
+
+	bts.explosionSpritesheetData = {
+		frames: {width: 64, height: 64},
+		animations: {
+			explode: [0, 24, false]
+		}
+	};
+}())
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
