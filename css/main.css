@@ -1,21 +1,78 @@
-main{
-	width:980px; 
-	height:455px;
-  margin: 50px auto;
-  position: relative;
+body {
+  margin: 0;
 }
+
+.player-list {
+  height: 80%;
+  width: 19%;
+  background: #666;
+  color: #fff;
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+  text-align: left;
+  padding-left: 20px;
+}
+span.username {
+  width: 80%;
+  display: inline-block;
+  cursor: pointer;
+  padding: 5px;
+}
+
+span.online {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: green;
+  border: 2px solid #fff;
+  vertical-align: middle;
+}
+span.paired {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: red;
+  border: 2px solid #fff;
+  vertical-align: middle;
+}
+.game {
+  height: 80%;
+  position: relative;
+  width: 80%;
+  background-color: #333;
+}
+
 #canvas{
-	display: none;
-  background-color: #333
+  background-color: #333;
+  display: block;
+  margin: 0 auto;
+}
+.app{
+  display: flex;
 }
 
 #messages{
   top: 0;
   right: 0;
-  width: calc(100% - 200px);
+  width: 100%;
   height: 100%;
   position: absolute;
-  display: none;e;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transition: 1s;
+  -moz-transition: 1s;
+  -o-transition: 1s;
+  transition: 1s;
+}
+
+#messages.show{
+  visibility: visible;
+  opacity: 1 ;
 }
 #overlay{
   top: 0;
@@ -27,8 +84,11 @@ main{
   height: 100%;
 }
 .text {
-  width: 50%;
-  margin: 25.5% auto;
+  bottom: 40%;
+  margin-left: 25%;
+  width: fit-content;
+  display: block;
+  position: absolute;
   padding: 10px 40px;
   color: #fff;
   background-color: #333;
@@ -36,22 +96,38 @@ main{
   text-align: center;
 }
 
-#login{
-	position: absolute;
-	width: 980px; 
-	height: 455px;
-	background-color: #333;
+.answers {
+  position: absolute;
+  bottom: 25%;
+  margin-left: 30%;
 }
 
-#login .form {
+.answers button {
+  background: #333;
+  color: #fff;
+  border: 1px solid #fff;
+  margin-right: 20px;
+  height: 50px;
+  font-size: 150%;
+  padding: 0 10px;
+}
+
+#login{
+  width: 100%;
+  height: 100%;
+  background-color: #333;
+  position: absolute;
+}
+
+#login form {
   height: 100px;
   position: relative;
   text-align: center;
-  top: calc(50% - 50px);
+  top: calc(50% - 150px);
   width: 100%;
 }
 
-#login .form .usernameInput {
+#login form .usernameInput {
   background-color: transparent;
   border: none;
   border-bottom: 2px solid #fff;
@@ -60,7 +136,16 @@ main{
   text-align: center;
   width: 400px;
 }
-
+#login form button{
+  background: #333;
+  color: #fff;
+  border: 1px solid #fff;
+  display: block;
+  margin: 50px auto;
+  width: 150px;
+  height: 50px;
+  font-size: 150%;
+}
 #login .title {
   font-size: 200%;
 }
