@@ -13,7 +13,7 @@
   - Room properties (max number of users, name, users, password)
 
 * Game adjustments:
-  - Game with more than 2 players
+  - Game with more than 2 players - Done
   - New size and shape of the map - Done
   - Players start positions - Done
   - New map images - Done
@@ -40,7 +40,6 @@
     - Monitions : adds additional monitions - Done
     - Reveal map: shows all mines and traps for 2 min 
     - Life power-up : fills ship's life  - Done
-    - The number of power-ups is calculated according to players number
     - After a power-up is colected it apears again on different place after 1 min
   
   - Along with power-up there are mines and traps on the map:
