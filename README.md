@@ -14,33 +14,32 @@
 
 * Game adjustments:
   - Game with more than 2 players
-  - Size and shape of the map according to number of players
-  - Number of power-ups according to number of players
-  - Players start positions
-  - New map images
+  - New size and shape of the map - Done
+  - Players start positions - Done
+  - New map images - Done
   - New ship images
   - Mine images
   - Power-up images
 
 * New rules:
-  - Player starts with ship placed in the center of their section
-  - Player has monitions (number of shots they can make)
+  - Player starts with ship placed in the center of their section - Done
+  - Player has monitions (number of shots they can make) - Done
   - Player can:
-    - Move ships
-    - Colect power-ups (players can see where the power-ups are)
-    - Atack other ships untill out of monitions
+    - Move ship - Done
+    - Colect power-ups (players can see where the power-ups are) - Done
+    - Atack other ships untill out of monitions - Done
 
   - Ships have:
-    - Life/size (number of hits they can take before sinking)
-    - Speed (number of steps in 1 sec)
-    - Range (max distance they can fire)
+    - Life (number of hits they can take before sinking) - Done
+    - Speed (number of steps in 1 sec) - Done
+    - Range (max distance they can fire) - Done
 
   - Power-ups:
-    - Speed power-up : increaces speed x2
-    - Range power-up : increaces reange by 1
-    - Monitions : adds additional monitions
+    - Speed power-up : increaces speed by 1 - Done
+    - Range power-up : increaces reange by 1 - Done
+    - Monitions : adds additional monitions - Done
     - Reveal map: shows all mines and traps for 2 min 
-    - Life power-up : fills ship's life 
+    - Life power-up : fills ship's life  - Done
     - The number of power-ups is calculated according to players number
     - After a power-up is colected it apears again on different place after 1 min
   
@@ -49,4 +48,4 @@
     - Mine: when hit ship loses all inhansements on speed and range
     - Trap: holds the ship in the position for 20sec
 
-  - Winner is the last player with atleast one ship left
+  - Winner is the last player with a ship left
