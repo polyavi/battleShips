@@ -1,11 +1,11 @@
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var port = process.env.PORT || 3000;
+let express = require('express');
+let app = express();
+let http = require('http').Server(app);
+let io = require('socket.io')(http);
+let port = process.env.PORT || 3000;
 
-var pairs = [];
-var prevUser;
+let pairs = [];
+let prevUser;
 
 app.use('/dist/app',express.static(__dirname + '/dist/app'));
 app.use('/css',express.static(__dirname + '/css'));

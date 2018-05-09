@@ -1,15 +1,15 @@
-import data from './js/data'
-import button from './js/button'
-import preloader from './js/preloader'
-import section from './js/section'
-import ship from './js/ship'
-import game from './js/game'
+import Data from './js/Data'
+import Field from './js/Field'
+import Preloader from './js/Preloader'
+import Section from './js/Section'
+import Ship from './js/Ship'
+import GameLogic from './js/GameLogic'
 
 export default () =>{
-	data();
-	button();
-	preloader();
-	section();
-	ship();
-	game();
+	Data();
+	Field();
+	Preloader();
+	Section();
+	Ship();
+	GameLogic();
 }

@@ -5,10 +5,10 @@ class Canvas extends Component {
 constructor(props) {
     super(props);
 
-    //this.state = {
-    //  width: document.getElementsByTagName('body')[0].clientWidth*0.8,
-    //  height: document.getElementsByTagName('body')[0].clientHeight*0.8
-    //}
+    this.state = {
+      width: document.getElementsByTagName('body')[0].clientWidth*0.8,
+      height: document.getElementsByTagName('body')[0].clientHeight*0.8
+    }
     this.getHit = this.getHit.bind(this);
     this.receivePosition = this.receivePosition.bind(this);
     this.showMessage = this.showMessage.bind(this);
@@ -18,13 +18,13 @@ constructor(props) {
 
     this.props.socket.on('receive position', this.receivePosition);
 
-    //window.onresize = () => {
-    //  this.setState({
-    //    width: document.getElementsByClassName('game')[0].clientWidth,
-    //    height: document.getElementsByClassName('game')[0].clientHeight
-    //  }
-    //  );
-    //}
+    window.onresize = () => {
+      this.setState({
+        width: document.getElementsByClassName('game')[0].clientWidth,
+        height: document.getElementsByClassName('game')[0].clientHeight
+      }
+      );
+    }
   }
 
 	getHit = (data) =>{
@@ -62,7 +62,7 @@ constructor(props) {
 
   render() {
     return (
-        <canvas id="canvas" width="980" height="455" />
+        <canvas id="canvas" width={this.state.width} height={this.state.height} />
     );
   }
 }
