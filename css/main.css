@@ -1,59 +1,155 @@
-body {
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?n599he');
+  src:  url('fonts/icomoon.eot?n599he#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?n599he') format('truetype'),
+    url('fonts/icomoon.woff?n599he') format('woff'),
+    url('fonts/icomoon.svg?n599he#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-dice:before {
+  content: "\e915";
+}
+.icon-chat:before {
+  content: "\e970";
+}
+.icon-users:before {
+  content: "\e972";
+}
+.icon-enlarge:before {
+  content: "\e989";
+}
+.icon-shrink:before {
+  content: "\e98a";
+}
+.icon-cog:before {
+  content: "\e994";
+}
+.icon-plus:before {
+  content: "\ea0a";
+}
+.icon-cross:before {
+  content: "\ea0f";
+}
+
+header {
+  width: 100%;
+  padding: 10px 20px;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+  background-color: #EF6461;
+}
+
+h1 {
   margin: 0;
 }
 
-.player-list {
-  height: 80%;
-  width: 19%;
-  background: #666;
+ul.menu {
+  display: flex;
+  margin: 0;
+  font-size: 19px;
+}
+
+.menu li {
+  margin-left: 20px;
+  cursor: pointer;
+}
+
+ul.menu i {
+  margin-right: 10px;
+}
+
+span.shown {
+    color: #313638;
+}
+body {
+  margin: 0;
   color: #fff;
-  text-align: center;
+  font-family: monospace;
+}
+
+main > div {
+  display: flex;
+}
+
+.player-list {
+  background: #E0DFD5;
+  color: #313638;
+  height: 100%;
 }
 
 ul {
   list-style: none;
-  text-align: left;
-  padding-left: 20px;
-}
-span.username {
-  width: 80%;
-  display: inline-block;
-  cursor: pointer;
-  padding: 5px;
+  padding: 0 10px;
 }
 
-span.online {
+span.username {
+  width: 74%;
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: green;
-  border: 2px solid #fff;
-  vertical-align: middle;
+  padding: 5px;
 }
-span.paired {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: red;
-  border: 2px solid #fff;
-  vertical-align: middle;
+.player-list li {
+  border-bottom: 1px solid #E8E9EB;
+  color: #313638;
 }
-.game {
-  height: 80%;
-  position: relative;
+
+.player-list h3 {
+  background-color: #E4B363;
+  color: #fff;
+  margin: 0;
+  padding: 10px 20px;
+}
+
+span.icon-dice, span.icon-chat {
+  color: #EF6461;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.sidebar {
+  height: calc(100vh - 50px);
+  width: 20%;
+}
+
+.app {
+  flex-wrap: wrap;
+  display: flex;
+}
+
+main {
   width: 80%;
-  background-color: #333;
+  background-color: #313638;
+}
+
+.game {
+  position: relative;
+  min-width: 80%;
+  background-color: #313638;
 }
 
 #canvas{
   background-color: #333;
   display: block;
   margin: 0 auto;
-}
-.app{
-  display: flex;
 }
 
 #messages{
@@ -73,6 +169,9 @@ span.paired {
 #messages.show{
   visibility: visible;
   opacity: 1 ;
+}
+.hide{
+  display: none;
 }
 #overlay{
   top: 0;
@@ -112,14 +211,13 @@ span.paired {
   padding: 0 10px;
 }
 
-#login{
+#login, #join-room{
   width: 100%;
-  height: 100%;
-  background-color: #333;
-  position: absolute;
+  height: calc(100% - 76px);
+  box-sizing: border-box;
 }
 
-#login form {
+form {
   height: 100px;
   position: relative;
   text-align: center;
@@ -127,7 +225,7 @@ span.paired {
   width: 100%;
 }
 
-#login form .usernameInput {
+form input {
   background-color: transparent;
   border: none;
   border-bottom: 2px solid #fff;
@@ -136,8 +234,8 @@ span.paired {
   text-align: center;
   width: 400px;
 }
-#login form button{
-  background: #333;
+form button{
+  background: #313638;
   color: #fff;
   border: 1px solid #fff;
   display: block;
@@ -145,17 +243,18 @@ span.paired {
   width: 150px;
   height: 50px;
   font-size: 150%;
+  font-family: monospace;
 }
-#login .title {
+.title {
   font-size: 200%;
 }
 
-#login .usernameInput {
+form input {
   font-size: 200%;
   letter-spacing: 3px;
 }
 
-#login .title, #login .usernameInput {
+.title, form input {
   color: #fff;
   font-weight: 100;
 }

@@ -6,42 +6,48 @@ class PlayerList extends Component {
 
 		this.state = {
 			socket: this.props.socket,
-			users: []
+			users: [],
+			room: this.props.room
 		}
 
-		this.state.socket.on('get users', (data) =>{
+		this.state.socket.on('new user', (data) =>{
 			this.setState({users: data});
 		});
 
-		this.handleClick = this.handleClick.bind(this);
+		this.handleMessage = this.handleMessage.bind(this);
 	}
 
-	handleClick = (e) => {
-		let userId = e.target.id;
-		this.state.socket.emit('pair', userId);
+	handleMessage = (e) => {
+		let userId = e.target.parentNode.id;
+	}
+
+	handleInvite = (e) =>{
+		let userId = e.target.parentNode.id;
+		this.state.socket.emit('invite', {room: this.state.room, user: userId})
 	}
 	
 	render(){
 		let playerNodes;
 		if(this.state.users.length > 0){
-			this.state.users = this.state.users.filter((user => user.username != this.props.me));
-			console.log(this.state.users);
 			playerNodes = this.state.users.map((user) =>{
 				return(
 					<li 
-						key={user.id}>
-						{user.paired ? 
-							<span id={user.id} className="username">{user.username}</span> :
-							<span id={user.id} className="username" onClick={this.handleClick}>{user.username}</span>
-						}
-						<span className={user.paired ? "paired" : "online"}></span>
+						key={user.id} 
+						id={user.id}>
+							<span className="username" >{user.username}</span>
+							{user.username != this.props.me &&
+							<span>
+								<span onClick={this.handleInvite} title="Invite to play" className="icon-dice"></span>
+								<span onClick={this.handleMessage} title="Send message" className="icon-chat"></span>
+							</span>
+							}
 					</li>
 				);
 			});
 		}
 		return (
-			<div className="player-list">
-				<h3>List of online users</h3>
+			<div className={this.props.isChatVisible ? "player-list hide" : "player-list"}>
+				<h3><i className="icon-users"></i> List of online users</h3>
 				{!!playerNodes && <ul> {playerNodes} </ul>}
 			</div>
 		);

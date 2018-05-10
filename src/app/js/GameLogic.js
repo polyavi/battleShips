@@ -86,5 +86,7 @@ export default ()=>{
 				bts.showMessage('Congartulations. You win.');
 			}
 		}
+		
+		bts.preload();
 	}())
 }

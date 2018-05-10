@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import Game from './Game';
-import PlayerList from './PlayerList';
-import Chat from './Chat';
-
+import Header from './Header';
+import Main from './Main';
+import SideBar from './SideBar';
 
 class App extends Component {
   constructor(props){
@@ -10,27 +9,68 @@ class App extends Component {
 
     this.state = {
       socket: io({transports: ['websocket'], upgrade: false}),
-      me: ''
+      me: '',
+      screen: 'log in',
+      isChatVisible: false
     }
-    this.setName = this.setName.bind(this);
+
+    this.logIn = this.logIn.bind(this);
+    this.showChat = this.showChat.bind(this);
+    this.hideChat = this.hideChat.bind(this);
+    this.showCreateRoom = this.showCreateRoom.bind(this);
+    this.showJoinRoom = this.showJoinRoom.bind(this);    
+
+    let self = this;
+    this.state.socket.on('joined', function(){
+      self.setState({screen: 'game'});
+    })
   }
 
-  setName = (name) =>{
-    this.setState({me: name});
+  logIn = (name, screen) =>{
+    this.setState({me: name, screen: 'room list'});
+  }
+
+  showChat = () =>{
+    this.setState({isChatVisible: true});
+  }
+
+  hideChat = () =>{
+    this.setState({isChatVisible: false});
+  }
+
+  showCreateRoom = () => {
+    this.setState({screen: 'create room'});
+  }
+
+  showJoinRoom = (wrongPass) => {
+    this.setState({screen: 'join room', wrongPass: wrongPass});
   }
 
   render() {
     return (
-      <div>
-        <div className="app">
-          <PlayerList 
-            socket={this.state.socket} 
-            me={this.state.me} />
-          <Game 
-            socket={this.state.socket} 
-            setName={this.setName} />
-        </div>
-        <Chat socket={this.state.socket} />
+      <div className="app">
+        <Header 
+          isChatVisible={this.state.isChatVisible}
+          screen={this.state.screen}
+          hideChat={this.hideChat} 
+          showChat={this.showChat} 
+          createRoom={this.showCreateRoom}/>
+        <SideBar 
+          isChatVisible={this.state.isChatVisible} 
+          socket={this.state.socket} 
+          joinRoom={this.showJoinRoom}
+          me={this.state.me}
+          handleScreen={this.handleScreen}/>
+        <Main
+          screen={this.state.screen}
+          wrongPass={this.state.wrongPass}
+          socket={this.state.socket}
+          hideChat={this.hideChat} 
+          showChat={this.showChat}
+          logIn={this.logIn}
+          showJoinRoom={this.showJoinRoom}
+          me={this.state.me}
+           />
       </div>
     );
   }

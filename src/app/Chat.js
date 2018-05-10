@@ -7,7 +7,7 @@ class Chat extends Component {
 
   render() {
     return (
-      <div className="chat">
+      <div className={this.props.isChatVisible ? "chat" : "chat hide"}>
 
       </div>
     );
