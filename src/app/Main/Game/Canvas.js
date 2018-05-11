@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Init from './Init'
+import Init from '../../js/Init'
 
 class Canvas extends Component {
 constructor(props) {
@@ -9,15 +9,6 @@ constructor(props) {
       width: document.getElementsByTagName('main')[0].clientWidth,
       height: document.getElementsByTagName('main')[0].clientHeight
     }
-    this.showMessage = this.showMessage.bind(this);
-
-    window.onresize = () => {
-      this.setState({
-        width: document.getElementsByClassName('game')[0].clientWidth,
-        height: document.getElementsByClassName('game')[0].clientHeight
-      }
-      );
-    }
   }
   
 	showMessage = (message) =>{
@@ -26,10 +17,17 @@ constructor(props) {
 
   componentDidMount(){
     Init();
-
-    bts.socket = this.props.socket;
+    
 		bts.showMessage = this.showMessage;
     bts.hideMessage = this.props.hideMessage;
+    
+    window.onresize = () => {
+      this.setState({
+        width: document.getElementsByTagName('main')[0].clientWidth,
+        height: document.getElementsByTagName('main')[0].clientHeight
+      }
+      );
+    }
   }
 
   render() {

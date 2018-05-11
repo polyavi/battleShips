@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import Game from './Game';
-import JoinRoom from './JoinRoom';
-import Chat from './Chat';
-import Login from './Login'
-import RoomList from './RoomList'
+import Game from './Game/Game';
+import JoinRoom from './Rooms/JoinRoom';
+import Login from './Login/Login'
+import RoomList from './Rooms/RoomList'
 
 
 class Main extends Component {
@@ -14,17 +13,15 @@ class Main extends Component {
       room: '',
       password: ''
     }
-
-    this.handleLogIn = this.handleLogIn.bind(this);
-    this.setUsername = this.setUsername.bind(this);
-    this.handleJoinRoom = this.handleJoinRoom.bind(this);
-
-    this.props.socket.on('wrong pass', ()=>{
-    	this.props.showJoinRoom(true);
-    })
   }
 
-  handleLogIn = (username) => {
+  componentDidMount = () =>{
+    window.socket.on('wrong pass', ()=>{
+      this.props.showJoinRoom(true);
+    })
+  }
+  
+  handleLogIn = (username) =>{
     if(username != "")
     {
       this.props.logIn(username);
@@ -32,13 +29,18 @@ class Main extends Component {
     }
   }
 
-  setUsername (username) {
-    this.props.socket.emit('add user', username);
+  setUsername = (username) => {
+    window.socket.emit('add user', username);
   }
 
-  handleJoinRoom (room, pass){
+  handleJoinRoom = (room, pass) =>{
   	this.setState({room: room, password: pass});
-  	this.props.socket.emit('join room', {room, pass});
+  	window.socket.emit('join room', {room, pass});
+  }
+
+  showJoinRoom = (room, wrongPass) =>{
+    this.setState({room: room});
+    this.props.showJoinRoom(wrongPass)
   }
 
   render() {
@@ -48,8 +50,7 @@ class Main extends Component {
           	<Login onSubmit={this.handleLogIn} />}
         	<RoomList 
         		screen={this.props.screen}
-        		socket={this.props.socket}
-        		showJoinRoom={this.props.showJoinRoom}
+        		showJoinRoom={this.showJoinRoom}
         	/>
           {(this.props.screen == 'join room' || this.props.screen == 'create room') && 
           	<JoinRoom 
@@ -59,7 +60,7 @@ class Main extends Component {
           		room={this.state.room}/>
           }
           {this.props.screen == 'game' && 
-          	<Game socket={this.props.socket}
+          	<Game
           		screen={this.props.screen}
           		me={this.props.me} />}
       </main>

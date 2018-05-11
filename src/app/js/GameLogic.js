@@ -59,8 +59,8 @@ export default ()=>{
 					animations: bts.shipsSpritesheetData.animations
 				}
 			);
-
-		bts.myship = new bts.Ship('my ship', {x: bts.stage.canvas.clientWidth/2 + bts.fieldSize*76 , y: bts.stage.canvas.clientHeight/2 + bts.fieldSize*44}, bts.playerProps);
+			
+			bts.myship = new bts.Ship('my ship', {x: bts.stage.canvas.clientWidth/2 + bts.fieldSize*76 , y: bts.stage.canvas.clientHeight/2 + bts.fieldSize*44}, bts.playerProps);
 		}
 
 		bts.startGame = function(){

@@ -54,10 +54,16 @@ export default ()=>{
 
 		p.increaseRange = function(){
 			this.range +=1;
+			if(this.name = 'my ship'){
+				this.drawRangeMarker();
+			}
 		}
 
 		p.resetRange = function(){
 			this.range = 3;
+			if(this.name = 'my ship'){
+				this.drawRangeMarker();
+			}
 		}
 
 		p.increaseMonitions = function(amount){
@@ -84,6 +90,8 @@ export default ()=>{
 		}
 
 		p.drawRangeMarker = function (){
+			bts.stage.removeChild(bts.stage.getChildByName('range'));
+
 			this.rangeSection = new createjs.Shape();
 
 			this.rangeSection.graphics.beginFill('#4682B4').beginStroke('#4682B4').drawPolyStar(this.children[0].x, this.children[0].y, 50*(this.range + 2), 6, 0, 0);

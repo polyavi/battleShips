@@ -6,16 +6,20 @@ class RoomList extends Component {
     this.state = {
 			rooms: []
 		}
-		this.handleClick = this.handleClick.bind(this);
 
-    this.props.socket.on('rooms', (data) =>{
+		this.handleClick = this.handleClick.bind(this);
+	}
+
+  componentDidMount = () =>{
+    window.socket.on('rooms', (data) =>{
 			this.setState({rooms: data});
 		});
+  }
+
+	handleClick = (e) =>{
+		this.props.showJoinRoom(e.target.innerText, false);
 	}
 
-	handleClick = ()=>{
-		this.props.showJoinRoom(false);
-	}
 	render(){
 		let roomNodes;
 		if(this.state.rooms.length > 0){

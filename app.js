@@ -9,7 +9,6 @@ app.use('/css',express.static(__dirname + '/css'));
 
 app.use('/images',express.static(__dirname + '/images'));
 
-
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
@@ -18,6 +17,7 @@ io.on('connection', function(socket){
 
 	socket.on('add user', function (username) {
 	  socket.username = username;
+	  socket.color = '#'+Math.random().toString(16).substr(2,6);
 	 
 	  io.emit('new user', getAllUsersData());
 	  socket.emit('rooms', getAllRoomsData());
@@ -29,24 +29,32 @@ io.on('connection', function(socket){
 			if(room.hasPass && room.pass !== roomProps.pass){
 					socket.emit('wrong pass');
 			}else{
-				socket.emit('joined');
+				socket.emit('joined', roomProps.room);
 				socket.join(roomProps.room);
 			}
 		}else{
 			socket.join(roomProps.room);
-			socket.emit('joined');
+			socket.emit('joined', roomProps.room);
 
 			let room = io.sockets.adapter.rooms[roomProps.room];
+			room.name = roomProps.room;
 			if(roomProps.pass != ''){
 				room.hasPass = true;
 				room.pass = roomProps.pass;
-				room.name = roomProps.room;
 			}else{
 				room.hasPass = false;
 			}
 		}
-		socket.emit('rooms', getAllRoomsData());
+		io.emit('rooms', getAllRoomsData());
 	});
+
+	socket.on('message to', function(data){
+		io.to(data.room).emit('message', {message: createMessage(data.text, socket), room: data.room});
+	})
+
+	socket.on('global message', function(text){
+		io.emit('message',  {message: createMessage(text, socket)});
+	})
 
 	socket.on('invite', function (username) { 
 	  io.emit('invitation', {username, room});
@@ -95,6 +103,19 @@ function getAllRoomsData(){
 	return roomsData;
 }
 
+function createMessage(text, sender){
+	return {
+		sender: {
+			name: sender.username,
+			color: sender.color
+		},
+		text: text,
+		time: formatTime(new Date())
+	}
+}
+function formatTime(date){
+	return date.getHours() + ':' + date.getMinutes();
+}
 http.listen(port, function(){
   console.log('listening on *:' + port);
 });

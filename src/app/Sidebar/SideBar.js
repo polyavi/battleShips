@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import PlayerList from './PlayerList';
-import Chat from './Chat';
+import PlayerList from './PlayerList/PlayerList';
+import Chat from './Chat/Chat';
 
 class SideBar extends Component {
   constructor(props){
@@ -10,10 +10,8 @@ class SideBar extends Component {
   render() {
     return (
       <div className="sidebar">
-        	<Chat socket={this.props.socket}
-                isChatVisible={this.props.isChatVisible}/>
+        	<Chat isChatVisible={this.props.isChatVisible}/>
           <PlayerList 
-            socket={this.props.socket} 
             me={this.props.me} 
             isChatVisible={this.props.isChatVisible}/>
       </div>

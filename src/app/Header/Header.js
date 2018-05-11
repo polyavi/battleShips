@@ -3,9 +3,6 @@ import React, { Component } from 'react';
 class Herader extends Component {
   constructor(props){
     super(props);
-
-    this.handleChat = this.handleChat.bind(this);
-    this.handleCreate = this.handleCreate.bind(this);
   }
 
   handleChat = () =>{
@@ -15,6 +12,7 @@ class Herader extends Component {
       this.props.showChat();
     }
   }
+  
   handleCreate = () =>{
     this.props.createRoom();
   }
@@ -24,7 +22,7 @@ class Herader extends Component {
       <header>
         <h1 className="title">Battleships</h1>
         <ul className="menu">
-          {screen != 'log in' && 
+          {this.props.screen != 'log in' && 
             <li>
               <span onClick={this.handleCreate}><i className="icon-plus" ></i>Create room</span>
             </li>

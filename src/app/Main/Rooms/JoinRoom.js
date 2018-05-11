@@ -10,6 +10,9 @@ class JoinRoom extends Component {
     }
     this.onSubmit = this.onSubmit.bind(this);
   }
+  componentDidMount(){
+    this.setState({room: this.props.room})
+  }
 
   updateRoomname = (event) => {
     this.setState({ room: event.target.value});
@@ -21,6 +24,9 @@ class JoinRoom extends Component {
 
   onSubmit = (e) => { 
     e.nativeEvent.preventDefault(); 
+    if(this.state.room == ''){
+      this.state.room =  this.props.room;
+    }
     this.props.onSubmit(this.state.room, this.state.pass);
   }    
 

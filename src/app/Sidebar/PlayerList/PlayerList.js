@@ -5,25 +5,25 @@ class PlayerList extends Component {
 		super(props);
 
 		this.state = {
-			socket: this.props.socket,
 			users: [],
 			room: this.props.room
 		}
+	}
 
-		this.state.socket.on('new user', (data) =>{
+  componentDidMount(){
+    window.socket.on('new user', (data) =>{
 			this.setState({users: data});
 		});
-
-		this.handleMessage = this.handleMessage.bind(this);
-	}
+  }
 
 	handleMessage = (e) => {
 		let userId = e.target.parentNode.id;
+
 	}
 
-	handleInvite = (e) =>{
+	handleInvite = (e) => {
 		let userId = e.target.parentNode.id;
-		this.state.socket.emit('invite', {room: this.state.room, user: userId})
+		window.socket.emit('invite', {room: this.state.room, user: userId})
 	}
 	
 	render(){

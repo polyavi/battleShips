@@ -10,14 +10,9 @@ class Game extends Component {
     this.state = {
       showMessage: false
     }
-
-    this.loadGame = this.loadGame.bind(this);
-    this.hideMessage = this.hideMessage.bind(this);
-
-    this.hendleOutSideMessages = this.hendleOutSideMessages.bind(this);
   }
 
-  loadGame(username, message){
+  loadGame = (username, message) => {
     this.showMessage(message);
     this.setState(
       { 
@@ -27,7 +22,7 @@ class Game extends Component {
     bts.preload();
   }
 
-  showMessage(message, isQuestion){
+  showMessage = (message, isQuestion) => {
     if(!isQuestion) {
       isQuestion = false;
     }
@@ -40,11 +35,11 @@ class Game extends Component {
       });
   }
 
-  hideMessage(){
+  hideMessage = () => {
     this.setState({ showMessage : false});
   }
   
-  hendleOutSideMessages = (message) =>{
+  hendleOutSideMessages = (message) => {
     this.showMessage(message)
   }
 
@@ -53,7 +48,6 @@ class Game extends Component {
       <div className="game">
         { this.props.screen == 'game' && 
           <Canvas 
-            socket={this.props.socket} 
             me={this.props.me} 
             hendleOutSideMessages={this.hendleOutSideMessages} 
             hideMessage={this.hideMessage}/> 

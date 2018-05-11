@@ -8,7 +8,6 @@ class Login extends Component {
     this.state = {
       username: ""
     }
-    this.onSubmit = this.onSubmit.bind(this);
   }
 
   update = (event) => {

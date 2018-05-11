@@ -1,28 +1,22 @@
 import React, { Component } from 'react';
-import Header from './Header';
-import Main from './Main';
-import SideBar from './SideBar';
+import Header from './Header/Header';
+import Main from './Main/Main';
+import SideBar from './Sidebar/SideBar';
 
 class App extends Component {
   constructor(props){
     super(props);
 
     this.state = {
-      socket: io({transports: ['websocket'], upgrade: false}),
       me: '',
       screen: 'log in',
-      isChatVisible: false
+      isChatVisible: true
     }
+  }
 
-    this.logIn = this.logIn.bind(this);
-    this.showChat = this.showChat.bind(this);
-    this.hideChat = this.hideChat.bind(this);
-    this.showCreateRoom = this.showCreateRoom.bind(this);
-    this.showJoinRoom = this.showJoinRoom.bind(this);    
-
-    let self = this;
-    this.state.socket.on('joined', function(){
-      self.setState({screen: 'game'});
+  componentDidMount(){
+    window.socket.on('joined', ()=>{
+      this.setState({screen: 'game'});
     })
   }
 
@@ -38,11 +32,11 @@ class App extends Component {
     this.setState({isChatVisible: false});
   }
 
-  showCreateRoom = () => {
+  showCreateRoom = () =>{
     this.setState({screen: 'create room'});
   }
 
-  showJoinRoom = (wrongPass) => {
+  showJoinRoom = (wrongPass) =>{
     this.setState({screen: 'join room', wrongPass: wrongPass});
   }
 
@@ -57,14 +51,12 @@ class App extends Component {
           createRoom={this.showCreateRoom}/>
         <SideBar 
           isChatVisible={this.state.isChatVisible} 
-          socket={this.state.socket} 
           joinRoom={this.showJoinRoom}
           me={this.state.me}
           handleScreen={this.handleScreen}/>
         <Main
           screen={this.state.screen}
           wrongPass={this.state.wrongPass}
-          socket={this.state.socket}
           hideChat={this.hideChat} 
           showChat={this.showChat}
           logIn={this.logIn}
