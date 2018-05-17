@@ -18,6 +18,9 @@ class JoinRoom extends Component {
     }else if(passwordInput){
       passwordInput.focus();
     }
+    window.socket.on('wrong pass', ()=>{
+      this.setState({pass:''})
+    })
   }
 
   updateRoomname = (event) => {

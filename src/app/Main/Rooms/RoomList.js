@@ -48,7 +48,7 @@ class RoomList extends Component {
 		return (
 			<div className={this.props.isRoomListVisible ? "room-list" : "room-list hide"}>
 				<h3>Rooms</h3>
-				{!!roomNodes && <ul> {roomNodes} </ul>}
+				{!!roomNodes ? <ul> {roomNodes} </ul> : <span className="empty-list">There are no rooms yet. Hurry up and you can be the first one to create a room</span>}
 			</div>
 		);
 	}

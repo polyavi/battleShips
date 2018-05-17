@@ -16,7 +16,6 @@ constructor(props) {
 	}
 
   componentDidMount(){
-    console.log('mount canvas');
     Init();
     
     bts.me = this.props.me;

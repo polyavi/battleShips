@@ -116,7 +116,7 @@ ul {
 }
 
 span.username {
-  width: 74%;
+  width: 80%;
   display: inline-block;
   padding: 5px;
 }
@@ -454,7 +454,9 @@ div#game-message > * {
   background-color: #313638;
   padding: 20px;
 }
-
+div#game-message form{
+  top: 0;
+}
 .admin-message .sender {
   display: inline;
 }
@@ -462,4 +464,9 @@ div#game-message > * {
 .admin-message {
   color: #313638;
   padding: 10px 20px;
+}
+
+span.empty-list {
+    padding: 10px;
+    display: block;
 }

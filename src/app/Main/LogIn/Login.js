@@ -11,6 +11,10 @@ class Login extends Component {
   }
   componentDidMount(){
     document.getElementsByClassName('usernameInput')[0].focus();
+
+    window.socket.on('taken username', () =>{
+      this.setState({isUserNameTaken: true, username:''});
+    })
   }
 
   update = (event) => {
@@ -26,7 +30,7 @@ class Login extends Component {
     return (
       <div id="login">
         <form onSubmit={this.onSubmit}>
-          <h3 className="title" >What's your nickname?</h3>
+          <h3 className="title">{this.state.isUserNameTaken ? "This username is taken. Try another." : "What's your nickname?"} </h3>
           <input className="usernameInput" type="text" maxLength="14" onChange={this.update} value={this.state.username} tabIndex="1"/>
           <button tabIndex="2">Login</button>
         </form>

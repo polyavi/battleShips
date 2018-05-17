@@ -44,11 +44,13 @@ export default ()=>{
 
 		p.handleInteraction = function(e){
 			if(bts.startPos.mouseX == bts.stage.mouseX && bts.startPos.mouseY == bts.stage.mouseY){
-				let targetShip = e.target.parent.getTargetShip();
+				let target = (e.target.parent.name == 'powerup') ? e.target.parent.parent.children[0] : e.target.parent.children[0];
+				let targetShip = target.parent.getTargetShip();
 				if(targetShip){
 					if(isTargetInRange(targetShip.position)) bts.myship.attackOponent(targetShip);
 				}else{
-					bts.moveToNextPosition(bts.myship, {x: bts.myship.children[0].x, y: bts.myship.children[0].y},{x: e.target.graphics.command.x, y: e.target.graphics.command.y});
+					bts.myship.prevPos = [];
+					bts.moveToNextPosition(bts.myship, {x: bts.myship.children[0].x, y: bts.myship.children[0].y},{x: target.graphics.command.x, y: target.graphics.command.y});
 
 					window.socket.emit(
 						'move', 
@@ -57,8 +59,8 @@ export default ()=>{
 							y: bts.myship.children[0].y - bts.canvasCenter.y
 						},
 						{
-							x: e.target.graphics.command.x - bts.canvasCenter.x, 
-							y: e.target.graphics.command.y - bts.canvasCenter.y
+							x: target.graphics.command.x - bts.canvasCenter.x, 
+							y: target.graphics.command.y - bts.canvasCenter.y
 						}
 					)
 				}
@@ -69,21 +71,32 @@ export default ()=>{
 			if(this.powerup){
 				if(ship.name == bts.me){
 					window.socket.emit('collect powerup', this.powerup);
-					this.removePowerUp();
 				}
+				this.removePowerUp();
 			}	
 		}
 
 		p.removePowerUp = function(){
 			this.powerup.delete;
-
-			createjs.Tween.get(this)
-				.to({alpha: 1}, 500, createjs.Ease.sinIn)
+			this.removeChild(this.getChildByName('powerup'));
 		}
 
 		p.addPowerUp = function(powerup){
-			createjs.Tween.get(this)
-				.to({alpha: 0.5}, 500, createjs.Ease.sinIn)
+			let text= new createjs.Container();
+			if(powerup.type == 'life'){
+				this.drawPowerUp('1Up', text);
+			}else if(powerup.type == 'monitions'){
+				this.drawPowerUp('moni', text);
+				this.drawPowerUp('tions', text, 2);
+			}else if(powerup.type == 'speed'){
+				this.drawPowerUp('speed', text);
+			}else if(powerup.type == 'range'){
+				this.drawPowerUp('range', text);
+			}
+
+			this.addChild(text);
+			createjs.Tween.get(text)
+				.to({alpha: 1}, 500, createjs.Ease.sinIn);
 			this.powerup = powerup;
 		}
 
@@ -106,6 +119,21 @@ export default ()=>{
 					return section.id == position.id;
 				})
 			);
+		}
+
+		p.drawPowerUp = function(name, text, i = 1){
+			let powerUpText = new createjs.Text(name, "25px monospace", '#EF6461');
+			let powerUpOtuline = new createjs.Text(name, "25px monospace", '#FFF');
+			powerUpOtuline.outline = 2;
+			text.addChild(powerUpOtuline, powerUpText);
+			if(i == 2){
+				powerUpText.y = powerUpText.getMeasuredHeight();
+				powerUpOtuline.y = powerUpText.getMeasuredHeight();
+			}
+			text.alpha = 0;
+			text.name = 'powerup';
+			text.x = this.children[0].graphics.command.x - powerUpText.getMeasuredWidth()/2;
+			text.y = this.children[0].graphics.command.y - powerUpText.getMeasuredHeight();
 		}
 
 		bts.Section = Section;

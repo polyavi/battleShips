@@ -44,7 +44,7 @@ const SHIP_POSITIONS = [
 ];
 const PLAYER_PROPS = {
 	speed: 1,
-	monitions: 10,
+	monitions: 5,
 	life: 3,
 	range: 3
 };
@@ -54,12 +54,17 @@ const POWERUP_TYPES = ['speed', 'range', 'monitions', 'life'];
 io.on('connection', function(socket){
 
 	socket.on('add user', function (username) {
-	  socket.username = username;
-	  socket.color = '#'+Math.random().toString(16).substr(2,6);
-	 
-	  io.emit('new user', getAllUsersData());
+		let existingUser = getAllUsersData().find(user =>{ return user.username == username});
+	  if(existingUser){
+	  	socket.emit('taken username');
+	  }else{
+	  	socket.username = username;
+		  socket.color = '#'+Math.random().toString(16).substr(2,6);
+		 
+		  io.emit('new user', getAllUsersData());
 
-	  socket.emit('rooms', getAllRoomsData());
+		  socket.emit('rooms', getAllRoomsData());
+		}
 	});
 
 	socket.on('join room', function (roomProps) {
@@ -70,18 +75,17 @@ io.on('connection', function(socket){
 			if(room.hasPass && room.pass !== roomProps.pass){
 					socket.emit('wrong pass');
 			}else{
-				socket.emit('joined', {name: roomProps.room, type:room.type, admin: false});
+				socket.emit('joined', {name: roomProps.room, type: room.type, admin: false});
 				socket.join(roomProps.room);
 			}
 		}else{
 			socket.join(roomProps.room);
-
 			room = io.sockets.adapter.rooms[roomProps.room];
 			room.name = roomProps.room;
 			room.type = 'game';
-			room.positions = [];
 			room.admin = socket.id;
 			room.powerups = genreratePowerUps();
+			room.obsticles = generateObsticles();
 
 			if(roomProps.pass != ''){
 				room.hasPass = true;
@@ -89,11 +93,11 @@ io.on('connection', function(socket){
 			}else{
 				room.hasPass = false;
 			}
-
 			socket.emit('joined', {name: roomProps.room, type: room.type, admin: true});
 		}
 
-		if(room.type = 'game'){
+		if(room.type == 'game'){
+			room.positions = [];
 			socket.room = roomProps.room;
 			socket.props = Object.assign({}, PLAYER_PROPS);
 			socket.color = PLAYER_COLORS[room.length -1];
@@ -146,15 +150,16 @@ io.on('connection', function(socket){
 	});
 
 	socket.on('direct message', function(data){
-		console.log(data);
-		let room = socket.username + ' to ' + io.sockets.connected[data].username;
-		if(io.sockets.adapter.rooms[room]){
-			socket.emit('go to tab', room);
+		let roomName = socket.username + ' to ' + io.sockets.connected[data].username;
+		if(io.sockets.adapter.rooms[roomName]){
+			socket.emit('go to tab', roomName);
 		}else{
-			socket.join(room);
-			io.sockets.connected[data].join(room);
-			io.sockets.adapter.rooms[room].type = 'direct message';
-			socket.emit('joined', {name: room, type:room.type});
+			socket.join(roomName);
+			let room = io.sockets.adapter.rooms[roomName];
+			room.type = 'direct message';
+			io.sockets.connected[data].join(roomName);
+			
+			socket.emit('joined', {name:roomName, type: room.type});
 		}
 	})
 
@@ -169,13 +174,20 @@ io.on('connection', function(socket){
 
 	socket.on('canvas init', function(){
 		let room = io.sockets.adapter.rooms[socket.room];
-		socket.emit('init field', {size: FIELD_SIZE, powerups: room.powerups});
+		socket.emit('init field', {size: FIELD_SIZE, powerups: room.powerups, obsticles: room.obsticles});
 
-		io.to(room.name).emit('positions', {positions: room.positions, props: PLAYER_PROPS})
+		io.to(room.name).emit('positions', {positions: room.positions, props: PLAYER_PROPS});
+
+		if(room.gameStarted){
+			socket.emit('allow movement');
+		}
 	});
 
 	socket.on('start game', function(){
 		io.to(socket.room).emit('allow movement');
+		let room = io.sockets.adapter.rooms[socket.room];
+		room.gameStarted = true;
+
 	});
 
 	socket.on('move', function(start, end){
@@ -188,15 +200,14 @@ io.on('connection', function(socket){
 		}else if(powerup.type == 'range'){
 			increaseRange(socket);
 		}else	if(powerup.type == 'life'){
-			fillLife(socket);
+			increaseLife(socket);
 		}else	if(powerup.type == 'monitions'){
 			increaseMonitions(socket);
 		}
 
 		io.to(socket.room).emit('prop change', [generateProp(powerup.type, socket)]);
 
-		socket.broadcast.to(socket.room).emit('remove powerup', powerup);
-		let room = io.sockets.adapter.rooms[socket.room]
+		let room = io.sockets.adapter.rooms[socket.room];
 
 		let newPowerUp = createPowerUp(powerup.type, room.powerups);
 
@@ -220,6 +231,8 @@ io.on('connection', function(socket){
 					let alivePlayers = getAlivePlayers(io.sockets.adapter.rooms[socket.room]);
 					if(alivePlayers.length == 1){
 						io.to(socket.room).emit('game over', socket.username);
+							let room = io.sockets.adapter.rooms[socket.room];
+							room.gameStarted = false;
 					}
 				}
 			}
@@ -228,6 +241,7 @@ io.on('connection', function(socket){
 
 	socket.on('play again', function(){
 		let room = io.sockets.adapter.rooms[socket.room];
+		console.log('play again' + room.type);
 		socket.emit('joined', {name: socket.room, type: room.type, admin: socket.username == room.admin ? true : false})
 	})
 
@@ -320,8 +334,10 @@ function decreaseLife(socket){
 	socket.props.life -=1;
 }
 
-function fillLife(socket){
-	socket.props.life = 3;
+function increaseLife(socket){
+	if(socket.props.life < 3){
+		socket.props.life +=1;
+	}
 }
 
 function increaseRange(socket){
@@ -376,6 +392,17 @@ function createPowerUp(type, powerups){
 		section: index, 
 		type : type
 	}
+}
+
+function generateObsticles(){
+	let obsticles = [];
+	let count = Math.floor(Math.random()*FIELD_SIZE);
+	while(count > 0){
+		obsticles.push( Math.floor(Math.random()*NUMBER_OF_SECTIONS));
+		count -=1;
+	}
+
+	return obsticles;
 }
 
 http.listen(port, function(){

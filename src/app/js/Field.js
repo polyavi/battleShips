@@ -75,7 +75,9 @@ export default ()=>{
 			let length = powerups.length;
 			for(let i = 0; i < length; i+=1){
 				let section = this.children[powerups[i].section];
-				section.addPowerUp(powerups[i]);
+				if(section.occupied != true){
+					section.addPowerUp(powerups[i]);
+				}
 			}
 		}
 
@@ -84,22 +86,48 @@ export default ()=>{
 			let bitmap = new createjs.Bitmap(bts.island);
 			bitmap.scaleX = bitmap.scaleY = 0.1;
 
-			bitmap.x = position.x;
-			bitmap.y = position.y;
+			bitmap.x = position.x - bitmap.image.naturalWidth*0.1/2;
+			bitmap.y = position.y - bitmap.image.naturalHeight*0.1/2;
 
-			island.addChild(bitmap);
-			island.name = 'island';
+			let section = bts.getSectionByCoordinates(bitmap.x, bitmap.y);
+			let neighbors = [];
+			if(section){
+				neighbors = bts.getNeighbors(section);
 
-			this.addChild(island);
-			getSectionsInsideIsland(bitmap);
+				if(section.occupied || neighbors.length < 6){
+					if(!bts.getSectionByCoordinates(bitmap.x + bitmap.image.naturalWidth*0.1, bitmap.y)){
+						bitmap.x -= bitmap.image.naturalWidth*0.1;
+					}else if(!bts.getSectionByCoordinates(bitmap.x - bitmap.image.naturalWidth*0.1, bitmap.y)) {
+						bitmap.x += bitmap.image.naturalWidth*0.1;
+					}
 
+					if(!bts.getSectionByCoordinates(bitmap.x, bitmap.y + bitmap.image.naturalHeight*0.1)){
+						bitmap.y -= bitmap.image.naturalHeight*0.1;
+					}else if(!bts.getSectionByCoordinates(bitmap.x, bitmap.y - bitmap.image.naturalHeight*0.1)) {
+						bitmap.y += bitmap.image.naturalHeight*0.1;
+					}
+				}
+
+				island.addChild(bitmap);
+				island.name = 'island';
+
+				this.addChild(island);
+				setSectionsInsideIsland(bitmap);
+			}
 		}
 
 		function getSectionsInsideIsland(bitmap){
+			return bts.sections.filter((section) => { 
+				return (bitmap.x < section.children[0].graphics.command.x && section.children[0].graphics.command.x < bitmap.x + bitmap.image.naturalWidth*0.1 && bitmap.y < section.children[0].graphics.command.y && section.children[0].graphics.command.y < bitmap.y + bitmap.image.naturalHeight*0.1)
+			});
+		}
+
+		function setSectionsInsideIsland(bitmap){
 
 			bts.sections.forEach((section) => { 
 				if(bitmap.x < section.children[0].graphics.command.x && section.children[0].graphics.command.x < bitmap.x + bitmap.image.naturalWidth*0.1 && bitmap.y < section.children[0].graphics.command.y && section.children[0].graphics.command.y < bitmap.y + bitmap.image.naturalHeight*0.1){
 					section.occupied = true;
+					section.island = bitmap;
 				}
 			});
 		}

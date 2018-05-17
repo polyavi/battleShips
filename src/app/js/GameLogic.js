@@ -37,16 +37,23 @@ export default ()=>{
 				bts.fieldSize = data.size;
 				if(!bts.stage.getChildByName('field')){
 					let field = new bts.Field();
-						field.drawIsland(bts.canvasCenter);
-						field.setPowerUpsInField(data.powerups);
-						bts.stage.canvas.addEventListener("mousewheel", mouseWheelHandler, false);
-				    bts.stage.canvas.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
-						bts.stage.addEventListener('stagemousedown', handleStageMovement);
+					drawObsticles(data.obsticles, field);
+					field.setPowerUpsInField(data.powerups);
+					bts.stage.canvas.addEventListener("mousewheel", mouseWheelHandler, false);
+			    bts.stage.canvas.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
+					bts.stage.addEventListener('stagemousedown', handleStageMovement);
 				}
 
 				let ships = new createjs.Container();
 				ships.name = 'ships';
 				bts.stage.addChild(ships);
+		}
+
+		function drawObsticles(data, field){
+			for(let i = 0; i< data.length; i+=1){
+			let section = field.children[data[i]].children[0].graphics.command;
+			field.drawIsland(section);
+			}
 		}
 
 		function mouseWheelHandler(e) {
@@ -85,12 +92,20 @@ export default ()=>{
 			let ships = bts.stage.getChildByName('ships').children;
 
 			data.positions.forEach(item =>{
-				if(!ships.find(ship => { return ship.name = item.username})){
-					let newShip = new bts.Ship(item.username, item.color, {x: bts.canvasCenter.x + item.position.x, y: bts.canvasCenter.y + item.position.y}, data.props);
+				if(!ships.find(ship => { return ship.name == item.username})){
+					let position = {
+						x: bts.canvasCenter.x + item.position.x,
+						y: bts.canvasCenter.y + item.position.y
+					}
+					let section = bts.getSectionByCoordinates(position.x, position.y);
+
+					let newShip = new bts.Ship(item.username, item.color, position, data.props);
 
 					if(bts.me == item.username){
 						bts.myship = newShip;
 						bts.myship.drawRangeMarker();
+						bts.stage.x -= item.position.x;
+						bts.stage.y -= item.position.y;
 					}
 				}
 			});
@@ -98,7 +113,7 @@ export default ()=>{
 
 		function handleNewPosition(data){
 			let ship = bts.stage.getChildByName('ships').children.find(item =>{ return item.name == data.name});
-
+				
 				bts.moveToNextPosition(
 					ship, 
 					{

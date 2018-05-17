@@ -43,7 +43,7 @@ class PlayerList extends Component {
 		return (
 			<div className={this.props.isChatVisible ? "player-list hide" : "player-list"}>
 				<h3><i className="icon-users"></i>online users</h3>
-				{!!playerNodes && <ul> {playerNodes} </ul>}
+				{!!playerNodes ? <ul> {playerNodes} </ul> : <span className="empty-list">Log in to see online users.</span>}
 			</div>
 		);
 	}

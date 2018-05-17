@@ -22,8 +22,10 @@ class Main extends Component {
       self.props.showJoinRoom(true);
     })
 
-    window.socket.on('joined', ()=>{
-      self.setState({isGameOver: false})
+    window.socket.on('joined', (data)=>{
+      if(data.type == 'game'){
+        self.setState({isGameOver: false})
+      }
     })
 
     window.socket.on('game over', (winner) =>{

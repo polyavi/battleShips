@@ -47,10 +47,9 @@
   Done - New size and shape of the map
   Done - Players start positions
   Done - New map images
-
-  - New ship images
-  - Mine images
-  - Power-up images
+  Done - New obstacles/islands
+  - Fire animation
+  - Explosion animation
 
 * New rules:
   Done - Player starts with ship placed in each corner 

@@ -18,6 +18,7 @@ export default ()=>{
 			this.life = playerProps.life;
 			this.range = playerProps.range;
 			this.color = color;
+			this.prevPos = [];
 
 			this.initialize(name, position);
 		}
@@ -42,7 +43,7 @@ export default ()=>{
 
 			sprite.x = position.x;
 			sprite.y = position.y;
-			this.position = getSectionByCoordinates(sprite.x, sprite.y);
+			this.position = bts.getSectionByCoordinates(sprite.x, sprite.y);
 			sprite.gotoAndPlay('ship');
 			this.addChild(sprite);
 			let stats= new createjs.Container();
@@ -96,33 +97,47 @@ export default ()=>{
 			}
 		}
 
-		function getNeighbors(section){
+		bts.getNeighbors = function(section){
 			let neighbors = [];
 			let sectionPos = section.children[0].graphics.command;
-			neighbors.push(getSectionByCoordinates(sectionPos.x, sectionPos.y - 87));
-			neighbors.push(getSectionByCoordinates(sectionPos.x, sectionPos.y + 87));
-			neighbors.push(getSectionByCoordinates(sectionPos.x - 76, sectionPos.y - 44));
-			neighbors.push(getSectionByCoordinates(sectionPos.x - 76, sectionPos.y + 44));
-			neighbors.push(getSectionByCoordinates(sectionPos.x + 76, sectionPos.y - 44));
-			neighbors.push(getSectionByCoordinates(sectionPos.x + 76, sectionPos.y + 44));
+
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x, sectionPos.y - 87));
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x, sectionPos.y + 87));
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x - 76, sectionPos.y - 44));
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x - 76, sectionPos.y + 44));
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x + 76, sectionPos.y - 44));
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x + 76, sectionPos.y + 44));
 
 			return neighbors.filter(section =>{
-				return section.occupied != true;
+				return section && section instanceof bts.Section && section.occupied != true;
 			});
 		}
 
-		function getClosestPosiblePosition(startPos, nextPos){
-			let startPosNeighbors = getNeighbors(startPos);
-			let nextPosNeighbors = getNeighbors(nextPos);
+		bts.getClosestPosiblePosition = function(ship, startPos, nextPos){
+			let startPosNeighbors = bts.getNeighbors(startPos);
+			let nextPosNeighbors = bts.getNeighbors(nextPos);
 			let mutualNeighbors = [];
+
 			startPosNeighbors.forEach(neighbor =>{
-				mutualNeighbors.push(nextPosNeighbors.find(section => {
-					return section.id == neighbor.id;
-				}))
+				let mutual = nextPosNeighbors.find(section => {
+					return section.id == neighbor.id && !ship.isInPerviosPositions(section);
+				});
+				if(mutual){
+					mutualNeighbors.push(mutual);
+				}
 			});
-			return mutualNeighbors.filter(section =>{
-				return !!section
-			});
+
+			if(mutualNeighbors.length == 0){
+				let next = startPosNeighbors.filter(section => {
+					return !ship.isInPerviosPositions(section);
+				});
+				if(next.length > 0){
+					return next[next.length - 1];
+				}else{
+					return ship.prevPos.pop();
+				}
+			}
+			return mutualNeighbors[mutualNeighbors.length -1];
 		}
 
 		bts.moveToNextPosition = function(ship, startPos, endPos){
@@ -131,6 +146,7 @@ export default ()=>{
 					x: startPos.x,
 					y: startPos.y
 				};
+
 				if(endPos.x == startPos.x){
 					if(endPos.y > startPos.y){
 						newPos.y += 87;
@@ -152,22 +168,32 @@ export default ()=>{
 						newPos.y -= 44;
 					}
 				}
-				if(getSectionByCoordinates(newPos.x, newPos.y).occupied == true){
-					let next = getClosestPosiblePosition(getSectionByCoordinates(startPos.x, startPos.y), getSectionByCoordinates(newPos.x, newPos.y))[0];
-					moveShip(ship, next, endPos);
+				let next = bts.getSectionByCoordinates(newPos.x, newPos.y);
+				if(next.occupied == true){
+					next = bts.getClosestPosiblePosition(ship, bts.getSectionByCoordinates(startPos.x, startPos.y), next);
+					if(ship.isInPerviosPositions(next)){
+						next = bts.getClosestPosiblePosition(ship, bts.getSectionByCoordinates(startPos.x, startPos.y), next);
+					}
 				}else{
-					moveShip(ship, getSectionByCoordinates(newPos.x, newPos.y), endPos);
-
+					if(ship.isInPerviosPositions(next)){
+						next = bts.getClosestPosiblePosition(ship, bts.getSectionByCoordinates(startPos.x, startPos.y), next);
+					}
 				}
+				ship.prevPos.push(bts.getSectionByCoordinates(startPos.x, startPos.y));
+				moveShip(ship, next, endPos);
 			}else{
-				ship.position = getSectionByCoordinates(startPos.x, startPos.y);
+				ship.position = bts.getSectionByCoordinates(startPos.x, startPos.y);
 				if(ship.sectionsInRange){
 					ship.markSectionsInRange();
 				}
 				return;
 			}
 		}
-
+		p.isInPerviosPositions = function(next){
+			return !!this.prevPos.find(previous =>{
+				return previous.id == next.id;
+			});
+		}
 		function moveShip(ship, target, endPos){
 			let nextPos = {
 				x: target.children[0].graphics.command.x,
@@ -207,7 +233,7 @@ export default ()=>{
 			});
 		}
 
-		function getSectionByCoordinates(x, y){
+		bts.getSectionByCoordinates = function(x, y){
 			return bts.stage.getChildByName('field').children.find((section) => {
 			 return section.children[0].hitTest(x, y) == true 
 			});

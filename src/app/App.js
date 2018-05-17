@@ -18,18 +18,24 @@ class App extends Component {
 
   componentDidMount(){
     window.socket.on('joined', (data)=>{
-      if(data.type = 'game'){
+      if(data.type == 'game'){
         this.setState({screen: 'game', isGameStarted: false, isRoomListVisible: false, isChatVisible: true, isAdmin: data.admin});
+      }else{
+         this.setState({isChatVisible: true});
       }
     })
 
     window.socket.on('allow movement', () =>{
       this.setState({isGameStarted: true});
     })
+
+    window.socket.on('new user', ()=>{
+      this.setState({isRoomListVisible: true, screen:'room list'});
+    })
   }
 
   logIn = (name, screen) =>{
-    this.setState({me: name, isRoomListVisible: true, screen:'room list'});
+    this.setState({me: name});
   }
 
   toggleChat = () =>{
