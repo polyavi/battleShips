@@ -9,6 +9,9 @@ class Login extends Component {
       username: ""
     }
   }
+  componentDidMount(){
+    document.getElementsByClassName('usernameInput')[0].focus();
+  }
 
   update = (event) => {
     this.setState({ username: event.target.value});
@@ -23,9 +26,9 @@ class Login extends Component {
     return (
       <div id="login">
         <form onSubmit={this.onSubmit}>
-          <h3 className="title">What's your nickname?</h3>
-          <input className="usernameInput" type="text" maxLength="14" onChange={this.update} value={this.state.username}/>
-          <button>Log in</button>
+          <h3 className="title" >What's your nickname?</h3>
+          <input className="usernameInput" type="text" maxLength="14" onChange={this.update} value={this.state.username} tabIndex="1"/>
+          <button tabIndex="2">Login</button>
         </form>
       </div>
     );

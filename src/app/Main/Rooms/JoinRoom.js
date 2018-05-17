@@ -5,13 +5,19 @@ class JoinRoom extends Component {
     super(props);
 
     this.state = {
-      room: this.props.room || "",
+      room: "",
       pass: ""
     }
     this.onSubmit = this.onSubmit.bind(this);
   }
   componentDidMount(){
-    this.setState({room: this.props.room})
+    let roomnameInput = document.getElementsByClassName('roomnameInput')[0];
+    let passwordInput = document.getElementsByClassName('passwordInput')[0];
+    if(roomnameInput){
+      roomnameInput.focus();
+    }else if(passwordInput){
+      passwordInput.focus();
+    }
   }
 
   updateRoomname = (event) => {
@@ -28,27 +34,32 @@ class JoinRoom extends Component {
       this.state.room =  this.props.room;
     }
     this.props.onSubmit(this.state.room, this.state.pass);
+    this.setState({room: ''})
   }    
 
   render() {
     return (
       <div id="join-room">
         <form onSubmit={this.onSubmit}>
-          <h3 className="title">{this.props.screen == 'create room' ? "Room name?" : this.props.room}</h3>
+          <h3 className="title">{this.props.screen == 'create room' ? "Enter room name." : "Do you want to join " + this.props.room + "?"}</h3>
           {this.props.screen == 'create room' && 
             <input 
               className="roomnameInput" 
               type="text" 
               maxLength="14" 
               onChange={this.updateRoomname} 
-              value={this.state.room}/>}
-          <h3 className="title">{this.props.wrongPass ? "Wrong pass! Please try again." : "Password?"}</h3>
-          <input 
-            className="passwordInput" 
-            type="password" 
-            maxLength="14" 
-            onChange={this.updatePass} 
-            value={this.state.pass}/>
+              value={this.state.room}/>
+          }
+          {(this.props.screen == 'create room' || this.props.hasPass) &&
+          <h3 className="title">{this.props.wrongPass ? "Wrong pass! Please try again." : "Enter password"}</h3>}
+          {(this.props.screen == 'create room' || this.props.hasPass) &&
+            <input 
+              className="passwordInput" 
+              type="password" 
+              maxLength="14" 
+              onChange={this.updatePass} 
+              value={this.state.pass}/>
+          }
           <button>{this.props.screen == 'create room' ? "Create room" : "Join Room"}</button>
         </form>
       </div>

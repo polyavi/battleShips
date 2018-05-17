@@ -10,34 +10,52 @@ class App extends Component {
     this.state = {
       me: '',
       screen: 'log in',
-      isChatVisible: true
+      isChatVisible: false,
+      isRoomListVisible: false
     }
+    this.startGame = this.startGame.bind(this);
   }
 
   componentDidMount(){
-    window.socket.on('joined', ()=>{
-      this.setState({screen: 'game'});
+    window.socket.on('joined', (data)=>{
+      if(data.type = 'game'){
+        this.setState({screen: 'game', isGameStarted: false, isRoomListVisible: false, isChatVisible: true, isAdmin: data.admin});
+      }
+    })
+
+    window.socket.on('allow movement', () =>{
+      this.setState({isGameStarted: true});
     })
   }
 
   logIn = (name, screen) =>{
-    this.setState({me: name, screen: 'room list'});
+    this.setState({me: name, isRoomListVisible: true, screen:'room list'});
   }
 
-  showChat = () =>{
-    this.setState({isChatVisible: true});
+  toggleChat = () =>{
+    this.setState({isChatVisible: !this.state.isChatVisible});
   }
 
-  hideChat = () =>{
-    this.setState({isChatVisible: false});
+  toggleRoomList = () =>{
+    this.setState({isRoomListVisible: !this.state.isRoomListVisible});
+  }
+
+  leaveRoom = () =>{
+    window.socket.emit('leave room');
+    this.setState({isRoomListVisible: true, screen:'room list'});
   }
 
   showCreateRoom = () =>{
-    this.setState({screen: 'create room'});
+    this.setState({screen: 'create room', isRoomListVisible: false});
   }
 
-  showJoinRoom = (wrongPass) =>{
-    this.setState({screen: 'join room', wrongPass: wrongPass});
+  showJoinRoom = (wrongPass, hasPass) =>{
+    this.setState({screen: 'join room', wrongPass: wrongPass, roomHasPass: hasPass, isRoomListVisible: false});
+  }
+
+  startGame = () =>{
+    window.socket.emit('start game');
+    this.setState({isGameStarted: true})
   }
 
   render() {
@@ -45,23 +63,28 @@ class App extends Component {
       <div className="app">
         <Header 
           isChatVisible={this.state.isChatVisible}
+          isRoomListVisible={this.state.isRoomListVisible}
           screen={this.state.screen}
-          hideChat={this.hideChat} 
-          showChat={this.showChat} 
-          createRoom={this.showCreateRoom}/>
+          createRoom={this.showCreateRoom}
+          toggleChat={this.toggleChat}
+          toggleRoomList={this.toggleRoomList}
+          leaveRoom={this.leaveRoom}
+          isAdmin={this.state.isAdmin}
+          startGame={this.startGame}
+          isGameStarted={this.state.isGameStarted}/>
         <SideBar 
           isChatVisible={this.state.isChatVisible} 
-          joinRoom={this.showJoinRoom}
-          me={this.state.me}
-          handleScreen={this.handleScreen}/>
+          me={this.state.me}/>
         <Main
+          isRoomListVisible={this.state.isRoomListVisible}
           screen={this.state.screen}
-          wrongPass={this.state.wrongPass}
-          hideChat={this.hideChat} 
-          showChat={this.showChat}
+          wrongPass={this.state.wrongPass} 
           logIn={this.logIn}
           showJoinRoom={this.showJoinRoom}
           me={this.state.me}
+          hasPass={this.state.roomHasPass}
+          isGameStarted={this.state.isGameStarted}
+          isAdmin={this.state.isAdmin}
            />
       </div>
     );

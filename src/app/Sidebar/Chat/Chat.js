@@ -22,10 +22,25 @@ class Chat extends Component {
   
   componentDidMount(){
     let self = this;
-    window.socket.on('joined', (tab)=>{
+
+    window.socket.on('joined', (data)=>{
       let tabs = self.state.tabs;
-      tabs.push({name: tab, action: 'message to', messages:[]})
-      self.setState({tabs: tabs});
+      tabs.push({name: data.name, action: 'message to', messages:[]})
+      if(data.type = 'game'){
+        self.setState({tabs: tabs, activeTab: data.name});
+      }
+    });
+
+    window.socket.on('go to tab', (data)=>{
+      self.setState({activeTab: data});
+    });
+
+    window.socket.on('close room', (data)=>{
+      let tabs = self.state.tabs.filter(tab =>{ return tab.name != data.room});
+
+      tabs.find(tab =>{return tab.name == 'general'}).messages.push(data.message);
+
+      self.setState({tabs: tabs, activeTab: 'general'});
     })
 
     window.socket.on('message', (data)=>{
@@ -33,10 +48,15 @@ class Chat extends Component {
       let room;
       if(data.room){
         room = data.room;
+        if(!tabs.find(tab =>{ return tab.name == data.room})){
+          tabs.push({name: room, action: 'message to', messages:[]})
+        }
       }else{
         room = 'general'
       }
+      
       tabs.find(tab =>{return tab.name == room}).messages.push(data.message);
+
       if(self.state.activeTab != room){
         let pending = self.state.pendingMessages;
         pending.push(room);
@@ -62,6 +82,12 @@ class Chat extends Component {
     }else{
       window.socket.emit(tab.action, {text: text, room: tab.name});
     }
+  }
+
+  addTab = (tab) => {
+    let tabs = this.state.tabs;
+    tabs.push(tab);
+    this.setState({tabs: tabs});
   }
 
   render() {

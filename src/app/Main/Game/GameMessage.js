@@ -1,28 +1,41 @@
 import React, { Component } from 'react';
 
 class GameMessage extends Component {
-	constructor(props){
+  constructor(props){
     super(props);
   }
 
-  onAccept = (e) => { 
-    this.props.onAccept();
-  } 
+  componentDidMount(){
 
-  onDecline = (e) => { 
-    this.props.onDecline();
-  } 
-  
+  }
+
+  handlePlayAgain = (e) => { 
+    e.nativeEvent.preventDefault(); 
+    window.socket.emit('play again');
+  }
+
+  handleLeaveRoom = (e) => { 
+    e.nativeEvent.preventDefault(); 
+    window.socket.emit('leave room');
+  }     
+
   render() {
     return (
-			<div id="messages" className={this.props.className}>
-				<div id="overlay" />
-				<div className="text">{this.props.text}</div>
-        {this.props.isQuestion && <div className="answers">
-            <div onClick={this.onAccept}>Yes</div>
-            <div onClick={this.onDecline}>No</div>
-          </div>}
-	    </div>
+      <div id="game-message">
+	      {this.props.isGameOver &&
+		      <form>
+	          <h3 className="title">{this.props.isWinner ? "Congratulations! You won." : "Game over! You lost."}</h3>
+	          <button onClick={this.handlePlayAgain}>Play again</button>
+	          <button onClick={this.handleLeaveRoom}>Leave room</button>
+	         </form>
+	      }
+      	{!this.props.isGameStarted &&
+      		<div>
+	          <h3 className="title">{this.props.isAdmin ? "Hit start game when you are ready." : "Waiting for the game to start."}</h3>
+      		</div>
+      	}
+
+      </div>
     );
   }
 }

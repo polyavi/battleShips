@@ -61,8 +61,6 @@ export default ()=>{
 
 			this.addChild(...bts.sections);
 			this.name = 'field';
-			this.setPowerUpsInField();
-
 			bts.stage.addChild(this);
 		}
 
@@ -73,14 +71,37 @@ export default ()=>{
 			}
 		}
 
-		p.setPowerUpsInField = function(){
-			let count = bts.powerUps.length*this.size;
-			let length = this.children.length;
-			for(count; count > 0; count -=1){
-				let section = this.children[Math.floor(Math.random()*length)];
-				section.alpha = 0.5;
-				section.powerup = bts.powerUps[Math.ceil(count/this.size) - 1];
+		p.setPowerUpsInField = function(powerups){
+			let length = powerups.length;
+			for(let i = 0; i < length; i+=1){
+				let section = this.children[powerups[i].section];
+				section.addPowerUp(powerups[i]);
 			}
+		}
+
+		p.drawIsland = function(position){
+			let island = new createjs.Container();
+			let bitmap = new createjs.Bitmap(bts.island);
+			bitmap.scaleX = bitmap.scaleY = 0.1;
+
+			bitmap.x = position.x;
+			bitmap.y = position.y;
+
+			island.addChild(bitmap);
+			island.name = 'island';
+
+			this.addChild(island);
+			getSectionsInsideIsland(bitmap);
+
+		}
+
+		function getSectionsInsideIsland(bitmap){
+
+			bts.sections.forEach((section) => { 
+				if(bitmap.x < section.children[0].graphics.command.x && section.children[0].graphics.command.x < bitmap.x + bitmap.image.naturalWidth*0.1 && bitmap.y < section.children[0].graphics.command.y && section.children[0].graphics.command.y < bitmap.y + bitmap.image.naturalHeight*0.1){
+					section.occupied = true;
+				}
+			});
 		}
 
 		bts.Field = Field;

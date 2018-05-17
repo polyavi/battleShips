@@ -13,7 +13,8 @@ class SideBar extends Component {
         	<Chat isChatVisible={this.props.isChatVisible}/>
           <PlayerList 
             me={this.props.me} 
-            isChatVisible={this.props.isChatVisible}/>
+            isChatVisible={this.props.isChatVisible}
+            />
       </div>
     );
   }

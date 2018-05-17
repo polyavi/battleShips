@@ -16,10 +16,10 @@ constructor(props) {
 	}
 
   componentDidMount(){
+    console.log('mount canvas');
     Init();
     
-		bts.showMessage = this.showMessage;
-    bts.hideMessage = this.props.hideMessage;
+    bts.me = this.props.me;
     
     window.onresize = () => {
       this.setState({

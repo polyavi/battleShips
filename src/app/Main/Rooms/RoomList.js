@@ -11,13 +11,17 @@ class RoomList extends Component {
 	}
 
   componentDidMount = () =>{
-    window.socket.on('rooms', (data) =>{
-			this.setState({rooms: data});
+    window.socket.on('rooms', (data) => {
+			this.setState({ rooms: data });
 		});
   }
 
 	handleClick = (e) =>{
-		this.props.showJoinRoom(e.target.innerText, false);
+		let hasPass = false;
+		if(e.target.parentNode.classList.contains('pass')){
+			hasPass = true;
+		}
+		this.props.showJoinRoom(e.target.innerText, false, hasPass);
 	}
 
 	render(){
@@ -26,15 +30,24 @@ class RoomList extends Component {
 			roomNodes = this.state.rooms.map((room) =>{
 				return(
 					<li 
-						key={room.key}>
-						<span onClick={this.handleClick}>{room.name}</span>
-						<span><i className={room.hasPass ? "icon-locked" : "icon-unlocked"}></i></span>
+						key={room.key}
+						className={room.hasPass ? "pass" : "no-pass"}>
+						{room.length == 6 ? <span>{room.name}</span> :
+						<div className="clickable" onClick={this.handleClick}>{room.name}</div>}
+						<div className="actions">
+							<span>players: {room.length}/6</span>
+							<span >
+								{room.hasPass ? <i className="icon-locked" title="You need to enter password to join this room."></i> :
+									<i className="icon-unlocked" title="This room has no password.You can join it freely."></i>
+								}
+							</span>
+						</div>
 					</li>);
 			});
 		}
 		return (
-			<div className={this.props.screen == "room list" ? "room-list" : "room-list hide"}>
-				<h3>List of available rooms</h3>
+			<div className={this.props.isRoomListVisible ? "room-list" : "room-list hide"}>
+				<h3>Rooms</h3>
 				{!!roomNodes && <ul> {roomNodes} </ul>}
 			</div>
 		);

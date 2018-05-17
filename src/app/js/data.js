@@ -19,6 +19,9 @@ export default ()=>{
 			},{
 				id:"explosion", 
 				src:'images/explosion.png'
+			},{
+				id:"island", 
+				src:'images/island.png'
 			}
 		];
 
@@ -39,18 +42,7 @@ export default ()=>{
 		};
 
 		bts.strokeColor = '#4682B4';
-
-		bts.myship;
-		bts.fieldSize = 12;
 		bts.sections = [];
 		bts.startPos = {};
-		bts.playerProps = {
-			speed: 1,
-			monitions: 10,
-			life: 3,
-			range: 3
-		}
-
-		bts.powerUps = ['speed', 'range', 'monitions', 'life'];
 	}())
 }

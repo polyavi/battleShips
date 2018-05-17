@@ -12,14 +12,21 @@ class MessageBoard extends Component {
 	  		let style = {
 					color: message.sender.color
 	  		}
-	  		return(<div className="message" key={index}>
-		  			<span className="sender" style={style}>{message.sender.name}:</span>
+	  		let messageNode = message.isAdminMessage ? 
+	  			<div className="admin-message"> 
+		  			<span className="sender" style={style}>{message.sender.name}</span>
+		  				{message.text}
+			  		<span className="time" >{message.time}</span>
+					</div> :
+					<div className="message" key={index}>
+						<span className="sender" style={style}>{message.sender.name}: </span>
 		  			<div className="message-body">
 			  			<span className="text">{message.text}</span>
 			  			<span className="time" >{message.time}</span>
 						</div>
-	  			</div>);
-	  	})
+  				</div>
+  			return messageNode;
+  		})
 	  }
     return (
       <div className="message-board">
