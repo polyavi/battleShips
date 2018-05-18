@@ -97,6 +97,34 @@ export default ()=>{
 			}
 		}
 
+		p.fireAnimation = function(target){
+			let fireball = new createjs.Shape();
+			fireball.graphics.beginFill('#E4B363').drawCircle(this.children[0].x, this.children[0].y, 10);
+			bts.stage.addChild(fireball);
+			let nextPos = {
+				x: target.graphics.command.x,
+				y: target.graphics.command.y
+			}
+
+			let hipotenuse = Math.sqrt(Math.pow(Math.abs(this.children[0].x - nextPos.x),2) + Math.pow(Math.abs(this.children[0].y - nextPos.y),2));
+			let angle = calculateAngle({x: this.children[0].x, y: this.children[0].y}, nextPos, hipotenuse);
+			
+			createjs.Tween.get(fireball.graphics.command)
+		  	.to({ x: nextPos.x, y: nextPos.y}, hipotenuse*10/this.speed, createjs.Ease.sinIn)
+		  	.call(bts.explodingAnimation,[fireball])
+		  	.call(bts.myship.attackOponent, [target])
+		}
+
+		bts.explodingAnimation = function(fireball){
+			let explosion = new createjs.Sprite(bts.explosionSpriteSheet);
+			explosion.gotoAndPlay('explode');
+			explosion.x = fireball.graphics.command.x - 32;
+			explosion.y = fireball.graphics.command.y - 32;
+
+			bts.stage.addChild(explosion);
+			bts.stage.removeChild(fireball);
+		}
+
 		bts.getNeighbors = function(section){
 			let neighbors = [];
 			let sectionPos = section.children[0].graphics.command;
@@ -181,19 +209,25 @@ export default ()=>{
 				}
 				ship.prevPos.push(bts.getSectionByCoordinates(startPos.x, startPos.y));
 				moveShip(ship, next, endPos);
+				ship.position = next;
 			}else{
 				ship.position = bts.getSectionByCoordinates(startPos.x, startPos.y);
+				if(ship.name != bts.me){
+					ship.alpha = ship.position.alpha;
+				}
 				if(ship.sectionsInRange){
 					ship.markSectionsInRange();
 				}
 				return;
 			}
 		}
+
 		p.isInPerviosPositions = function(next){
 			return !!this.prevPos.find(previous =>{
 				return previous.id == next.id;
 			});
 		}
+
 		function moveShip(ship, target, endPos){
 			let nextPos = {
 				x: target.children[0].graphics.command.x,
@@ -220,9 +254,12 @@ export default ()=>{
 		  	.to({ x: nextPos.x - 50, y: nextPos.y - 100}, hipotenuse*10/ship.speed, createjs.Ease.sinIn)
 		}
 
-		p.attackOponent = function(targetShip){
-			if(this.monitions > 0 && targetShip.life > 0){
-				window.socket.emit('hit', targetShip.name);
+		p.attackOponent = function(targetPosition){
+			let targetShip = targetPosition.parent.getTargetShip();
+			if(targetShip){
+				if(bts.myship.monitions > 0 && targetShip.life > 0){
+					window.socket.emit('hit', targetShip.name);
+				}
 			}
 		}
 
@@ -231,6 +268,18 @@ export default ()=>{
 			this.sectionsInRange = bts.sections.filter((section) => { 
 				return bts.stage.getChildByName('range').hitTest(section.children[0].graphics.command.x, section.children[0].graphics.command.y);
 			});
+
+			this.sectionsInRange.forEach(section=>{
+				if(section.getTargetShip()){
+					section.getTargetShip().alpha = 1;
+				}
+				createjs.Tween.get(section)
+			  	.to({alpha: 1}, 10/this.speed, createjs.Ease.sinIn)
+				if(section.island){
+					createjs.Tween.get(section.island)
+			  		.to({alpha: 1}, 10/this.speed, createjs.Ease.sinIn)
+		  	}
+			})
 		}
 
 		bts.getSectionByCoordinates = function(x, y){

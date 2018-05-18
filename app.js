@@ -15,42 +15,16 @@ app.get('/', function(req, res){
 
 const PLAYER_COLORS = ['#246EB9', '#4CB944', '#7F675B', '#4F517D', '#1A3A3A','#511730']
 const FIELD_SIZE = 12;
-const NUMBER_OF_SECTIONS = 469;
-const SHIP_POSITIONS = [
-	{
-		x: FIELD_SIZE*76,
-		y: FIELD_SIZE*44
-	},
-	{
-		x: -FIELD_SIZE*76,
-		y: -FIELD_SIZE*44
-	},
-	{
-		x: FIELD_SIZE*76,
-		y: -FIELD_SIZE*44
-	},
-	{
-		x: -FIELD_SIZE*76,
-		y: FIELD_SIZE*44
-	},
-	{
-		x: 0,
-		y: FIELD_SIZE*87
-	},
-	{
-		x: 0,
-		y: -FIELD_SIZE*87
-	}
-];
+const NUMBER_OF_SECTIONS = FIELD_SIZE*72;
+const SHIP_POSITIONS = [0, 23, NUMBER_OF_SECTIONS/2 - 1, NUMBER_OF_SECTIONS/2 - 24, NUMBER_OF_SECTIONS - 24, NUMBER_OF_SECTIONS - 1];
 const PLAYER_PROPS = {
 	speed: 1,
-	monitions: 5,
+	monitions: 3,
 	life: 3,
-	range: 3
+	range: 1
 };
 
 const POWERUP_TYPES = ['speed', 'range', 'monitions', 'life'];
-
 io.on('connection', function(socket){
 
 	socket.on('add user', function (username) {
@@ -61,6 +35,7 @@ io.on('connection', function(socket){
 	  	socket.username = username;
 		  socket.color = '#'+Math.random().toString(16).substr(2,6);
 		 
+		  socket.emit('logged in', getAllUsersData());
 		  io.emit('new user', getAllUsersData());
 
 		  socket.emit('rooms', getAllRoomsData());
@@ -75,8 +50,8 @@ io.on('connection', function(socket){
 			if(room.hasPass && room.pass !== roomProps.pass){
 					socket.emit('wrong pass');
 			}else{
-				socket.emit('joined', {name: roomProps.room, type: room.type, admin: false});
 				socket.join(roomProps.room);
+				socket.emit('joined', {name: roomProps.room, type: room.type, admin: false});
 			}
 		}else{
 			socket.join(roomProps.room);
@@ -84,8 +59,12 @@ io.on('connection', function(socket){
 			room.name = roomProps.room;
 			room.type = 'game';
 			room.admin = socket.id;
-			room.powerups = genreratePowerUps();
-			room.obsticles = generateObsticles();
+
+			room.positions = [];
+			room.occupiedSections = [];
+			room.obsticles = generateObsticles(room);
+			room.powerups = genreratePowerUps(room);
+			//room.mines = generateMines(room);
 
 			if(roomProps.pass != ''){
 				room.hasPass = true;
@@ -97,7 +76,6 @@ io.on('connection', function(socket){
 		}
 
 		if(room.type == 'game'){
-			room.positions = [];
 			socket.room = roomProps.room;
 			socket.props = Object.assign({}, PLAYER_PROPS);
 			socket.color = PLAYER_COLORS[room.length -1];
@@ -174,7 +152,7 @@ io.on('connection', function(socket){
 
 	socket.on('canvas init', function(){
 		let room = io.sockets.adapter.rooms[socket.room];
-		socket.emit('init field', {size: FIELD_SIZE, powerups: room.powerups, obsticles: room.obsticles});
+		socket.emit('init field', {size: FIELD_SIZE, powerups: room.powerups, obsticles: room.obsticles, occupied: room.occupiedSections});
 
 		io.to(room.name).emit('positions', {positions: room.positions, props: PLAYER_PROPS});
 
@@ -209,9 +187,13 @@ io.on('connection', function(socket){
 
 		let room = io.sockets.adapter.rooms[socket.room];
 
-		let newPowerUp = createPowerUp(powerup.type, room.powerups);
+		let newPowerUp = createPowerUp(powerup.type, room);
+		while(!newPowerUp){
+			newPowerUp = createPowerUp(powerup.type, room);
+		}
 
 		room.powerups.splice(room.powerups.indexOf(powerup), 1, newPowerUp);
+		room.occupiedSections.splice(room.occupiedSections.indexOf(powerup.section), 1, newPowerUp.section);
 
 		setTimeout(()=>{
 			io.to(socket.room).emit('add powerup', newPowerUp);
@@ -241,7 +223,6 @@ io.on('connection', function(socket){
 
 	socket.on('play again', function(){
 		let room = io.sockets.adapter.rooms[socket.room];
-		console.log('play again' + room.type);
 		socket.emit('joined', {name: socket.room, type: room.type, admin: socket.username == room.admin ? true : false})
 	})
 
@@ -364,47 +345,88 @@ function generateProp(powerup, socket){
 	};
 }
 
-function genreratePowerUps(){
+function genreratePowerUps(room){
 	let powerUps = [];
-	let count = POWERUP_TYPES.length*FIELD_SIZE;
+	let count = POWERUP_TYPES.length*FIELD_SIZE/2;
 
-	for(count; count > 0; count -=1){
-		powerUps.push(
-			createPowerUp(POWERUP_TYPES[Math.ceil(count/FIELD_SIZE) - 1], powerUps)
-		);
+	while(count > 0){
+		let type = POWERUP_TYPES[count%POWERUP_TYPES.length];
+		let powerup = createPowerUp(type, room);
+		if(powerup){
+			powerUps.push(powerup);
+			room.occupiedSections.push(powerup.section);
+			count -=1;
+		}
 	}
 
 	return powerUps;
 }
 
-function createPowerUp(type, powerups){
-	let index = Math.floor(Math.random()*NUMBER_OF_SECTIONS);
-	let isOccupied = !!powerups.find(powerup =>{
-		return powerup.section == index;
-	})
-	while(isOccupied){
-		index = Math.floor(Math.random()*NUMBER_OF_SECTIONS);
-		isOccupied = !!powerups.find(powerup =>{
-			return powerup.section == index;
-		})
-	}
-	return {
-		section: index, 
-		type : type
+function createPowerUp(type, room){
+	let section = Math.floor(Math.random()*NUMBER_OF_SECTIONS);
+
+	if(!isOccupied(room, section)){
+		return {
+			section: section, 
+			type : type
+		}
 	}
 }
 
-function generateObsticles(){
+function generateObsticles(room){
 	let obsticles = [];
-	let count = Math.floor(Math.random()*FIELD_SIZE);
+	let count = Math.max(6, Math.floor(Math.random()*FIELD_SIZE));
 	while(count > 0){
-		obsticles.push( Math.floor(Math.random()*NUMBER_OF_SECTIONS));
-		count -=1;
+		let section =  Math.floor(Math.random()*NUMBER_OF_SECTIONS);
+		if(section%24 > 1 && 
+			section%25 > 1 && 
+			Math.floor(section/24) > 0 && 
+			Math.floor(section/24) < (FIELD_SIZE*3/2 -1)*2 && 
+			!isOccupied(room, section) &&
+			!isOccupied(room, section - 1) &&
+			!isOccupied(room, section + 1) &&
+			!isOccupied(room, section - FIELD_SIZE*2) &&
+			!isOccupied(room, section + FIELD_SIZE*2) &&
+			!isOccupied(room, section - (FIELD_SIZE*2 + Math.pow(-1, Math.floor(section/24)))) &&
+			!isOccupied(room, section + (FIELD_SIZE*2 - Math.pow(-1, Math.floor(section/24))))
+			){
+			obsticles.push(section);
+				room.occupiedSections.push(
+				section,  
+				section - 1, 
+				section + 1, 
+				section - FIELD_SIZE*2, 
+				section - (FIELD_SIZE*2 + Math.pow(-1, Math.floor(section/24))), 
+				section + FIELD_SIZE*2, 
+				section + (FIELD_SIZE*2 - Math.pow(-1, Math.floor(section/24)))
+			);
+			count -=1;
+		}
 	}
-
 	return obsticles;
 }
 
+function generateMines(room){
+	let mines = [];
+	let count = 30;
+
+	while(count > 0){
+		let section = Math.floor(Math.random()*NUMBER_OF_SECTIONS);
+		if(!isOccupied(room, section)){
+			mines.push(section);
+			room.occupiedSections.push(section);
+			count -=1;
+		}
+	}
+
+	return mines;
+}
+
+function isOccupied(room, section){
+	return !!room.occupiedSections.find(item =>{
+		return section == item;
+	})
+}
 http.listen(port, function(){
   console.log('listening on *:' + port);
 });

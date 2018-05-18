@@ -35,10 +35,7 @@ export default ()=>{
 	 
 		p.drawSection = function(position){
 			let section = new createjs.Shape();
-
 			section.graphics.beginBitmapFill(bts.backgroundImage).beginStroke(bts.strokeColor).drawPolyStar(position.x, position.y, 50, 6, 0, 0);
-			section.name = 'section';
-
 			this.addChild(section);
 		}
 
@@ -47,7 +44,9 @@ export default ()=>{
 				let target = (e.target.parent.name == 'powerup') ? e.target.parent.parent.children[0] : e.target.parent.children[0];
 				let targetShip = target.parent.getTargetShip();
 				if(targetShip){
-					if(isTargetInRange(targetShip.position)) bts.myship.attackOponent(targetShip);
+					if(isTargetInRange(targetShip.position) && bts.myship.monitions > 0) {
+						bts.myship.fireAnimation(target);
+					}
 				}else{
 					bts.myship.prevPos = [];
 					bts.moveToNextPosition(bts.myship, {x: bts.myship.children[0].x, y: bts.myship.children[0].y},{x: target.graphics.command.x, y: target.graphics.command.y});
@@ -55,12 +54,12 @@ export default ()=>{
 					window.socket.emit(
 						'move', 
 						{
-							x: bts.myship.children[0].x - bts.canvasCenter.x, 
-							y: bts.myship.children[0].y - bts.canvasCenter.y
+							x: bts.myship.children[0].x, 
+							y: bts.myship.children[0].y
 						},
 						{
-							x: target.graphics.command.x - bts.canvasCenter.x, 
-							y: target.graphics.command.y - bts.canvasCenter.y
+							x: target.graphics.command.x, 
+							y: target.graphics.command.y
 						}
 					)
 				}

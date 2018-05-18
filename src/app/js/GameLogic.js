@@ -17,12 +17,20 @@ export default ()=>{
 			bts.stage.removeChild(bts.preloader);
 			bts.backgroundImage = bts.queue.getResult('sea');
 			bts.island = bts.queue.getResult('island');
+			bts.sand = bts.queue.getResult('sand');
 
 			bts.shipSpritesheet = new createjs.SpriteSheet(
 				{
 					images : [bts.queue.getResult('ships')],
 					frames: bts.shipsSpritesheetData.frames,
 					animations: bts.shipsSpritesheetData.animations
+				}
+			);
+			bts.explosionSpriteSheet = new createjs.SpriteSheet(
+				{
+					images : [bts.queue.getResult('explosion')],
+					frames: bts.explosionSpritesheetData.frames,
+					animations: bts.explosionSpritesheetData.animations
 				}
 			);
 			bts.canvasCenter = {
@@ -37,10 +45,10 @@ export default ()=>{
 				bts.fieldSize = data.size;
 				if(!bts.stage.getChildByName('field')){
 					let field = new bts.Field();
+
 					drawObsticles(data.obsticles, field);
 					field.setPowerUpsInField(data.powerups);
-					bts.stage.canvas.addEventListener("mousewheel", mouseWheelHandler, false);
-			    bts.stage.canvas.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
+
 					bts.stage.addEventListener('stagemousedown', handleStageMovement);
 				}
 
@@ -56,19 +64,6 @@ export default ()=>{
 			}
 		}
 
-		function mouseWheelHandler(e) {
-	    if(Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)))>0) bts.zoom=1.1; else bts.zoom=1/1.1;
-	    let scale = bts.stage.scaleX*bts.zoom
-
-	    if(scale < 0.5){ 
-	    	scale = 0.5; 
-	    }else if(scale > 1){
-	    	scale = 1;
-	    }
-
-	    bts.stage.scaleX = bts.stage.scaleY = scale;
-	  }
-
 		function handleStageMovement (){
 			bts.startPos = {
 				mouseX: bts.stage.mouseX,
@@ -78,8 +73,16 @@ export default ()=>{
 			}
 
 			bts.stage.addEventListener('stagemousemove', function(e){
-				bts.stage.x = bts.startPos.x + (bts.stage.mouseX - bts.startPos.mouseX);
-				bts.stage.y = bts.startPos.y + (bts.stage.mouseY - bts.startPos.mouseY);
+				let newPosition = {
+					x: (bts.startPos.x + (bts.stage.mouseX - bts.startPos.mouseX)),
+					y: (bts.startPos.y + (bts.stage.mouseY - bts.startPos.mouseY))
+				}
+				if(newPosition.x > -1640 && newPosition.x < 100){
+					bts.stage.x = newPosition.x;
+				}
+				if(newPosition.y > -1640 && newPosition.y < 0){
+					bts.stage.y = newPosition.y;
+				}
 			});
 
 			bts.stage.addEventListener('stagemouseup', function (e) {
@@ -94,18 +97,31 @@ export default ()=>{
 			data.positions.forEach(item =>{
 				if(!ships.find(ship => { return ship.name == item.username})){
 					let position = {
-						x: bts.canvasCenter.x + item.position.x,
-						y: bts.canvasCenter.y + item.position.y
+						x: bts.sections[item.position].children[0].graphics.command.x,
+						y: bts.sections[item.position].children[0].graphics.command.y
 					}
 					let section = bts.getSectionByCoordinates(position.x, position.y);
 
 					let newShip = new bts.Ship(item.username, item.color, position, data.props);
+					newShip.alpha = 0;
 
 					if(bts.me == item.username){
 						bts.myship = newShip;
+						bts.myship.alpha = 1;
 						bts.myship.drawRangeMarker();
-						bts.stage.x -= item.position.x;
-						bts.stage.y -= item.position.y;
+
+						bts.stage.x = -position.x + 50;
+						bts.stage.y = -position.y + 50;
+						if(bts.stage.x < -1640){
+							bts.stage.x += bts.stage.canvas.clientWidth - 100;
+						}else if(bts.stage.x > 100){
+							bts.stage.x -= bts.stage.canvas.clientWidth;
+						}
+						if(bts.stage.y < -1640){
+							bts.stage.y += bts.stage.canvas.clientHeight - 100;
+						}else if(bts.stage.y > 100){
+							bts.stage.y += bts.stage.canvas.clientHeight;
+						}
 					}
 				}
 			});
@@ -117,12 +133,12 @@ export default ()=>{
 				bts.moveToNextPosition(
 					ship, 
 					{
-						x: data.start.x + bts.canvasCenter.x, 
-						y: data.start.y + bts.canvasCenter.y
+						x: data.start.x, 
+						y: data.start.y
 					}, 
 					{
-						x: data.end.x + bts.canvasCenter.x,
-						y: data.end.y + bts.canvasCenter.y
+						x: data.end.x,
+						y: data.end.y
 					}
 				)
 		}
@@ -135,6 +151,7 @@ export default ()=>{
 					bts.myship.drawRangeMarker();
 				}
 				if(item.powerup == 'life'){
+					//bts.explodingAnimation();
 					ship.drawLife(ship.getChildByName('stats').getChildByName('life'));
 				}
 			})

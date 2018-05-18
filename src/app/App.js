@@ -29,7 +29,7 @@ class App extends Component {
       this.setState({isGameStarted: true});
     })
 
-    window.socket.on('new user', ()=>{
+    window.socket.on('logged in', ()=>{
       this.setState({isRoomListVisible: true, screen:'room list'});
     })
   }

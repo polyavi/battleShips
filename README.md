@@ -50,6 +50,8 @@
   Done - New obstacles/islands
   - Fire animation
   - Explosion animation
+  - Mines
+  Done - revealing maps on the go
 
 * New rules:
   Done - Player starts with ship placed in each corner 

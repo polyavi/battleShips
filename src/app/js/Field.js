@@ -38,46 +38,44 @@ export default ()=>{
 		}
 	 
 		p.drawField = function (){
-			//draw center of field
-			let sectionCenter = new bts.Section(this.center);
-			bts.sections.push(sectionCenter);
-			// draw center line
-			p.drawLineOfSections(this.center, this.size, 87);
-			p.drawLineOfSections(this.center, this.size, -87);
-			
-			// rest of the field
-			for(let i = this.size; i > this.size/2; i-=1){
-				let j = this.size - i +1;
-				for(let k = 1; k<3; k+=1){
-					let d = Math.pow(-1, k);
-
-					p.drawLineOfSections({x: this.center.x + 152*j*d, y: this.center.y - 87}, i, 87);
-					p.drawLineOfSections({x: this.center.x + 152*j*d, y: this.center.y}, i-1, -87);
-
-					p.drawLineOfSections({x: this.center.x + (76 + 152*(j-1))*d, y: this.center.y - 44}, i, 87);
-					p.drawLineOfSections({x: this.center.x + (76 + 152*(j-1))*d, y: this.center.y + 44}, i, -87);
-				}
+			let i = 0;
+			while(i < this.size*3/2){
+				p.drawLineOfSections({x: 152*i, y: 0}, this.size*2, 87, i);
+				p.drawLineOfSections({x: 76 + 152*i, y: 44}, this.size*2, 87, i +	1);
+				i+=1;
 			}
 
 			this.addChild(...bts.sections);
 			this.name = 'field';
+			//let sand = new createjs.Container()
+			//p.drawSand(sand);
 			bts.stage.addChild(this);
 		}
 
-		p.drawLineOfSections = function(startingPoint, numberofSections, step){
-			for(let i = 1; i < numberofSections + 1; i+=1){
+		p.drawLineOfSections = function(startingPoint, numberofSections, step, numberOfRow){
+			for(let i = 0; i < numberofSections; i+=1){
 				let section = new bts.Section({x: startingPoint.x, y: startingPoint.y + step*i});
+				section.name = numberOfRow + '-' + i;
 				bts.sections.push(section);
+				section.alpha = 0;
 			}
+		}
+
+		p.drawSand = function(container){
+			let bitmap = new createjs.Bitmap(bts.sand);
+			bitmap.x = bitmap.image.naturalWidth*2 - 50;
+			bitmap.y = bitmap.image.naturalHeight - 250;
+			bitmap.scaleX = 2;
+			bitmap.rotation = 180;
+
+			container.addChild(bitmap);
 		}
 
 		p.setPowerUpsInField = function(powerups){
 			let length = powerups.length;
 			for(let i = 0; i < length; i+=1){
 				let section = this.children[powerups[i].section];
-				if(section.occupied != true){
-					section.addPowerUp(powerups[i]);
-				}
+				section.addPowerUp(powerups[i]);
 			}
 		}
 
@@ -89,41 +87,15 @@ export default ()=>{
 			bitmap.x = position.x - bitmap.image.naturalWidth*0.1/2;
 			bitmap.y = position.y - bitmap.image.naturalHeight*0.1/2;
 
-			let section = bts.getSectionByCoordinates(bitmap.x, bitmap.y);
-			let neighbors = [];
-			if(section){
-				neighbors = bts.getNeighbors(section);
+			island.addChild(bitmap);
+			island.name = 'island';
+			bitmap.alpha = 0;
 
-				if(section.occupied || neighbors.length < 6){
-					if(!bts.getSectionByCoordinates(bitmap.x + bitmap.image.naturalWidth*0.1, bitmap.y)){
-						bitmap.x -= bitmap.image.naturalWidth*0.1;
-					}else if(!bts.getSectionByCoordinates(bitmap.x - bitmap.image.naturalWidth*0.1, bitmap.y)) {
-						bitmap.x += bitmap.image.naturalWidth*0.1;
-					}
-
-					if(!bts.getSectionByCoordinates(bitmap.x, bitmap.y + bitmap.image.naturalHeight*0.1)){
-						bitmap.y -= bitmap.image.naturalHeight*0.1;
-					}else if(!bts.getSectionByCoordinates(bitmap.x, bitmap.y - bitmap.image.naturalHeight*0.1)) {
-						bitmap.y += bitmap.image.naturalHeight*0.1;
-					}
-				}
-
-				island.addChild(bitmap);
-				island.name = 'island';
-
-				this.addChild(island);
-				setSectionsInsideIsland(bitmap);
-			}
-		}
-
-		function getSectionsInsideIsland(bitmap){
-			return bts.sections.filter((section) => { 
-				return (bitmap.x < section.children[0].graphics.command.x && section.children[0].graphics.command.x < bitmap.x + bitmap.image.naturalWidth*0.1 && bitmap.y < section.children[0].graphics.command.y && section.children[0].graphics.command.y < bitmap.y + bitmap.image.naturalHeight*0.1)
-			});
+			this.addChild(island);
+			setSectionsInsideIsland(bitmap);
 		}
 
 		function setSectionsInsideIsland(bitmap){
-
 			bts.sections.forEach((section) => { 
 				if(bitmap.x < section.children[0].graphics.command.x && section.children[0].graphics.command.x < bitmap.x + bitmap.image.naturalWidth*0.1 && bitmap.y < section.children[0].graphics.command.y && section.children[0].graphics.command.y < bitmap.y + bitmap.image.naturalHeight*0.1){
 					section.occupied = true;

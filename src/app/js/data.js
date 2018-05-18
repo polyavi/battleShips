@@ -22,6 +22,9 @@ export default ()=>{
 			},{
 				id:"island", 
 				src:'images/island.png'
+			},{
+				id:"sand", 
+				src:'images/sand.png'
 			}
 		];
 
