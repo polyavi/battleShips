@@ -48,7 +48,7 @@ export default ()=>{
 
 					drawObsticles(data.obsticles, field);
 					field.setPowerUpsInField(data.powerups);
-
+					field.setMines(data.mines);
 					bts.stage.addEventListener('stagemousedown', handleStageMovement);
 				}
 
@@ -144,15 +144,17 @@ export default ()=>{
 		}
 
 		function handlePropChanges(data){
-			data.forEach( item =>{
+			data.props.forEach( item =>{
 				let ship = bts.stage.getChildByName('ships').getChildByName(item.username);
 				ship[item.powerup] = item.amount;
 				if(bts.me == item.username && item.powerup == 'range'){
 					bts.myship.drawRangeMarker();
 				}
 				if(item.powerup == 'life'){
-					//bts.explodingAnimation();
-					ship.drawLife(ship.getChildByName('stats').getChildByName('life'));
+					if(ship[item.powerup] > item.amount){
+						ship.explodingAnimation();
+					}
+					ship.drawStats(ship.getChildByName('stats'));
 				}
 			})
 		}

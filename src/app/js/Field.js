@@ -47,8 +47,7 @@ export default ()=>{
 
 			this.addChild(...bts.sections);
 			this.name = 'field';
-			//let sand = new createjs.Container()
-			//p.drawSand(sand);
+
 			bts.stage.addChild(this);
 		}
 
@@ -61,21 +60,19 @@ export default ()=>{
 			}
 		}
 
-		p.drawSand = function(container){
-			let bitmap = new createjs.Bitmap(bts.sand);
-			bitmap.x = bitmap.image.naturalWidth*2 - 50;
-			bitmap.y = bitmap.image.naturalHeight - 250;
-			bitmap.scaleX = 2;
-			bitmap.rotation = 180;
-
-			container.addChild(bitmap);
-		}
-
 		p.setPowerUpsInField = function(powerups){
 			let length = powerups.length;
 			for(let i = 0; i < length; i+=1){
 				let section = this.children[powerups[i].section];
 				section.addPowerUp(powerups[i]);
+			}
+		}
+
+		p.setMines = function(mines){
+			let length = mines.length;
+			for(let i = 0; i < length; i+=1){
+				let section = this.children[mines[i]];
+				section.mine = true;
 			}
 		}
 

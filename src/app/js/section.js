@@ -45,7 +45,8 @@ export default ()=>{
 				let targetShip = target.parent.getTargetShip();
 				if(targetShip){
 					if(isTargetInRange(targetShip.position) && bts.myship.monitions > 0) {
-						bts.myship.fireAnimation(target);
+						targetShip.explodingAnimation();
+						bts.myship.attackOponent(targetShip);
 					}
 				}else{
 					bts.myship.prevPos = [];

@@ -26,11 +26,12 @@ class Chat extends Component {
 
     window.socket.on('joined', (data)=>{
       let tabs = self.state.tabs;
-      if(data.type == 'game'){
+
+      if(data.type == 'game' && !tabs.find(item =>{return data.name == item.name})){
         tabs.push({name: data.name, socketName: data.name, action: 'message to', messages:[]});
         self.setState({tabs: tabs, activeTab: data.name});
       }
-      if(data.type == 'direct message'){
+      if(data.type == 'direct message' && !tabs.find(item =>{return data.name == item.name})){
         tabs.push({name: data.name.split(' to ')[1], socketName: data.name, action: 'message to', messages:[]})
         self.setState({tabs: tabs, activeTab: data.name});
       }

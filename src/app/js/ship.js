@@ -37,12 +37,15 @@ export default ()=>{
 		}
 
 		p.drawShip =  function (name, position) {
+			this.explosion = new createjs.Sprite(bts.explosionSpriteSheet);
+			this.explosion.alpha = 0;
+			bts.stage.addChild(this.explosion);
 			let sprite = new createjs.Sprite(bts.shipSpritesheet);
 			sprite.regX = 55/2;
 			sprite.regY = 110/2;
 
-			sprite.x = position.x;
-			sprite.y = position.y;
+			sprite.x = this.explosion.x = position.x;
+			sprite.y = this.explosion.y = position.y;
 			this.position = bts.getSectionByCoordinates(sprite.x, sprite.y);
 			sprite.gotoAndPlay('ship');
 			this.addChild(sprite);
@@ -72,7 +75,7 @@ export default ()=>{
 		p.drawStats = function(stats){
 			let background = new createjs.Shape();
 
-			let text = new createjs.Text(this.name, "40px monospace", this.color);
+			let text = new createjs.Text(this.name, "20px monospace", this.color);
 
 			let life = new createjs.Container();
 			life.x = text.getMeasuredWidth() + 10;
@@ -80,7 +83,7 @@ export default ()=>{
 
 			this.drawLife(life);
 
-			background.graphics.beginFill('#F7F8F9').drawRoundRect(-10, -10, life.x + this.life*15 + 20, 60, 10);
+			background.graphics.beginFill('#F7F8F9').drawRoundRect(-10, -10, life.x + this.life*15 + 20, 40, 10);
 
 			stats.addChild(background, text, life);
 			stats.name = 'stats';
@@ -92,37 +95,16 @@ export default ()=>{
 			life.children = [];
 			for(let i = 0; i< this.life; i+=1){
 				let lifeLine = new createjs.Shape();
-				lifeLine.graphics.beginFill(this.color).drawRoundRect(i*15, 5, 10, 30, 5);	
+				lifeLine.graphics.beginFill(this.color).drawRoundRect(i*15, 0, 10, 20, 5);	
 				life.addChild(lifeLine);		
 			}
 		}
 
-		p.fireAnimation = function(target){
-			let fireball = new createjs.Shape();
-			fireball.graphics.beginFill('#E4B363').drawCircle(this.children[0].x, this.children[0].y, 10);
-			bts.stage.addChild(fireball);
-			let nextPos = {
-				x: target.graphics.command.x,
-				y: target.graphics.command.y
-			}
-
-			let hipotenuse = Math.sqrt(Math.pow(Math.abs(this.children[0].x - nextPos.x),2) + Math.pow(Math.abs(this.children[0].y - nextPos.y),2));
-			let angle = calculateAngle({x: this.children[0].x, y: this.children[0].y}, nextPos, hipotenuse);
-			
-			createjs.Tween.get(fireball.graphics.command)
-		  	.to({ x: nextPos.x, y: nextPos.y}, hipotenuse*10/this.speed, createjs.Ease.sinIn)
-		  	.call(bts.explodingAnimation,[fireball])
-		  	.call(bts.myship.attackOponent, [target])
-		}
-
-		bts.explodingAnimation = function(fireball){
-			let explosion = new createjs.Sprite(bts.explosionSpriteSheet);
-			explosion.gotoAndPlay('explode');
-			explosion.x = fireball.graphics.command.x - 32;
-			explosion.y = fireball.graphics.command.y - 32;
-
-			bts.stage.addChild(explosion);
-			bts.stage.removeChild(fireball);
+		p.explodingAnimation = function(){
+			this.explosion.x = this.position.children[0].graphics.command.x - 32;
+			this.explosion.y = this.position.children[0].graphics.command.y - 32;
+			this.explosion.alpha = 1;
+			this.explosion.gotoAndPlay('explode');
 		}
 
 		bts.getNeighbors = function(section){
@@ -169,6 +151,13 @@ export default ()=>{
 		}
 
 		bts.moveToNextPosition = function(ship, startPos, endPos){
+			if(ship.position.mine == true && ship.name == bts.me){
+				ship.position.mine = false;
+				ship.explodingAnimation();
+				window.socket.emit('steped on mine', bts.me);
+				return;
+			}
+
 			if(startPos.x != endPos.x || startPos.y != endPos.y){
 				let newPos = {
 					x: startPos.x,
@@ -210,6 +199,9 @@ export default ()=>{
 				ship.prevPos.push(bts.getSectionByCoordinates(startPos.x, startPos.y));
 				moveShip(ship, next, endPos);
 				ship.position = next;
+				if(ship.sectionsInRange){
+					ship.markSectionsInRange();
+				}
 			}else{
 				ship.position = bts.getSectionByCoordinates(startPos.x, startPos.y);
 				if(ship.name != bts.me){
@@ -245,20 +237,19 @@ export default ()=>{
 
 			createjs.Tween.removeTweens(ship.children[0], ship.children[1]);
 			createjs.Tween.get(ship.children[0])
-		  	.to({rotation: angle}, (ship.children[0].rotation - angle)*10/ship.speed, createjs.Ease.sinIn)
+		  	.to({rotation: angle}, 100, createjs.Ease.sinIn)
 		  	.to({ x: nextPos.x, y: nextPos.y}, hipotenuse*10/ship.speed, createjs.Ease.sinIn)
 		  	.call(target.checkForPowerUp.bind(target), [ship])
 		  	.call(bts.moveToNextPosition,[ship, nextPos, endPos]);
 
 		  createjs.Tween.get(ship.children[1])
-		  	.to({ x: nextPos.x - 50, y: nextPos.y - 100}, hipotenuse*10/ship.speed, createjs.Ease.sinIn)
+		  	.to({ x: nextPos.x - 50, y: nextPos.y - 100}, hipotenuse*10/ship.speed, createjs.Ease.sinIn);
 		}
 
-		p.attackOponent = function(targetPosition){
-			let targetShip = targetPosition.parent.getTargetShip();
+		p.attackOponent = function(targetShip){
 			if(targetShip){
 				if(bts.myship.monitions > 0 && targetShip.life > 0){
-					window.socket.emit('hit', targetShip.name);
+					window.socket.emit('hit', {name: targetShip.name, x:  targetShip.position.children[0].graphics.command.x, y:  targetShip.position.children[0].graphics.command.y});
 				}
 			}
 		}

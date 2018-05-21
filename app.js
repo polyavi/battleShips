@@ -60,11 +60,12 @@ io.on('connection', function(socket){
 			room.type = 'game';
 			room.admin = socket.id;
 
+			room.availablePositions = SHIP_POSITIONS.slice();
 			room.positions = [];
 			room.occupiedSections = [];
 			room.obsticles = generateObsticles(room);
 			room.powerups = genreratePowerUps(room);
-			//room.mines = generateMines(room);
+			room.mines = generateMines(room);
 
 			if(roomProps.pass != ''){
 				room.hasPass = true;
@@ -79,7 +80,19 @@ io.on('connection', function(socket){
 			socket.room = roomProps.room;
 			socket.props = Object.assign({}, PLAYER_PROPS);
 			socket.color = PLAYER_COLORS[room.length -1];
-			room.positions.push({position: SHIP_POSITIONS[room.length - 1], username: socket.username, color: socket.color});
+
+			let randomPosition = Math.floor(Math.random()*room.availablePositions.length);
+			room.positions.push({position: SHIP_POSITIONS[randomPosition], username: socket.username, color: socket.color});
+			room.availablePositions.splice(randomPosition, 1);
+
+			io.to(room.name).emit('message', {
+				message: createMessage( 
+					' joined the game.', 
+					socket, 
+					true
+				),
+				room: room.name
+			});
 		}
 
 		io.emit('rooms', getAllRoomsData());
@@ -152,7 +165,15 @@ io.on('connection', function(socket){
 
 	socket.on('canvas init', function(){
 		let room = io.sockets.adapter.rooms[socket.room];
-		socket.emit('init field', {size: FIELD_SIZE, powerups: room.powerups, obsticles: room.obsticles, occupied: room.occupiedSections});
+		socket.emit(
+			'init field', 
+			{
+				size: FIELD_SIZE, 
+				powerups: room.powerups, 
+				obsticles: room.obsticles, 
+				occupied: room.occupiedSections, 
+				mines: room.mines
+			});
 
 		io.to(room.name).emit('positions', {positions: room.positions, props: PLAYER_PROPS});
 
@@ -166,6 +187,14 @@ io.on('connection', function(socket){
 		let room = io.sockets.adapter.rooms[socket.room];
 		room.gameStarted = true;
 
+		io.to(room.name).emit('message', {
+			message: createMessage( 
+				' The game started.', 
+				socket, 
+				true
+			),
+			room: room.name
+		});
 	});
 
 	socket.on('move', function(start, end){
@@ -183,9 +212,18 @@ io.on('connection', function(socket){
 			increaseMonitions(socket);
 		}
 
-		io.to(socket.room).emit('prop change', [generateProp(powerup.type, socket)]);
+		io.to(socket.room).emit('prop change', {props: [generateProp(powerup.type, socket)]});
 
 		let room = io.sockets.adapter.rooms[socket.room];
+
+		io.to(room.name).emit('message', {
+			message: createMessage( 
+				' collected ' + powerup.type + ' power up.', 
+				socket, 
+				true
+			),
+			room: room.name
+		});
 
 		let newPowerUp = createPowerUp(powerup.type, room);
 		while(!newPowerUp){
@@ -200,13 +238,38 @@ io.on('connection', function(socket){
 		}, 30000);
 	});
 
+	socket.on('steped on mine', function(username){
+		let socket = getSocketByUsername(username);
+		resetRange(socket);
+		resetSpeed(socket);
+		decreaseLife(socket);
+
+		io.to(socket.room).emit('prop change', {props: [generateProp('speed', socket), generateProp('range', socket)]});
+		
+		io.to(room.name).emit('message', {
+			message: createMessage( 
+				' steped on mine and lost all speed and range enhansments.', 
+				socket, 
+				true
+			),
+			room: room.name
+		});
+
+	});
+
 	socket.on('hit', function(data){
 		if(socket.props.monitions > 0){
-			let target = getSocketByUsername(data);
+			let target = getSocketByUsername(data.name);
 			if(target.props.life > 0){
 				decreaseMonitions(socket);
 				decreaseLife(target);
-				io.to(socket.room).emit('prop change', [generateProp('monitions', socket), generateProp('life', target)]);
+				io.to(socket.room).emit('prop change', {
+					props: [generateProp('monitions', socket), generateProp('life', target)], 
+					target: {
+						x: data.x,
+						y: data.y
+					}
+				});
 				if(target.props.life == 0){
 					io.to(socket.room).emit('player sunk', data);
 
@@ -215,7 +278,25 @@ io.on('connection', function(socket){
 						io.to(socket.room).emit('game over', socket.username);
 							let room = io.sockets.adapter.rooms[socket.room];
 							room.gameStarted = false;
+					}else{
+						io.to(room.name).emit('message', {
+							message: createMessage( 
+								+ ' atacked ' + data.name + ' and sunk their ship.', 
+								socket, 
+								true
+							),
+							room: room.name
+						});
 					}
+				}else{
+					io.to(room.name).emit('message', {
+						message: createMessage( 
+							+ ' atacked ' + data.name + ' and lost life.', 
+							socket, 
+							true
+						),
+						room: room.name
+					});
 				}
 			}
 		}
@@ -223,7 +304,8 @@ io.on('connection', function(socket){
 
 	socket.on('play again', function(){
 		let room = io.sockets.adapter.rooms[socket.room];
-		socket.emit('joined', {name: socket.room, type: room.type, admin: socket.username == room.admin ? true : false})
+		socket.props = Object.assign({}, PLAYER_PROPS);
+		socket.emit('joined', {name: socket.room, type: room.type, admin: socket.id == room.admin ? true : false})
 	})
 
 	socket.on('disconect', function(){
@@ -316,9 +398,7 @@ function decreaseLife(socket){
 }
 
 function increaseLife(socket){
-	if(socket.props.life < 3){
-		socket.props.life +=1;
-	}
+	socket.props.life +=1;
 }
 
 function increaseRange(socket){
@@ -326,7 +406,7 @@ function increaseRange(socket){
 }
 
 function resetRange(socket){
-	socket.props.range = 3;
+	socket.props.range = 1;
 }
 
 function increaseMonitions(socket){
