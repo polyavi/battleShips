@@ -14,6 +14,7 @@ class SideBar extends Component {
           <PlayerList 
             me={this.props.me} 
             isChatVisible={this.props.isChatVisible}
+            users={this.props.users}
             />
       </div>
     );

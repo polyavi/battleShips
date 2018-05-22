@@ -12,21 +12,20 @@ constructor(props) {
   }
 
   componentDidMount(){
-
-    Init();
-    
-    bts.me = this.props.me;
-    
     this.setState({
       width: document.getElementsByTagName('main')[0].clientWidth,
       height: document.getElementsByTagName('main')[0].clientHeight
     });
+    
+    Init();
+    
+    bts.me = this.props.me;
+
     window.onresize = () => {
-      if(this._ismounted) this.setState({
+      this.setState({
         width: document.getElementsByTagName('main')[0].clientWidth,
         height: document.getElementsByTagName('main')[0].clientHeight
-      }
-      );
+      });
     }
   }
 

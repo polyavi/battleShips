@@ -7,10 +7,12 @@ class GameMessage extends Component {
   }
 
   handlePlayAgain = (e) => { 
+    e.nativeEvent.preventDefault(); 
     window.socket.emit('play again');
   }
 
   handleLeaveRoom = (e) => { 
+    e.nativeEvent.preventDefault(); 
     window.socket.emit('leave room');
   }     
 
@@ -20,9 +22,9 @@ class GameMessage extends Component {
 	      {this.props.isGameOver &&
 		      <form>
 	          <h3 className="title">{this.props.isWinner ? "Congratulations! You won." : "Game over! You lost."}</h3>
-	          <Link to="/game" onClick={this.handlePlayAgain} className="submit">Play again</Link>
-	          <Link to="/rooms" onClick={this.handleLeaveRoom} className="submit">Leave room</Link>
-	         </form>
+	          <button onClick={this.handlePlayAgain} className="submit">Play again</button>
+	          <button onClick={this.handleLeaveRoom} className="submit">Leave room</button>
+	       </form>
 	      }
       	{!this.props.isGameStarted &&
       		<div>

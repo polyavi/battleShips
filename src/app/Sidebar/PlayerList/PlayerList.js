@@ -3,35 +3,17 @@ import React, { Component } from 'react';
 class PlayerList extends Component {
 	constructor(props){
 		super(props);
-
-		this.state = {
-			users: [],
-			room: this.props.room
-		}
 	}
 
-  componentDidMount(){
-  	this._ismounted = true;
-
-    window.socket.on('new user', (data) =>{
-			if(this._ismounted) this.setState({users: data});
-		});
-  }
-
- 	componentWillUnmount(){
-    this._ismounted = false;
-  }
-
 	handleMessage = (e) => {
-		let username = e.target.parentNode.parentNode.firstChild.innerText;
 		let userId = e.target.parentNode.parentNode.id;
 		window.socket.emit('direct message', userId);
 	}
 	
 	render(){
 		let playerNodes;
-		if(this.state.users.length > 0){
-			playerNodes = this.state.users.map((user) =>{
+		if(this.props.users.length > 0){
+			playerNodes = this.props.users.map((user) =>{
 				return(
 					<li 
 						key={user.id} 

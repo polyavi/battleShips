@@ -4,26 +4,12 @@ import { Link } from 'react-router-dom';
 class RoomList extends Component {
 	constructor(props){
     super(props);
-    this.state = {
-			rooms: []
-		}
-	}
-
-  componentDidMount(){
-  	this._ismounted = true;
-    window.socket.on('rooms', (data) => {
-			if(this._ismounted) this.setState({ rooms: data });
-		});
-  }
-
-  componentWillUnmount(){
-  	this._ismounted = false;
 	}
 
 	render(){
 		let roomNodes;
-		if(this.state.rooms.length > 0){
-			roomNodes = this.state.rooms.map((room) =>{
+		if(this.props.rooms.length > 0){
+			roomNodes = this.props.rooms.map((room) =>{
 				return(
 					<li 
 						key={room.key}

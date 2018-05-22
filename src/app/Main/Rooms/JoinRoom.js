@@ -6,9 +6,9 @@ class JoinRoom extends Component {
     super(props);
 
     this.state = {
-      room: "",
       pass: ""
     }
+
     this.onSubmit = this.onSubmit.bind(this);
   }
 
@@ -17,9 +17,6 @@ class JoinRoom extends Component {
     if(passwordInput){
       passwordInput.focus();
     }
-    let params = this.props.location.pathname.split('/')[2].split('&');
-
-    this.setState({room: params[0], hasPass: (params[1] == 'false') ? false : true});
 
     window.socket.on('wrong pass', ()=>{
       this.setState({wrongPass: true, pass: ''});
@@ -30,25 +27,30 @@ class JoinRoom extends Component {
     this.setState({ pass: event.target.value});
   }
 
-  onSubmit = (e) => { 
+  onSubmit = (e) => {
+    e.nativeEvent.preventDefault();
+
     if(this.state.room == ''){
       this.state.room =  this.props.room;
     }
-
-    window.socket.emit('join room', {room: this.state.room, pass: this.state.pass});
+    let room = this.props.location.pathname.split('/')[2].split('&')[0];
     
-    this.setState({room: ''})
+    window.socket.emit('join room', {room: room, pass: this.state.pass});
   }    
 
   render() {
+    let params = this.props.location.pathname.split('/')[2].split('&');
+    let room = params[0];
+    let hasPass = (params[1] == 'false') ? false : true;
+
     return (
       <div id="join-room">
-        <form>
-          <h3 className="title">{"Do you want to join " + this.state.room + "?"}</h3>
+        <form onSubmit={this.onSubmit}>
+          <h3 className="title">{"Do you want to join " + room + "?"}</h3>
 
-          {this.state.hasPass &&
+          {hasPass &&
           <h3 className="title">{this.state.wrongPass  ? "Wrong pass! Please try again." : "Enter password"}</h3>}
-          {this.state.hasPass &&
+          {hasPass &&
             <input 
               className="passwordInput" 
               type="password" 
@@ -56,7 +58,7 @@ class JoinRoom extends Component {
               onChange={this.updatePass} 
               value={this.state.pass}/>
           }
-          <Link to="/game" onClick={this.onSubmit} className="submit">Join room</Link>
+          <button className="submit">Join room</button>
         </form>
       </div>
     );

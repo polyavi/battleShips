@@ -8,10 +8,12 @@ import SideBar from './Sidebar/SideBar';
 class App extends Component {
   constructor(props){
     super(props);
-
+    this.goto = '';
     this.state = {
       me: '',
       isChatVisible: false,
+      users: [],
+      rooms: []
     }
 
     this.startGame = this.startGame.bind(this);
@@ -24,10 +26,10 @@ class App extends Component {
     window.socket.on('joined', (data)=>{
       if(self._ismounted){
         if(data.type == 'game'){
-          
-          self.setState({ isGameStarted: false, isChatVisible: true, isAdmin: data.admin, isGameOver: false});
+          this.goto='game';
+          self.setState({isGameStarted: false, isChatVisible: true, isAdmin: data.admin, isGameOver: false});
         }else{
-           self.setState({isChatVisible: true});
+          self.setState({isChatVisible: true});
         }
       }
     })
@@ -38,16 +40,24 @@ class App extends Component {
 
     window.socket.on('logged in', (data)=>{
       self.goto = 'rooms';
-      if(self._ismounted) self.setState({me: data});
+      if(self._ismounted) self.setState({me: data.name, rooms: data.allRooms, users: data.allUsers});
     })
 
     window.socket.on('game over', (winner) =>{
       if(self._ismounted) self.setState({isGameOver: true, isWinner: self.state.me == winner ? true : false})
     })
-
-    window.socket.on('close room', () =>{
+    
+    window.socket.on('close room', () => {
       this.goto='rooms';
-    })
+    });
+
+    window.socket.on('new user', (data) =>{
+      if(this._ismounted) this.setState({users: data});
+    });
+
+    window.socket.on('rooms', (data) => {
+      if(this._ismounted) this.setState({rooms: data});
+    });;
   }
 
   componentWillUnmount(){
@@ -64,10 +74,12 @@ class App extends Component {
   }
 
   render() {
-    if(this.goto == 'rooms' && this.props.location.pathname.indexOf('/rooms') == -1){
-    this.goto = '';
-     return <Redirect to="/rooms"/>
+    if(this.goto != '' && this.props.location.pathname.indexOf('/'+ this.goto) == -1){
+      let path = '/'+ this.goto;
+      this.goto = '';
+      return <Redirect to={path}/>
     }
+
     return (
       <div className="app">
         <Header
@@ -78,6 +90,7 @@ class App extends Component {
           isAdmin={this.state.isAdmin}
           toggleChat={this.toggleChat}/>
         <SideBar
+          users={this.state.users}
           isChatVisible={this.state.isChatVisible}
           me={this.state.me}/>
         <Main
@@ -85,6 +98,7 @@ class App extends Component {
           isAdmin={this.state.isAdmin}
           isWinner={this.state.isWinner}
           isGameOver={this.state.isGameOver}
+          rooms={this.state.rooms}
           me={this.state.me}/>
       </div>
       );

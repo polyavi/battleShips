@@ -41,10 +41,9 @@ io.on('connection', function(socket){
 	  	socket.username = username;
 		  socket.color = '#'+Math.random().toString(16).substr(2,6);
 		 
-		  socket.emit('logged in', username);
-		  io.emit('new user', getAllUsersData());
+		  socket.emit('logged in', {name: username, allUsers: getAllUsersData(), allRooms: getAllRoomsData()});
 
-		  socket.emit('rooms', getAllRoomsData());
+		  socket.emit('new user', getAllUsersData());
 		}
 	});
 
@@ -97,11 +96,12 @@ io.on('connection', function(socket){
 
 			sockets.forEach(socket =>{
 				io.sockets.connected[socket].leave(socket.room);
-			})
+			});
+
 		}else{
 			io.to(socket.room).emit('message', {
 				message: createMessage(
-					' left the room.', 
+					' left the game.', 
 					socket,
 					true
 				), 
@@ -112,7 +112,7 @@ io.on('connection', function(socket){
 
 			socket.emit('close room', {
 				message: createMessage(' left ' + socket.room, socket, true),
-				room: room.name				
+				room: room.name		
 			});
 		}
 
@@ -146,22 +146,7 @@ io.on('connection', function(socket){
 	});
 
 	socket.on('canvas init', function(){
-		let room = io.sockets.adapter.rooms[socket.room];
-		socket.emit(
-			'init field', 
-			{
-				size: FIELD_SIZE, 
-				powerups: room.powerups, 
-				obsticles: room.obsticles, 
-				occupied: room.occupiedSections, 
-				mines: room.mines
-			});
-
-		io.to(room.name).emit('positions', {positions: room.positions, props: PLAYER_PROPS});
-
-		if(room.gameStarted){
-			socket.emit('allow movement');
-		}
+		initField(socket);
 	});
 
 	socket.on('start game', function(){
@@ -255,13 +240,15 @@ io.on('connection', function(socket){
 				});
 
 				if(target.props.life == 0){
-					io.to(socket.room).emit('player sunk', data);
+					io.to(socket.room).emit('player sunk', data.name);
 
 					let alivePlayers = getAlivePlayers(io.sockets.adapter.rooms[socket.room]);
 
 					if(alivePlayers.length == 1){
+
 						io.to(socket.room).emit('game over', socket.username);
 							let room = io.sockets.adapter.rooms[socket.room];
+							room.restart = false;
 							room.gameStarted = false;
 					}else{
 						io.to(socket.room).emit('message', {
@@ -272,7 +259,6 @@ io.on('connection', function(socket){
 							),
 							room: socket.room
 						});
-						io.to(socket.room).emit('remove ship', data.name);
 					}
 				}else{
 					io.to(socket.room).emit('message', {
@@ -290,7 +276,14 @@ io.on('connection', function(socket){
 
 	socket.on('play again', function(){
 		let room = io.sockets.adapter.rooms[socket.room];
+
+		if(!room.restart){
+			room.restart = true;
+			setFieldProps(room);
+		}
 		socket.props = Object.assign({}, PLAYER_PROPS);
+		initField(socket);
+		
 		socket.emit('joined', {name: socket.room, type: room.type, admin: socket.id == room.admin ? true : false})
 	})
 
@@ -299,6 +292,24 @@ io.on('connection', function(socket){
 	});
 });
 
+function initField(socket){
+	let room = io.sockets.adapter.rooms[socket.room];
+	socket.emit(
+		'init field', 
+		{
+			size: FIELD_SIZE, 
+			powerups: room.powerups, 
+			obsticles: room.obsticles, 
+			occupied: room.occupiedSections, 
+			mines: room.mines
+		});
+
+	io.to(room.name).emit('positions', {positions: room.positions, props: PLAYER_PROPS});
+
+	if(room.gameStarted){
+		socket.emit('allow movement');
+	}
+}
 function logInExistingRoom(room, password, socket){
 	if(room.hasPass && room.pass !== password){
 		socket.emit('wrong pass');
@@ -313,12 +324,7 @@ function setRoom(roomname, password, socket, room){
 	room.type = 'game';
 	room.admin = socket.id;
 
-	room.availablePositions = SHIP_POSITIONS.slice();
-	room.positions = [];
-	room.occupiedSections = [];
-	room.obsticles = generateObsticles(room);
-	room.powerups = genreratePowerUps(room);
-	room.mines = generateMines(room);
+	setFieldProps(room);
 
 	if(password != ''){
 		room.hasPass = true;
@@ -326,6 +332,15 @@ function setRoom(roomname, password, socket, room){
 	}else{
 		room.hasPass = false;
 	}
+}
+
+function setFieldProps(room){
+	room.availablePositions = SHIP_POSITIONS.slice();
+	room.positions = [];
+	room.occupiedSections = [];
+	room.obsticles = generateObsticles(room);
+	room.powerups = genreratePowerUps(room);
+	room.mines = generateMines(room);
 }
 
 function setNewPlayer(socket, roomname, room){
@@ -382,7 +397,7 @@ function getAllRoomsData(){
 
 	keys.forEach(function(key) {
 		let room = io.sockets.adapter.rooms[key];
-		if(room.name && room.type == 'game'){
+		if(room.name && room.type == 'game' && room.length != 0){
 			roomsData.push({
 				name: room.name,
 				hasPass: room.hasPass,

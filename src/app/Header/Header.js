@@ -48,10 +48,10 @@ class Herader extends Component {
 
           {(this.props.location.pathname.indexOf('/game') > -1) &&
             <li>
-             <Link to="/rooms" onClick={this.handleLeaveRoom}>
+             <span to="/rooms" onClick={this.handleLeaveRoom}>
                 <i className="icon-exit"></i>
                 Leave room
-              </Link> 
+              </span> 
             </li>
           }
 

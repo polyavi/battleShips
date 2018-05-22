@@ -43,19 +43,20 @@ export default ()=>{
 
 		function buidField(data) {
 				bts.fieldSize = data.size;
-				if(!bts.stage.getChildByName('field')){
-					let field = new bts.Field();
+				bts.stage.removeAllChildren();
 
-					drawObsticles(data.obsticles, field);
-					field.setPowerUpsInField(data.powerups);
-					field.setMines(data.mines);
-					bts.stage.addEventListener('stagemousedown', handleStageMovement);
-				}
+				let field = new bts.Field();
+
+				drawObsticles(data.obsticles, field);
+				field.setPowerUpsInField(data.powerups);
+				field.setMines(data.mines);
+				bts.stage.addEventListener('stagemousedown', handleStageMovement);
+
 				let sandSections = new createjs.Container();
 				sandSections.addChild(...bts.sandBorder);
 				bts.stage.addChild(sandSections);
 
-				let ships = new createjs.Container();
+				var ships = new createjs.Container();
 				ships.name = 'ships';
 				bts.stage.addChild(ships);
 		}

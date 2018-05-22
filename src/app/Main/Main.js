@@ -19,7 +19,9 @@ class Main extends Component {
       <main>
        <Switch>
           <Route exact path='/' component={Login}/>
-          <Route path='/rooms' component={RoomList}/>
+          <Route path='/rooms' render = { () => <RoomList
+            rooms={this.props.rooms} />
+          }/>
           <Route path='/joinroom' component={JoinRoom}/>
           <Route path='/createroom' component={CreateRoom}/>
           <Route path='/game' render={
