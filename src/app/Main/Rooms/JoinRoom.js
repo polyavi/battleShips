@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class JoinRoom extends Component {
   constructor(props){
@@ -10,21 +11,19 @@ class JoinRoom extends Component {
     }
     this.onSubmit = this.onSubmit.bind(this);
   }
+
   componentDidMount(){
-    let roomnameInput = document.getElementsByClassName('roomnameInput')[0];
     let passwordInput = document.getElementsByClassName('passwordInput')[0];
-    if(roomnameInput){
-      roomnameInput.focus();
-    }else if(passwordInput){
+    if(passwordInput){
       passwordInput.focus();
     }
-    window.socket.on('wrong pass', ()=>{
-      this.setState({pass:''})
-    })
-  }
+    let params = this.props.location.pathname.split('/')[2].split('&');
 
-  updateRoomname = (event) => {
-    this.setState({ room: event.target.value});
+    this.setState({room: params[0], hasPass: (params[1] == 'false') ? false : true});
+
+    window.socket.on('wrong pass', ()=>{
+      this.setState({wrongPass: true, pass: ''});
+    })
   }
 
   updatePass = (event) => {
@@ -32,30 +31,24 @@ class JoinRoom extends Component {
   }
 
   onSubmit = (e) => { 
-    e.nativeEvent.preventDefault(); 
     if(this.state.room == ''){
       this.state.room =  this.props.room;
     }
-    this.props.onSubmit(this.state.room, this.state.pass);
+
+    window.socket.emit('join room', {room: this.state.room, pass: this.state.pass});
+    
     this.setState({room: ''})
   }    
 
   render() {
     return (
       <div id="join-room">
-        <form onSubmit={this.onSubmit}>
-          <h3 className="title">{this.props.screen == 'create room' ? "Enter room name." : "Do you want to join " + this.props.room + "?"}</h3>
-          {this.props.screen == 'create room' && 
-            <input 
-              className="roomnameInput" 
-              type="text" 
-              maxLength="14" 
-              onChange={this.updateRoomname} 
-              value={this.state.room}/>
-          }
-          {(this.props.screen == 'create room' || this.props.hasPass) &&
-          <h3 className="title">{this.props.wrongPass ? "Wrong pass! Please try again." : "Enter password"}</h3>}
-          {(this.props.screen == 'create room' || this.props.hasPass) &&
+        <form>
+          <h3 className="title">{"Do you want to join " + this.state.room + "?"}</h3>
+
+          {this.state.hasPass &&
+          <h3 className="title">{this.state.wrongPass  ? "Wrong pass! Please try again." : "Enter password"}</h3>}
+          {this.state.hasPass &&
             <input 
               className="passwordInput" 
               type="password" 
@@ -63,7 +56,7 @@ class JoinRoom extends Component {
               onChange={this.updatePass} 
               value={this.state.pass}/>
           }
-          <button>{this.props.screen == 'create room' ? "Create room" : "Join Room"}</button>
+          <Link to="/game" onClick={this.onSubmit} className="submit">Join room</Link>
         </form>
       </div>
     );

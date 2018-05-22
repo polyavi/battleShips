@@ -39,19 +39,34 @@ export default ()=>{
 	 
 		p.drawField = function (){
 			let i = 0;
+			for(let j=0; j < this.size*2 + 2; j+=1){
+				drawSand(-76, -44 + 87*j);
+			}
 			while(i < this.size*3/2){
 				p.drawLineOfSections({x: 152*i, y: 0}, this.size*2, 87, i);
 				p.drawLineOfSections({x: 76 + 152*i, y: 44}, this.size*2, 87, i +	1);
 				i+=1;
 			}
-
+			for(let j=0; j < this.size*2 + 2; j+=1){
+				drawSand(152*this.size*3/2+1, 87*(j-1));
+			}
 			this.addChild(...bts.sections);
 			this.name = 'field';
 
 			bts.stage.addChild(this);
 		}
+		
+		function drawSand(x, y){
+			let sand = new createjs.Shape();
+			sand.graphics.beginBitmapFill(bts.sand).beginStroke('#E4B363').drawPolyStar(x, y, 50, 6, 0, 0);
+			sand.alpha = 0;
+			bts.sandBorder.push(sand);
+		}
 
 		p.drawLineOfSections = function(startingPoint, numberofSections, step, numberOfRow){
+			drawSand(startingPoint.x, startingPoint.y - step);
+			drawSand(startingPoint.x, startingPoint.y + step*numberofSections);
+
 			for(let i = 0; i < numberofSections; i+=1){
 				let section = new bts.Section({x: startingPoint.x, y: startingPoint.y + step*i});
 				section.name = numberOfRow + '-' + i;

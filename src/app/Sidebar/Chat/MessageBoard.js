@@ -13,7 +13,7 @@ class MessageBoard extends Component {
 					color: message.sender.color
 	  		}
 	  		let messageNode = message.isAdminMessage ? 
-	  			<div className="admin-message"> 
+	  			<div className="admin-message" key={index}> 
 		  			<span className="sender" style={style}>{message.sender.name}</span>
 		  				{message.text}
 			  		<span className="time" >{message.time}</span>

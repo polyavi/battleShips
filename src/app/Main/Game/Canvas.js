@@ -1,33 +1,35 @@
 import React, { Component } from 'react';
-import Init from '../../js/Init'
+import Init from '../../canvasActions/Init'
 
 class Canvas extends Component {
 constructor(props) {
     super(props);
 
     this.state = {
-      width: document.getElementsByTagName('main')[0].clientWidth,
-      height: document.getElementsByTagName('main')[0].clientHeight
+      width: 0,
+      height: 0
     }
   }
-  
-	showMessage = (message) =>{
-		this.props.hendleOutSideMessages(message);
-	}
 
   componentDidMount(){
+
     Init();
     
     bts.me = this.props.me;
     
+    this.setState({
+      width: document.getElementsByTagName('main')[0].clientWidth,
+      height: document.getElementsByTagName('main')[0].clientHeight
+    });
     window.onresize = () => {
-      this.setState({
+      if(this._ismounted) this.setState({
         width: document.getElementsByTagName('main')[0].clientWidth,
         height: document.getElementsByTagName('main')[0].clientHeight
       }
       );
     }
   }
+
 
   render() {
     return (

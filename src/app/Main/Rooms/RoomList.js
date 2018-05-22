@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class RoomList extends Component {
 	constructor(props){
@@ -6,22 +7,17 @@ class RoomList extends Component {
     this.state = {
 			rooms: []
 		}
-
-		this.handleClick = this.handleClick.bind(this);
 	}
 
-  componentDidMount = () =>{
+  componentDidMount(){
+  	this._ismounted = true;
     window.socket.on('rooms', (data) => {
-			this.setState({ rooms: data });
+			if(this._ismounted) this.setState({ rooms: data });
 		});
   }
 
-	handleClick = (e) =>{
-		let hasPass = false;
-		if(e.target.parentNode.classList.contains('pass')){
-			hasPass = true;
-		}
-		this.props.showJoinRoom(e.target.innerText, false, hasPass);
+  componentWillUnmount(){
+  	this._ismounted = false;
 	}
 
 	render(){
@@ -33,7 +29,7 @@ class RoomList extends Component {
 						key={room.key}
 						className={room.hasPass ? "pass" : "no-pass"}>
 						{room.length == 6 ? <span>{room.name}</span> :
-						<div className="clickable" onClick={this.handleClick}>{room.name}</div>}
+						<Link to={"/joinroom/" + room.name + "&" + room.hasPass } className="clickable">{room.name}</Link>}
 						<div className="actions">
 							<span>players: {room.length}/6</span>
 							<span >
@@ -46,7 +42,7 @@ class RoomList extends Component {
 			});
 		}
 		return (
-			<div className={this.props.isRoomListVisible ? "room-list" : "room-list hide"}>
+			<div className="room-list">
 				<h3>Rooms</h3>
 				{!!roomNodes ? <ul> {roomNodes} </ul> : <span className="empty-list">There are no rooms yet. Hurry up and you can be the first one to create a room</span>}
 			</div>

@@ -23,22 +23,23 @@ class Chat extends Component {
   
   componentDidMount(){
     let self = this;
+    this._ismounted = true;
 
     window.socket.on('joined', (data)=>{
       let tabs = self.state.tabs;
 
       if(data.type == 'game' && !tabs.find(item =>{return data.name == item.name})){
         tabs.push({name: data.name, socketName: data.name, action: 'message to', messages:[]});
-        self.setState({tabs: tabs, activeTab: data.name});
+        if(this._ismounted) self.setState({tabs: tabs, activeTab: data.name});
       }
       if(data.type == 'direct message' && !tabs.find(item =>{return data.name == item.name})){
         tabs.push({name: data.name.split(' to ')[1], socketName: data.name, action: 'message to', messages:[]})
-        self.setState({tabs: tabs, activeTab: data.name});
+        if(this._ismounted) self.setState({tabs: tabs, activeTab: data.name});
       }
     });
 
     window.socket.on('go to tab', (data)=>{
-      self.setState({activeTab: data});
+      if(this._ismounted) self.setState({activeTab: data});
     });
 
     window.socket.on('close room', (data)=>{
@@ -46,7 +47,7 @@ class Chat extends Component {
 
       tabs.find(tab =>{return tab.socketName == 'general'}).messages.push(data.message);
 
-      self.setState({tabs: tabs, activeTab: 'general'});
+      if(this._ismounted) self.setState({tabs: tabs, activeTab: 'general'});
     })
 
     window.socket.on('message', (data)=>{
@@ -66,11 +67,15 @@ class Chat extends Component {
       if(self.state.activeTab != room){
         let pending = self.state.pendingMessages;
         pending.push(room);
-        self.setState({tabs: tabs, pendingMessages: pending});
+        if(this._ismounted) self.setState({tabs: tabs, pendingMessages: pending});
       }else{
-        self.setState({tabs: tabs});
+        if(this._ismounted) self.setState({tabs: tabs});
       }
     })
+  }
+  
+  componentWillUnmount(){
+    this._ismounted = false;
   }
 
   activateTab = (tabName) =>{

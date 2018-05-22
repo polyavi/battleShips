@@ -24,7 +24,7 @@ export default ()=>{
 				src:'images/island.png'
 			},{
 				id:"sand", 
-				src:'images/sand.png'
+				src:'images/sand.jpg'
 			}
 		];
 
@@ -47,5 +47,6 @@ export default ()=>{
 		bts.strokeColor = '#4682B4';
 		bts.sections = [];
 		bts.startPos = {};
+		bts.sandBorder = [];
 	}())
 }

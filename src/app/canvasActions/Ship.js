@@ -186,6 +186,9 @@ export default ()=>{
 					}
 				}
 				let next = bts.getSectionByCoordinates(newPos.x, newPos.y);
+				if(!next){
+					next = bts.getNeighbors(bts.getSectionByCoordinates(startPos.x, startPos.y))[0];
+				}
 				if(next.occupied == true){
 					next = bts.getClosestPosiblePosition(ship, bts.getSectionByCoordinates(startPos.x, startPos.y), next);
 					if(ship.isInPerviosPositions(next)){
@@ -194,6 +197,8 @@ export default ()=>{
 				}else{
 					if(ship.isInPerviosPositions(next)){
 						next = bts.getClosestPosiblePosition(ship, bts.getSectionByCoordinates(startPos.x, startPos.y), next);
+					}else{
+
 					}
 				}
 				ship.prevPos.push(bts.getSectionByCoordinates(startPos.x, startPos.y));
@@ -259,19 +264,24 @@ export default ()=>{
 			this.sectionsInRange = bts.sections.filter((section) => { 
 				return bts.stage.getChildByName('range').hitTest(section.children[0].graphics.command.x, section.children[0].graphics.command.y);
 			});
+			
+			bts.sandBorder.forEach((sand) => { 
+				if(bts.stage.getChildByName('range').hitTest(sand.graphics.command.x, sand.graphics.command.y)){
+					createjs.Tween.get(sand).to({alpha: 1}, 100, createjs.Ease.sinIn)
+				}
+			});
 
 			this.sectionsInRange.forEach(section=>{
 				if(section.getTargetShip()){
 					section.getTargetShip().alpha = 1;
 				}
-				createjs.Tween.get(section)
-			  	.to({alpha: 1}, 10/this.speed, createjs.Ease.sinIn)
+				createjs.Tween.get(section).to({alpha: 1}, 10/this.speed, createjs.Ease.sinIn)
 				if(section.island){
-					createjs.Tween.get(section.island)
-			  		.to({alpha: 1}, 10/this.speed, createjs.Ease.sinIn)
+					createjs.Tween.get(section.island).to({alpha: 1}, 10/this.speed, createjs.Ease.sinIn)
 		  	}
 			})
 		}
+
 
 		bts.getSectionByCoordinates = function(x, y){
 			return bts.stage.getChildByName('field').children.find((section) => {

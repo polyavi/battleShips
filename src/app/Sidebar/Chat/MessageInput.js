@@ -6,7 +6,7 @@ class MessageInput extends Component {
     this.state = {
     	text: ''
     }
-  this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleSubmit = (e) => {

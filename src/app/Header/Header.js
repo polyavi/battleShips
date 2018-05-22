@@ -1,24 +1,19 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class Herader extends Component {
   constructor(props){
     super(props);
+
+    this.handleGameStart = this.handleGameStart.bind(this);
   }
 
   handleChat = () =>{
     this.props.toggleChat();
   }
-  
-  handleCreate = () =>{
-    this.props.createRoom();
-  }
-
-  handleRoomList = () =>{
-    this.props.toggleRoomList();
-  }
 
   handleLeaveRoom = () =>{
-    this.props.leaveRoom();
+    window.socket.emit('leave room');
   }
 
   handleGameStart = () =>{
@@ -30,20 +25,19 @@ class Herader extends Component {
       <header>
         <h1 className="title">Battleships</h1>
         <ul className="menu">
-          {(this.props.screen != 'log in' && this.props.screen != 'game') &&
+          {(
+            this.props.location.pathname != '/' && 
+            this.props.location.pathname.indexOf('/game') == -1
+            ) &&
             <li>
-              <span onClick={this.handleCreate}><i className="icon-plus" ></i>Create room</span>
-            </li>
-          } 
-          {(this.props.screen != 'log in' && this.props.screen != 'game') && 
-            <li>
-              <span onClick={this.handleRoomList} className={this.props.isRoomListVisible ? "shown" : ""}>
-                <i className="icon-dice"></i>
-                {this.props.isRoomListVisible ? "Hide rooms" : "Show rooms"} 
-            </span> 
+              <Link to="/createroom"><i className="icon-plus" ></i>Create room</Link>
             </li>
           }
-          {(this.props.screen == 'game' && this.props.isAdmin && !this.props.isGameStarted) &&
+
+          {(
+            this.props.location.pathname.indexOf('/game') > -1 && 
+            this.props.isAdmin && 
+            !this.props.isGameStarted) &&
             <li>
               <span onClick={this.handleGameStart}>
                 <i className="icon-dice"></i>
@@ -51,15 +45,17 @@ class Herader extends Component {
             </span>  
             </li>
           }
-          {(this.props.screen == 'game') &&
+
+          {(this.props.location.pathname.indexOf('/game') > -1) &&
             <li>
-              <span onClick={this.handleLeaveRoom}>
+             <Link to="/rooms" onClick={this.handleLeaveRoom}>
                 <i className="icon-exit"></i>
                 Leave room
-              </span> 
+              </Link> 
             </li>
           }
-          {this.props.screen != 'log in' &&
+
+          { this.props.location.pathname != '/' &&
             <li>
               <span onClick={this.handleChat} className={this.props.isChatVisible ? "shown" : ""}>
                 <i className="icon-chat"></i>
@@ -67,7 +63,6 @@ class Herader extends Component {
             </span> 
             </li>
           }
-          
         </ul>
       </header>
     );

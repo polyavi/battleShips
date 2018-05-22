@@ -11,9 +11,15 @@ class PlayerList extends Component {
 	}
 
   componentDidMount(){
+  	this._ismounted = true;
+
     window.socket.on('new user', (data) =>{
-			this.setState({users: data});
+			if(this._ismounted) this.setState({users: data});
 		});
+  }
+
+ 	componentWillUnmount(){
+    this._ismounted = false;
   }
 
 	handleMessage = (e) => {

@@ -87,6 +87,10 @@ ul.menu i {
   margin-right: 10px;
 }
 
+ul.menu a {
+    color: #fff;
+    text-decoration: none;
+}
 span.shown {
     color: #313638;
 }
@@ -99,6 +103,8 @@ body {
   cursor: pointer;
   width: 80%;
   padding: 10px 0;
+  color: #fff;
+  text-decoration: none;
 }
 main > div {
   display: flex;
@@ -255,7 +261,7 @@ form input {
   width: 400px;
 }
 
-form button{
+form .submit{
   background: #313638;
   color: #fff;
   border: 1px solid #fff;
@@ -266,9 +272,12 @@ form button{
   font-size: 150%;
   font-family: monospace;
   cursor: pointer;
+  padding: 10px 0;
+  box-sizing: border-box;
+  text-decoration: none;
 }
 
-form button:hover {
+form .submit:hover {
     background-color: #EF6461;
 }
 

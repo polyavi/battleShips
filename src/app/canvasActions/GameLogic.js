@@ -51,6 +51,9 @@ export default ()=>{
 					field.setMines(data.mines);
 					bts.stage.addEventListener('stagemousedown', handleStageMovement);
 				}
+				let sandSections = new createjs.Container();
+				sandSections.addChild(...bts.sandBorder);
+				bts.stage.addChild(sandSections);
 
 				let ships = new createjs.Container();
 				ships.name = 'ships';
@@ -77,10 +80,10 @@ export default ()=>{
 					x: (bts.startPos.x + (bts.stage.mouseX - bts.startPos.mouseX)),
 					y: (bts.startPos.y + (bts.stage.mouseY - bts.startPos.mouseY))
 				}
-				if(newPosition.x > -1640 && newPosition.x < 100){
+				if(newPosition.x > -1660 && newPosition.x < 100){
 					bts.stage.x = newPosition.x;
 				}
-				if(newPosition.y > -1640 && newPosition.y < 0){
+				if(newPosition.y > -1530 && newPosition.y < 80){
 					bts.stage.y = newPosition.y;
 				}
 			});
@@ -146,12 +149,13 @@ export default ()=>{
 		function handlePropChanges(data){
 			data.props.forEach( item =>{
 				let ship = bts.stage.getChildByName('ships').getChildByName(item.username);
+				let oldProp = ship[item.powerup];
 				ship[item.powerup] = item.amount;
 				if(bts.me == item.username && item.powerup == 'range'){
 					bts.myship.drawRangeMarker();
 				}
 				if(item.powerup == 'life'){
-					if(ship[item.powerup] > item.amount){
+					if(oldProp > item.amount){
 						ship.explodingAnimation();
 					}
 					ship.drawStats(ship.getChildByName('stats'));
