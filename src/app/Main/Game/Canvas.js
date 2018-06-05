@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Init from '../../canvasActions/Init'
 
 class Canvas extends Component {
-constructor(props) {
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -11,14 +11,14 @@ constructor(props) {
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.setState({
       width: document.getElementsByTagName('main')[0].clientWidth,
       height: document.getElementsByTagName('main')[0].clientHeight
     });
-    
+
     Init();
-    
+
     bts.me = this.props.me;
 
     window.onresize = () => {
@@ -31,8 +31,12 @@ constructor(props) {
 
 
   render() {
-    return (
-        <canvas id="canvas" width={this.state.width} height={this.state.height} />
+    return ( 
+      <canvas 
+        id = "canvas"
+        width = { this.state.width }
+        height = { this.state.height }
+      />
     );
   }
 }

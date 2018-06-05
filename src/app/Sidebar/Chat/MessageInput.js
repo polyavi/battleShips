@@ -1,35 +1,43 @@
 import React, { Component } from 'react';
 
 class MessageInput extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
-    	text: ''
+      text: ''
     }
-    
+
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onTextChange = this.onTextChange.bind(this);
   }
 
   handleSubmit = (e) => {
-  	e.nativeEvent.preventDefault(); 
-    if(this.state.text != ''){
+    e.nativeEvent.preventDefault();
+    if (this.state.text != '') {
       this.props.onSendMessage(this.state.text);
-      this.setState({text: ''});
+      this.setState({
+        text: ''
+      });
     }
   }
 
   onTextChange = (e) => {
-  	this.setState({text: e.target.value});
+    this.setState({
+      text: e.target.value
+    });
   }
 
   render() {
-    return (
-      <div className="message-input">
-      <form onSubmit={this.handleSubmit}>
-      	<input type="text" value={this.state.text} onChange={this.onTextChange}/>
-      	<button>Send</button>
-      	</form>
+    return ( 
+      <div className = "message-input">
+        <form onSubmit = { this.handleSubmit }>
+          <input 
+            type = "text"
+            value = { this.state.text }
+            onChange = { this.onTextChange }
+          /> 
+          <button> Send </button> 
+        </form> 
       </div>
     );
   }

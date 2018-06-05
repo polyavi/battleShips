@@ -69,8 +69,15 @@
     Done - Speed power-up : increaces speed by 1 
     Done - Range power-up : increaces reange by 1 
     Done - Monitions : adds additional monitions 
-    Done - Life power-up : fills ship's life  
+    Done - Life power-up : adds 1 to ship's life  
     Done - After a power-up is colected it apears again on different place after  30 sec
 
   Done - Winner is the last player with a ship left
 
+* Integrate Redux
+  - Create new flat data structure for the store
+      # Users(id, username, color)
+      # Rooms(id, name, password)
+      # Messages(senderId, text, time)
+      # Component visibility()
+  - Deside on how each component will connect to the store
