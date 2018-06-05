@@ -1,40 +1,35 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-class GameMessage extends Component {
-  constructor(props){
-    super(props);
-  }
+const GameMessage = ({props}) =>{
 
-  handlePlayAgain = (e) => { 
+  let handlePlayAgain = (e) => { 
     e.nativeEvent.preventDefault(); 
     window.socket.emit('play again');
   }
 
-  handleLeaveRoom = (e) => { 
+  let handleLeaveRoom = (e) => { 
     e.nativeEvent.preventDefault(); 
     window.socket.emit('leave room');
   }     
 
-  render() {
-    return (
-      <div id="game-message">
-	      {this.props.isGameOver &&
-		      <form>
-	          <h3 className="title">{this.props.isWinner ? "Congratulations! You won." : "Game over! You lost."}</h3>
-	          <button onClick={this.handlePlayAgain} className="submit">Play again</button>
-	          <button onClick={this.handleLeaveRoom} className="submit">Leave room</button>
-	       </form>
-	      }
-      	{!this.props.isGameStarted &&
-      		<div>
-	          <h3 className="title">{this.props.isAdmin ? "Hit start game when you are ready." : "Waiting for the game to start."}</h3>
-      		</div>
-      	}
+  return (
+    <div id="game-message">
+      {props.isGameOver &&
+	      <form>
+          <h3 className="title">{props.isWinner ? "Congratulations! You won." : "Game over! You lost."}</h3>
+          <button onClick={handlePlayAgain} className="submit">Play again</button>
+          <button onClick={handleLeaveRoom} className="submit">Leave room</button>
+       </form>
+      }
+    	{!props.isGameStarted &&
+    		<div>
+          <h3 className="title">{props.isAdmin ? "Hit start game when you are ready." : "Waiting for the game to start."}</h3>
+    		</div>
+    	}
 
-      </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default GameMessage;

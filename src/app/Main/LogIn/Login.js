@@ -8,7 +8,11 @@ class Login extends Component {
     this.state = {
       username: ""
     }
+    
+    this.onSubmit = this.onSubmit.bind(this);
+    this.update = this.update.bind(this);
   }
+
   componentDidMount(){
     this._ismounted = true;
     document.getElementsByClassName('usernameInput')[0].focus();

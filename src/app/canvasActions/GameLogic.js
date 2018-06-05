@@ -10,9 +10,8 @@ export default ()=>{
 		/**
 		 * Initialize the game
 		 *
-		 * @method init
+		 * @method initGame
 		 */
-		
 		bts.initGame = function () {
 			bts.stage.removeChild(bts.preloader);
 			bts.backgroundImage = bts.queue.getResult('sea');
@@ -41,6 +40,12 @@ export default ()=>{
 			addSocketListeners();
 		}
 
+		/**
+		 * Initiates drawing of sections, powerups, mines, ships and obsticles
+		 *
+		 * @method buidField
+		 * @param {Object} data The field data
+		 */
 		function buidField(data) {
 				bts.fieldSize = data.size;
 				bts.stage.removeAllChildren();
@@ -61,6 +66,13 @@ export default ()=>{
 				bts.stage.addChild(ships);
 		}
 
+		/**
+		 * Draws obsticles
+		 *
+		 * @method drawObsticles
+		 * @param {Object} data the positions of the obsicles
+		 * @param {createjs.Container} field 
+		 */
 		function drawObsticles(data, field){
 			for(let i = 0; i< data.length; i+=1){
 			let section = field.children[data[i]].children[0].graphics.command;
@@ -68,6 +80,11 @@ export default ()=>{
 			}
 		}
 
+		/**
+		 * Handles field draging
+		 *
+		 * @method handleStageMovement
+		 */
 		function handleStageMovement (){
 			bts.startPos = {
 				mouseX: bts.stage.mouseX,
@@ -95,6 +112,10 @@ export default ()=>{
 			});
 		}
 
+		/**
+		 * @method positionShips
+		 * @param {Object} data the positions, stats and names of all ships
+		 */
 		function positionShips(data){
 			let ships = bts.stage.getChildByName('ships').children;
 
@@ -131,6 +152,10 @@ export default ()=>{
 			});
 		}
 
+		/**
+		 * @method positionShips
+		 * @param {Object} data new position and name of ship
+		 */
 		function handleNewPosition(data){
 			let ship = bts.stage.getChildByName('ships').children.find(item =>{ return item.name == data.name});
 				
@@ -147,6 +172,10 @@ export default ()=>{
 				)
 		}
 
+		/**
+		 * @method handlePropChanges
+		 * @param {Object} data names of ships and the name and value of changed props
+		 */
 		function handlePropChanges(data){
 			data.props.forEach( item =>{
 				let ship = bts.stage.getChildByName('ships').getChildByName(item.username);
@@ -164,6 +193,10 @@ export default ()=>{
 			})
 		}
 
+		/**
+		 * @method handleSinking
+		 * @param {String} shipName
+		 */
 		function handleSinking(shipName){
 			let ship = bts.stage.getChildByName('ships').getChildByName(shipName);
 				bts.stage.getChildByName('ships').removeChild(ship);
@@ -175,6 +208,11 @@ export default ()=>{
 				}
 		}
 
+		/**
+		 * adds all socket interations
+		 * 
+		 * @method addSocketListeners
+		 */
 		function addSocketListeners(){
 			window.socket.emit('canvas init');
 

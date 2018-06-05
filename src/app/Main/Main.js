@@ -9,40 +9,30 @@ import Login from './Login/Login'
 import RoomList from './Rooms/RoomList'
 
 
-class Main extends Component {
-  constructor(props){
-    super(props);
-  }
-
-  render() {
-    return (
-      <main>
-       <Switch>
-          <Route exact path='/' component={Login}/>
-          <Route path='/rooms' render = { () => <RoomList
-            rooms={this.props.rooms} />
-          }/>
-          <Route path='/joinroom' component={JoinRoom}/>
-          <Route path='/createroom' component={CreateRoom}/>
-          <Route path='/game' render={
-            () =>  <div>
-            <Canvas
-              me={this.props.me}/>
-            {(!this.props.isGameStarted || this.props.isGameOver) && 
-              <GameMessage
-              isGameStarted={this.props.isGameStarted}
-              isAdmin={this.props.isAdmin}
-              isWinner={this.props.isWinner}
-              isGameOver={this.props.isGameOver} 
-              isWinner={this.props.isWinner}/> 
-            }
-              </div>
-            }
-          />
-         </Switch>
-      </main>
-    );
-  }
+const Main = ({rooms, me, ...props}) =>{
+  return (
+    <main>
+     <Switch>
+        <Route exact path='/' component={Login}/>
+        <Route path='/rooms' render = { () => <RoomList
+          rooms={rooms} />
+        }/>
+        <Route path='/joinroom' component={JoinRoom}/>
+        <Route path='/createroom' component={CreateRoom}/>
+        <Route path='/game' render={
+          () =>  <div>
+          <Canvas
+            me={me}/>
+          {(!props.isGameStarted || props.isGameOver) && 
+            <GameMessage
+            props={props}/> 
+          }
+            </div>
+          }
+        />
+       </Switch>
+    </main>
+  );
 }
 
 export default Main;

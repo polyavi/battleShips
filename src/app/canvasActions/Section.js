@@ -32,13 +32,25 @@ export default ()=>{
 			this.Container_initialize();
 			this.drawSection(position);
 		}
-	 
+	 		
+		/**
+		 * Draws Section
+		 *
+		 * @method drawSection
+		 * @param {Object} position coordinates
+		 */
 		p.drawSection = function(position){
 			let section = new createjs.Shape();
 			section.graphics.beginBitmapFill(bts.backgroundImage).beginStroke(bts.strokeColor).drawPolyStar(position.x, position.y, 50, 6, 0, 0);
 			this.addChild(section);
 		}
 
+		/**
+		 * Handles click on Section
+		 *
+		 * @method handleInteraction
+		 * @param {Object} e event object
+		 */
 		p.handleInteraction = function(e){
 			if(bts.startPos.mouseX == bts.stage.mouseX && bts.startPos.mouseY == bts.stage.mouseY){
 				let target = (e.target.parent.name == 'powerup') ? e.target.parent.parent.children[0] : e.target.parent.children[0];
@@ -67,6 +79,12 @@ export default ()=>{
 			}
 		}
 
+		/**
+		 * Checks if there is power up in the Section, determines if it shoud send socket event and removes power up
+		 *
+		 * @method checkForPowerUp
+		 * @param {Ship} ship 
+		 */
 		p.checkForPowerUp = function(ship){
 			if(this.powerup){
 				if(ship.name == bts.me){
@@ -76,11 +94,17 @@ export default ()=>{
 			}	
 		}
 
+		/**
+		 * @method removePowerUp
+		 */
 		p.removePowerUp = function(){
 			this.powerup.delete;
 			this.removeChild(this.getChildByName('powerup'));
 		}
-
+		/**
+		 * @method addPowerUp
+		 * @param {Object} powerup 
+		 */
 		p.addPowerUp = function(powerup){
 			let text= new createjs.Container();
 			if(powerup.type == 'life'){
@@ -100,6 +124,11 @@ export default ()=>{
 			this.powerup = powerup;
 		}
 
+		/**
+		 * Checks if there is a ship in the Section and returns it
+		 * 
+		 * @method getTargetShip
+		 */
 		p.getTargetShip = function(){
 			let ships = bts.stage.getChildByName('ships').children.filter((child) =>{ 
 				return child.name != bts.me;
@@ -113,14 +142,24 @@ export default ()=>{
 			}
 		}
 
-		function isTargetInRange(position){
+		/**
+		 * @method isTargetInRange
+		 * @param {Section} section
+		 */
+		function isTargetInRange(section){
 			return !!(
 				bts.myship.sectionsInRange.find(section => { 
-					return section.id == position.id;
+					return section.id == section.id;
 				})
 			);
 		}
 
+		/**
+		 * @method drawPowerUp
+		 * @param {String} name the type of power up
+		 * @param {String} text the test to by drawn
+		 * @param {Number} i Number of line
+		 */
 		p.drawPowerUp = function(name, text, i = 1){
 			let powerUpText = new createjs.Text(name, "25px monospace", '#EF6461');
 			let powerUpOtuline = new createjs.Text(name, "25px monospace", '#FFF');
@@ -130,10 +169,30 @@ export default ()=>{
 				powerUpText.y = powerUpText.getMeasuredHeight();
 				powerUpOtuline.y = powerUpText.getMeasuredHeight();
 			}
-			text.alpha = 0;
 			text.name = 'powerup';
 			text.x = this.children[0].graphics.command.x - powerUpText.getMeasuredWidth()/2;
 			text.y = this.children[0].graphics.command.y - powerUpText.getMeasuredHeight();
+		}
+
+		/**
+		 * Gets the 6 surrounding section of the given one
+		 *
+		 * @method getNeighbors
+		 */
+		p.getNeighbors = function(){
+			let neighbors = [];
+			let sectionPos = this.children[0].graphics.command;
+
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x, sectionPos.y - 87));
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x, sectionPos.y + 87));
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x - 76, sectionPos.y - 44));
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x - 76, sectionPos.y + 44));
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x + 76, sectionPos.y - 44));
+			neighbors.push(bts.getSectionByCoordinates(sectionPos.x + 76, sectionPos.y + 44));
+
+			return neighbors.filter(section =>{
+				return section && section instanceof bts.Section && section.occupied != true;
+			});
 		}
 
 		bts.Section = Section;

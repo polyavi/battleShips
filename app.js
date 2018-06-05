@@ -6,7 +6,6 @@ let port = process.env.PORT || 3000;
 
 app.use('/dist/app', express.static(__dirname + '/dist/app'));
 app.use('/css', express.static(__dirname + '/css'));
-
 app.use('/images', express.static(__dirname + '/images'));
 
 app.get('/', function(req, res){
@@ -29,8 +28,8 @@ const PLAYER_PROPS = {
 	life: 3,
 	range: 1
 };
-
 const POWERUP_TYPES = ['speed', 'range', 'monitions', 'life'];
+
 io.on('connection', function(socket){
 
 	socket.on('add user', function (username) {
@@ -233,10 +232,6 @@ io.on('connection', function(socket){
 
 				io.to(socket.room).emit('prop change', {
 					props: [generateProp('monitions', socket), generateProp('life', target)], 
-					target: {
-						x: data.x,
-						y: data.y
-					}
 				});
 
 				if(target.props.life == 0){
@@ -310,6 +305,7 @@ function initField(socket){
 		socket.emit('allow movement');
 	}
 }
+
 function logInExistingRoom(room, password, socket){
 	if(room.hasPass && room.pass !== password){
 		socket.emit('wrong pass');
@@ -547,6 +543,7 @@ function isOccupied(room, section){
 		return section == item;
 	})
 }
+
 http.listen(port, function(){
   console.log('listening on *:' + port);
 });

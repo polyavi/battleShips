@@ -378,7 +378,7 @@ span.sender {
 .no-messages {
   text-align: center;
   margin: 10px;
-  color: #F7F8F9;
+  color: #E0DFD5;
 }
 .message-board {
   max-height: 90%;
@@ -469,6 +469,17 @@ div#game-message form{
 }
 .admin-message .sender {
   display: inline;
+}
+
+span.close {
+  padding-top: 10px;
+  display: inline-block;
+  font-weight: bold;
+  color: #FFF;
+  cursor: pointer;
+}
+.tab.active span.close {
+  color: #EF6461;
 }
 
 .admin-message {

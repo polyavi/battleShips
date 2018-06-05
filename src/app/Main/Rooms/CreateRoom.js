@@ -9,7 +9,10 @@ class CreateRoom extends Component {
       room: "",
       pass: ""
     }
+
     this.onSubmit = this.onSubmit.bind(this);
+    this.updateRoomname = this.updateRoomname.bind(this);
+    this.updatePass = this.updatePass.bind(this);
   }
 
   componentDidMount(){

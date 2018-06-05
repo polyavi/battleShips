@@ -1,5 +1,4 @@
 ## Battleships to do list
-* Design UI
 
 * Instant messages:
   Done - to all users in room
@@ -73,5 +72,5 @@
     Done - Life power-up : fills ship's life  
     Done - After a power-up is colected it apears again on different place after  30 sec
 
-  - Winner is the last player with a ship left
+  Done - Winner is the last player with a ship left
 

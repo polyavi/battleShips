@@ -10,6 +10,7 @@ class JoinRoom extends Component {
     }
 
     this.onSubmit = this.onSubmit.bind(this);
+    this.updatePass = this.updatePass.bind(this);
   }
 
   componentDidMount(){

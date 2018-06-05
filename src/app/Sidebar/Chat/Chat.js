@@ -13,12 +13,14 @@ class Chat extends Component {
         {
           name: 'general',
           socketName: 'general',
+          isVisible: true,
           action: 'global message',
           messages: [
           ]
         }
       ]
     }
+  this.closeTab = this.closeTab.bind(this);
   }
   
   componentDidMount(){
@@ -29,11 +31,11 @@ class Chat extends Component {
       let tabs = self.state.tabs;
 
       if(data.type == 'game' && !tabs.find(item =>{return data.name == item.name})){
-        tabs.push({name: data.name, socketName: data.name, action: 'message to', messages:[]});
+        tabs.push({name: data.name, socketName: data.name, isVisible: true, action: 'message to', messages:[]});
         if(this._ismounted) self.setState({tabs: tabs, activeTab: data.name});
       }
       if(data.type == 'direct message' && !tabs.find(item =>{return data.name == item.name})){
-        tabs.push({name: data.name.split(' to ')[1], socketName: data.name, action: 'message to', messages:[]})
+        tabs.push({name: data.name.split(' to ')[1], isVisible: true, socketName: data.name, action: 'message to', messages:[]})
         if(this._ismounted) self.setState({tabs: tabs, activeTab: data.name});
       }
     });
@@ -43,11 +45,11 @@ class Chat extends Component {
     });
 
     window.socket.on('close room', (data)=>{
-      let tabs = self.state.tabs.filter(tab =>{ return tab.socketName != data.room});
+      let tabs = this.state.tabs.filter(tab =>{ return tab.socketName != data.room});
 
       tabs.find(tab =>{return tab.socketName == 'general'}).messages.push(data.message);
 
-      if(this._ismounted) self.setState({tabs: tabs, activeTab: 'general'});
+      if(this._ismounted) this.setState({tabs: tabs, activeTab: 'general'});    
     })
 
     window.socket.on('message', (data)=>{
@@ -56,7 +58,9 @@ class Chat extends Component {
       if(data.room){
         room = data.room;
         if(!tabs.find(tab =>{ return tab.socketName == data.room})){
-          tabs.push({name: room.split(' to ')[0], socketName: room, action: 'message to', messages:[]})
+          tabs.push({name: room.split(' to ')[0], socketName: room, isVisible: true, action: 'message to', messages:[]})
+        }else{
+          tabs.find(tab =>{ return tab.socketName == data.room}).isVisible = true;
         }
       }else{
         room = 'general'
@@ -95,6 +99,15 @@ class Chat extends Component {
     }
   }
 
+  closeTab = (tabName) =>{
+    let changedTabs = [];
+    this.state.tabs.forEach( tab => {
+      changedTabs.push(Object.assign({} , tab));
+    });
+    changedTabs.find(tab =>{ return tab.socketName == tabName}).isVisible = false;
+    if(this._ismounted) this.setState({activeTab: 'general', tabs: changedTabs});    
+  }
+
   render() {
     return (
       <div className={this.props.isChatVisible ? "chat" : "chat hide"}>
@@ -102,10 +115,11 @@ class Chat extends Component {
             activeTab={this.state.activeTab}
             tabs={this.state.tabs}
             pendingMessages={this.state.pendingMessages}
-            activateTab={this.activateTab} />
+            activateTab={this.activateTab}
+            closeTab={this.closeTab} />
           <div className="tab-content">
         		<MessageBoard messages={this.state.tabs.find( tab => {return tab.socketName == this.state.activeTab}).messages}/>
-        		<MessageInput  onSendMessage={this.onSendMessage}/>
+        		<MessageInput onSendMessage={this.onSendMessage}/>
           </div>
       </div>
     );
