@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
+import { connect } from "react-redux";
 
-class MessageInput extends Component {
+const mapStateToProps = state => {
+  return { 
+    activeChat: state.chat.activeChat
+  };
+};
+
+class ConnectedMessageInput extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,7 +21,14 @@ class MessageInput extends Component {
   handleSubmit = (e) => {
     e.nativeEvent.preventDefault();
     if (this.state.text != '') {
-      this.props.onSendMessage(this.state.text);
+      if (this.props.activeChat == 'global') {
+        window.socket.emit('global message', this.state.text)
+      } else {
+        window.socket.emit('direct message', {
+          text: this.state.text,
+          name: this.props.activeChat
+        });
+      }
       this.setState({
         text: ''
       });
@@ -42,5 +56,7 @@ class MessageInput extends Component {
     );
   }
 }
+
+const MessageInput = connect(mapStateToProps)(ConnectedMessageInput);
 
 export default MessageInput;

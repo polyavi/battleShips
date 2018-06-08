@@ -8,24 +8,19 @@ import CreateRoom from './Rooms/CreateRoom';
 import Login from './Login/Login'
 import RoomList from './Rooms/RoomList'
 
-
-const Main = ({rooms, me, ...props}) =>{
+const Main = ({isGameStarted, isGameOver}) =>{
   return (
     <main>
      <Switch>
         <Route exact path='/' component={Login}/>
-        <Route path='/rooms' render = { () => <RoomList
-          rooms={rooms} />
-        }/>
+        <Route path='/rooms' component = {RoomList}/>
         <Route path='/joinroom' component={JoinRoom}/>
         <Route path='/createroom' component={CreateRoom}/>
         <Route path='/game' render={
           () =>  <div>
-          <Canvas
-            me={me}/>
-          {(!props.isGameStarted || props.isGameOver) && 
-            <GameMessage
-            props={props}/> 
+          <Canvas/>
+          {(!isGameStarted || isGameOver) && 
+            <GameMessage/> 
           }
             </div>
           }

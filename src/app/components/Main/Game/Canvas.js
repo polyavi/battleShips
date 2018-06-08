@@ -1,21 +1,23 @@
 import React, { Component } from 'react';
 import Init from '../../canvasActions/Init'
+import { connect } from "react-redux";
+const mapStateToProps = state => {
+  return { 
+    me: state.userData.me.name
+  };
+};
 
-class Canvas extends Component {
+class ConnectedCanvas extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      width: 0,
-      height: 0
+      width: document.getElementsByTagName('body')[0].clientWidth*0.8,
+      height: document.getElementsByTagName('body')[0].clientHeight - 50
     }
   }
 
   componentDidMount() {
-    this.setState({
-      width: document.getElementsByTagName('main')[0].clientWidth,
-      height: document.getElementsByTagName('main')[0].clientHeight
-    });
 
     Init();
 
@@ -29,7 +31,6 @@ class Canvas extends Component {
     }
   }
 
-
   render() {
     return ( 
       <canvas 
@@ -40,5 +41,7 @@ class Canvas extends Component {
     );
   }
 }
+
+const Canvas = connect(mapStateToProps)(ConnectedCanvas);
 
 export default Canvas;

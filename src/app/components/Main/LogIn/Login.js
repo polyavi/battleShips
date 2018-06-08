@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 
 class Login extends Component {
 
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     this.state = {
       username: ""
@@ -12,7 +12,7 @@ class Login extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.update = this.update.bind(this);
   }
-
+  
   componentDidMount() {
     this._ismounted = true;
     document.getElementsByClassName('usernameInput')[0].focus();

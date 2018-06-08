@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?382ssl');
-  src:  url('fonts/icomoon.eot?382ssl#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?382ssl') format('truetype'),
-    url('fonts/icomoon.woff?382ssl') format('woff'),
-    url('fonts/icomoon.svg?382ssl#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?44syys');
+  src:  url('fonts/icomoon.eot?44syys#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?44syys') format('truetype'),
+    url('fonts/icomoon.woff?44syys') format('woff'),
+    url('fonts/icomoon.svg?44syys#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -33,20 +33,11 @@
 .icon-users:before {
   content: "\e972";
 }
-.icon-enlarge:before {
-  content: "\e989";
-}
-.icon-shrink:before {
-  content: "\e98a";
-}
 .icon-locked:before {
   content: "\e98f";
 }
 .icon-unlocked:before {
   content: "\e990";
-}
-.icon-cog:before {
-  content: "\e994";
 }
 .icon-plus:before {
   content: "\ea0a";
@@ -56,6 +47,9 @@
 }
 .icon-exit:before {
   content: "\ea14";
+}
+.icon-arrow-left:before {
+  content: "\ea38";
 }
 
 header {
@@ -81,6 +75,7 @@ ul.menu {
 .menu li {
   margin-left: 20px;
   cursor: pointer;
+  display: flex;
 }
 
 ul.menu i {
@@ -365,6 +360,10 @@ span.time {
 
 span.sender {
   display: block;
+}
+
+span.sender.me {
+    text-align: right;
 }
 
 .message-body {

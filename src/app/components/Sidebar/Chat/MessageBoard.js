@@ -1,12 +1,21 @@
 import React, { Component } from 'react';
+import { connect } from "react-redux";
 
-const MessageBoard = ({ messages }) => {
+const mapStateToProps = state => {
+  return { 
+  	messages: state.chat.messages.filter(message => message.to == state.chat.activeChat),
+  	me: state.userData.me.name
+  };
+};
+
+const ConnectedMessageBoard = ({ messages, me }) => {
 	let messageNodes;
 	if (messages && messages.length > 0) {
 		messageNodes = messages.map((message, index) => {
 			return <Message 
 				message = { message }
-				index = { index }
+				key = { index }
+				me = { me }
 			/>;
 		})
 	}
@@ -22,16 +31,16 @@ const MessageBoard = ({ messages }) => {
 	);
 }
 
-const Message = ({ message, index }) => {
+const Message = ({ message, index, me }) => {
 	let style = {
 		color: message.sender.color
 	}
 
-	if (message.isAdminMessage) {
+	if (message.isSystem) {
 		return ( 
-			<div className = "admin-message" key = { index }>
+			<div className = "admin-message">
 				<span className = "sender" style = { style }> 
-					{ message.sender.name } 
+					{ message.sender.name == me? "You" : message.sender.name } 
 				</span> 
 				{ message.text } 
 				<span className = "time" > { message.time } </span> 
@@ -40,10 +49,9 @@ const Message = ({ message, index }) => {
 	}
 
 	return ( 
-		<div className = "message"
-			key = { index }>
-			<span className = "sender" style = { style }> 
-			{ message.sender.name }: 
+		<div className = "message">
+			<span className = { message.sender.name == me ? "sender me" : "sender" } style = { style }> 
+					{ message.sender.name == me? "You:" : message.sender.name + ":" }
 			</span> 
 			<div className = "message-body">
 				<span className = "text" > { message.text } </span> 
@@ -52,5 +60,7 @@ const Message = ({ message, index }) => {
 		</div>
 	)
 }
+
+const MessageBoard = connect(mapStateToProps)(ConnectedMessageBoard);
 
 export default MessageBoard;

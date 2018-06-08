@@ -70,14 +70,27 @@
     Done - Range power-up : increaces reange by 1 
     Done - Monitions : adds additional monitions 
     Done - Life power-up : adds 1 to ship's life  
-    Done - After a power-up is colected it apears again on different place after  30 sec
+    Done - After a power-up is colected it apears again on different place after 30 sec
 
   Done - Winner is the last player with a ship left
 
 * Integrate Redux
-  - Create new flat data structure for the store
-      # Users(id, username, color)
-      # Rooms(id, name, password)
-      # Messages(senderId, text, time)
-      # Component visibility()
-  - Deside on how each component will connect to the store
+  Done - Create new flat data structure for the store
+    Done # Users(id, username, color)
+    Done # Rooms(id, name, type)
+    Done # Messages(senderId, text, time)
+    Done # isChatVisible
+    Done # Me(id, name)
+    Done # Location
+    Done # Chat tabs(id, name, action)
+    Done # Game states(isGameStarted, isGameOver)
+  Done - Create Redux actions
+  Done - Create Redux reducers
+
+  Done - Deside on how each component will connect to the store
+
+* Issues to be fixed
+  Done - Should put return/cancel button on join room screen
+  Fixed - Events on user disconnect
+  - When ship moves there is slow down on each section
+  Fixed - Double rooms and users appear when log in

@@ -6,8 +6,8 @@ class CreateRoom extends Component {
     super(props);
 
     this.state = {
-      room: "",
-      pass: ""
+      room:'',
+      pass: ''
     }
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -19,6 +19,11 @@ class CreateRoom extends Component {
     this._ismounted = true;
     let roomnameInput = document.getElementsByClassName('roomnameInput')[0];
     roomnameInput.focus();
+    if(this.state.room != '' || this.state.pass != '')
+    this.setState({
+      room: '',
+      pass: ''
+    })
   }
 
   componentWillUnmount() {
@@ -40,13 +45,10 @@ class CreateRoom extends Component {
   onSubmit = (e) => {
     e.nativeEvent.preventDefault();
 
-    window.socket.emit('join room', {
+    window.socket.emit('create room', {
       room: this.state.room,
       pass: this.state.pass
     });
-    this.setState({
-      room: ''
-    })
   }
 
   render() {
@@ -69,8 +71,8 @@ class CreateRoom extends Component {
             onChange = { this.updatePass }
             value = { this.state.pass }
           /> 
-          <button className = "submit" > Create room < /button> <
-        /form> 
+          <button className = "submit" > Create room </button> 
+          </form> 
       </div>
     );
   }

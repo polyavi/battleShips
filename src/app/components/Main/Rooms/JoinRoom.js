@@ -34,16 +34,16 @@ class JoinRoom extends Component {
     if(this.state.room == ''){
       this.state.room =  this.props.room;
     }
-    let room = this.props.location.pathname.split('/')[2].split('&')[0];
+    let room = this.props.location.hash.split('#')[1].split('&')[0];
     
     window.socket.emit('join room', {room: room, pass: this.state.pass});
   }    
 
   render() {
-    let params = this.props.location.pathname.split('/')[2].split('&');
+    let params = this.props.location.hash.split('#')[1].split('&');
     let room = params[0];
     let hasPass = (params[1] == 'false') ? false : true;
-
+    
     return (
       <div id="join-room">
         <form onSubmit={this.onSubmit}>
