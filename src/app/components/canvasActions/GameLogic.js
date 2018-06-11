@@ -102,10 +102,10 @@ export default ()=>{
 					x: (bts.startPos.x + (bts.stage.mouseX - bts.startPos.mouseX)),
 					y: (bts.startPos.y + (bts.stage.mouseY - bts.startPos.mouseY))
 				}
-				if(newPosition.x > -88*bts.fieldSize*3/2+1 && newPosition.x < 100){
+				if(newPosition.x > -88*(bts.fieldSize*3/2 + 2) && newPosition.x < 100){
 					bts.stage.x = newPosition.x;
 				}
-				if(newPosition.y > -59*(bts.fieldSize*2 + 3) && newPosition.y < 80){
+				if(newPosition.y > -59*(bts.fieldSize*2 + 2) && newPosition.y < 80){
 					bts.stage.y = newPosition.y;
 				}
 			});
@@ -141,12 +141,12 @@ export default ()=>{
 
 						bts.stage.x = -position.x + 50;
 						bts.stage.y = -position.y + 50;
-						if(bts.stage.x < -1640){
+						if(bts.stage.x < -88*(bts.fieldSize*3/2+2)){
 							bts.stage.x += bts.stage.canvas.clientWidth - 100;
 						}else if(bts.stage.x > 100){
 							bts.stage.x -= bts.stage.canvas.clientWidth;
 						}
-						if(bts.stage.y < -1640){
+						if(bts.stage.y < -59*(bts.fieldSize*2 + 2)){
 							bts.stage.y += bts.stage.canvas.clientHeight - 100;
 						}else if(bts.stage.y > 100){
 							bts.stage.y += bts.stage.canvas.clientHeight;
@@ -230,7 +230,7 @@ export default ()=>{
 
 			window.socket.on('allow movement', function(){
 				bts.stage.getChildByName('field').children.forEach(section =>{
-					if(!section.occupied){
+					if(section instanceof bts.Section && !section.occupied){
 						section.addEventListener('click', section.handleInteraction);
 						section.neighbors = section.getNeighbors();
 					}

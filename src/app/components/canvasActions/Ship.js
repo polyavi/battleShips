@@ -167,7 +167,7 @@ export default ()=>{
 					return this.prevPos.pop();
 				}
 			}
-			return mutualNeighbors[mutualNeighbors.length -1];
+			return mutualNeighbors[0];
 		}
 
 		/**
@@ -218,7 +218,7 @@ export default ()=>{
 				if(!next){
 					next = startSection.neighbors[0];
 				}
-			if(next.occupied == true){
+				if(next.occupied == true){
 					next = ship.getClosestPosiblePosition(startSection, next);
 					if(ship.isInPerviosPositions(next)){
 						next = ship.getClosestPosiblePosition(startSection, next);
@@ -280,7 +280,7 @@ export default ()=>{
 		 */
 		p.markSectionsInRange = function(){
 			this.sectionsInRange = [];
-			this.sectionsInRange = bts.sections.filter((section) => { 
+			this.sectionsInRange = bts.sections.filter((section) => {
 				return bts.stage.getChildByName('range').hitTest(section.children[0].graphics.command.x, section.children[0].graphics.command.y);
 			});
 			
