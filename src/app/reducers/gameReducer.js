@@ -1,4 +1,4 @@
-import { CHANGE_LOCATION, CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME } from "../actions/actionTypes";
+import { CHANGE_LOCATION, CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME } from '../actions/actionTypes';
 
 const initialState = {
 	path: '',

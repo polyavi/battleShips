@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
-import chatActions from "../../actions/chatActions";
+import chatActions from '../../actions/chatActions';
 const mapStateToProps = state => {
   return {
     isChatVisible: state.chat.isChatVisible,
@@ -36,11 +36,11 @@ const ConnectedHeader = (props) => {
   
   return ( 
     <header>
-      <h1 className = "title" > Battleships </h1> 
-      <ul className = "menu" >
+      <h1 className = 'title' > Battleships </h1> 
+      <ul className = 'menu' >
         { (props.location.pathname === '/createroom' || props.location.pathname === '/joinroom' )&&
           <li>
-          <i className = "icon-arrow-left" ></i> 
+          <i className = 'icon-arrow-left' ></i> 
             <span onClick = { props.goBack }>Go back</span>  
           </li>
         }  
@@ -49,8 +49,8 @@ const ConnectedHeader = (props) => {
           props.location.pathname != '/createroom' && 
           props.location.pathname != '/joinroom' ) &&
         <li>
-          <Link to = "/createroom"> 
-            <i className = "icon-plus" > </i>
+          <Link to = '/createroom'> 
+            <i className = 'icon-plus' > </i>
             Create room
           </Link>
         </li>
@@ -61,7 +61,7 @@ const ConnectedHeader = (props) => {
         !props.isGameStarted) &&
         <li>
           <span onClick = { startGame }> 
-            <i className = "icon-dice"> </i>
+            <i className = 'icon-dice'> </i>
             Start game
           </span>
         </li>
@@ -70,8 +70,8 @@ const ConnectedHeader = (props) => {
       {
         (props.location.pathname.indexOf('/game') > -1) &&
         <li>
-          <span to = "/rooms" onClick = { handleLeaveRoom }>
-          <i className = "icon-exit"> </i>
+          <span to = '/rooms' onClick = { handleLeaveRoom }>
+          <i className = 'icon-exit'> </i>
           Leave room
           </span>  
         </li>
@@ -79,9 +79,9 @@ const ConnectedHeader = (props) => {
 
       { (props.location.pathname != '/') &&
           <li>
-            <span onClick = { toggleChat } className = { props.isChatVisible ? "shown" : "" }>
-              <i className = "icon-chat" ></i> 
-              { props.isChatVisible ? "Show users" : "Show chat" } 
+            <span onClick = { toggleChat } className = { props.isChatVisible ? 'shown' : '' }>
+              <i className = 'icon-chat' ></i> 
+              { props.isChatVisible ? 'Show users' : 'Show chat' } 
             </span>  
           </li>
       } 

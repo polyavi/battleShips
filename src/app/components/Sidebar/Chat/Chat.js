@@ -6,9 +6,9 @@ import MessageInput from './MessageInput'
 
 const Chat = () => {
   return ( 
-    <div className = "chat">
+    <div className = 'chat'>
       <Tabs /> 
-      <div className = "tab-content" >
+      <div className = 'tab-content' >
         <MessageBoard /> 
         <MessageInput />
       </div> 

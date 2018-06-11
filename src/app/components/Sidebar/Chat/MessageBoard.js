@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
 const mapStateToProps = state => {
   return { 
@@ -21,11 +21,11 @@ const ConnectedMessageBoard = ({ messages, me }) => {
 	}
 
 	return ( 
-		<div className = "message-board"> 
+		<div className = 'message-board'> 
 		{
 			!!messageNodes ? 
 			messageNodes : 
-			<div className = "no-messages" > No mesages yet! </div>
+			<div className = 'no-messages' > No mesages yet! </div>
 		} 
 		</div>
 	);
@@ -38,24 +38,24 @@ const Message = ({ message, index, me }) => {
 
 	if (message.isSystem) {
 		return ( 
-			<div className = "admin-message">
-				<span className = "sender" style = { style }> 
-					{ message.sender.name == me? "You" : message.sender.name } 
+			<div className = 'admin-message'>
+				<span className = 'sender' style = { style }> 
+					{ message.sender.name == me? 'You' : message.sender.name } 
 				</span> 
 				{ message.text } 
-				<span className = "time" > { message.time } </span> 
+				<span className = 'time' > { message.time } </span> 
 			</div>
 		)
 	}
 
 	return ( 
-		<div className = "message">
-			<span className = { message.sender.name == me ? "sender me" : "sender" } style = { style }> 
-					{ message.sender.name == me? "You:" : message.sender.name + ":" }
+		<div className = 'message'>
+			<span className = { message.sender.name == me ? 'sender me' : 'sender' } style = { style }> 
+					{ message.sender.name == me? 'You:' : message.sender.name + ':' }
 			</span> 
-			<div className = "message-body">
-				<span className = "text" > { message.text } </span> 
-				<span className = "time" > { message.time } </span> 
+			<div className = 'message-body'>
+				<span className = 'text' > { message.text } </span> 
+				<span className = 'time' > { message.time } </span> 
 			</div> 
 		</div>
 	)

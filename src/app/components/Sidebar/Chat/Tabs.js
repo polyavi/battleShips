@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { connect } from "react-redux";
-import chatActions from "../../../actions/chatActions";
+import { connect } from 'react-redux';
+import chatActions from '../../../actions/chatActions';
 
 const mapStateToProps = state => {
   return {
@@ -30,7 +30,7 @@ const ConnectedTabs = ({chatTabs, penndingChats, activeChat}) => {
     })
   }
 
-  return (<div className = "tabs-container"> { tabNodes } </div>);
+  return (<div className = 'tabs-container'> { tabNodes } </div>);
 }
 
 const mapDispatchToProps = dispatch => {
@@ -56,7 +56,7 @@ const ConnectedTab = ({ name, classNames, ...props}) => {
     <div className = { classNames.join(' ') } id = { name } onClick = { handleTabClick }> 
       { name } 
       { name != 'global' && 
-        <span className = "close"
+        <span className = 'close'
           onClick = { handleTabClose } > x 
         </span> 
       }

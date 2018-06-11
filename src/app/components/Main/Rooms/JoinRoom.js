@@ -6,7 +6,7 @@ class JoinRoom extends Component {
     super(props);
 
     this.state = {
-      pass: ""
+      pass: ''
     }
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -45,21 +45,21 @@ class JoinRoom extends Component {
     let hasPass = (params[1] == 'false') ? false : true;
     
     return (
-      <div id="join-room">
+      <div id='join-room'>
         <form onSubmit={this.onSubmit}>
-          <h3 className="title">{"Do you want to join " + room + "?"}</h3>
+          <h3 className='title'>{'Do you want to join ' + room + '?'}</h3>
 
           {hasPass &&
-          <h3 className="title">{this.state.wrongPass  ? "Wrong pass! Please try again." : "Enter password"}</h3>}
+          <h3 className='title'>{this.state.wrongPass  ? 'Wrong pass! Please try again.' : 'Enter password'}</h3>}
           {hasPass &&
             <input 
-              className="passwordInput" 
-              type="password" 
-              maxLength="14" 
+              className='passwordInput' 
+              type='password' 
+              maxLength='14' 
               onChange={this.updatePass} 
               value={this.state.pass}/>
           }
-          <button className="submit">Join room</button>
+          <button className='submit'>Join room</button>
         </form>
       </div>
     );

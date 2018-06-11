@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Init from '../../canvasActions/Init'
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 const mapStateToProps = state => {
   return { 
     me: state.userData.me.name
@@ -34,7 +34,7 @@ class ConnectedCanvas extends Component {
   render() {
     return ( 
       <canvas 
-        id = "canvas"
+        id = 'canvas'
         width = { this.state.width }
         height = { this.state.height }
       />

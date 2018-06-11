@@ -48,7 +48,7 @@
   Done - New map images
   Done - New obstacles/islands
   Done - Explosion animation
-  DOne - Mines
+  Done - Mines
   Done - revealing maps on the go
 
 * New rules:
@@ -92,5 +92,16 @@
 * Issues to be fixed
   Done - Should put return/cancel button on join room screen
   Fixed - Events on user disconnect
-  - When ship moves there is slow down on each section
+  Fixed- When ship moves there is slow down on each section
   Fixed - Double rooms and users appear when log in
+  - Ship range propblem
+
+* Practice React patterns and good practices
+  - cildren props
+  - Children.map() and cloneElement()
+  - Static Properties
+  - Context API
+  - Compound Components
+  - High Order Components
+  - Render Props
+  - shouldComponentUpdate

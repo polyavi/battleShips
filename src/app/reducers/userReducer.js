@@ -2,7 +2,7 @@ import {
 	SET_USERS,
 	ADD_USER,
 	REMOVE_USER
-} from "../actions/actionTypes";
+} from '../actions/actionTypes';
 
 const initialState = {
 	me: {

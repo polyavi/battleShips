@@ -1,10 +1,10 @@
 /**
  * @module BattleShips
  */
-export default ()=>{
-  window.bts = window.bts || {};
+export default () => {
+	window.bts = window.bts || {};
 
-	(function () {
+	(function() {
 		'use strict';
 		/**
 		 * @namespace bts
@@ -12,10 +12,10 @@ export default ()=>{
 		 * @extends {createjs.Container}
 		 * @constructor
 		 */
-		let Section = function (position) {
+		let Section = function(position) {
 			// :properties
 			this.powerup = '';
-
+			this.neighbors = [];
 			this.initialize(position);
 		}
 
@@ -28,18 +28,18 @@ export default ()=>{
 		 *
 		 * @method init
 		 */
-		p.initialize = function (position) {
+		p.initialize = function(position) {
 			this.Container_initialize();
 			this.drawSection(position);
 		}
-	 		
+
 		/**
 		 * Draws Section
 		 *
 		 * @method drawSection
 		 * @param {Object} position coordinates
 		 */
-		p.drawSection = function(position){
+		p.drawSection = function(position) {
 			let section = new createjs.Shape();
 			section.graphics.beginBitmapFill(bts.backgroundImage).beginStroke(bts.strokeColor).drawPolyStar(position.x, position.y, 50, 6, 0, 0);
 			this.addChild(section);
@@ -51,27 +51,31 @@ export default ()=>{
 		 * @method handleInteraction
 		 * @param {Object} e event object
 		 */
-		p.handleInteraction = function(e){
-			if(bts.startPos.mouseX == bts.stage.mouseX && bts.startPos.mouseY == bts.stage.mouseY){
+		p.handleInteraction = function(e) {
+			if (bts.startPos.mouseX == bts.stage.mouseX && bts.startPos.mouseY == bts.stage.mouseY) {
 				let target = (e.target.parent.name == 'powerup') ? e.target.parent.parent.children[0] : e.target.parent.children[0];
 				let targetShip = target.parent.getTargetShip();
-				if(targetShip){
-					if(isTargetInRange(targetShip.position) && bts.myship.monitions > 0) {
+				if (targetShip) {
+					if (isTargetInRange(targetShip.position) && bts.myship.monitions > 0) {
 						targetShip.explodingAnimation();
 						bts.myship.attackOponent(targetShip);
 					}
-				}else{
+				} else {
 					bts.myship.prevPos = [];
-					bts.moveToNextPosition(bts.myship, {x: bts.myship.children[0].x, y: bts.myship.children[0].y},{x: target.graphics.command.x, y: target.graphics.command.y});
+					bts.moveToNextPosition(bts.myship, {
+						x: bts.myship.children[0].x,
+						y: bts.myship.children[0].y
+					}, {
+						x: target.graphics.command.x,
+						y: target.graphics.command.y
+					});
 
 					window.socket.emit(
-						'move', 
-						{
-							x: bts.myship.children[0].x, 
+						'move', {
+							x: bts.myship.children[0].x,
 							y: bts.myship.children[0].y
-						},
-						{
-							x: target.graphics.command.x, 
+						}, {
+							x: target.graphics.command.x,
 							y: target.graphics.command.y
 						}
 					)
@@ -85,19 +89,19 @@ export default ()=>{
 		 * @method checkForPowerUp
 		 * @param {Ship} ship 
 		 */
-		p.checkForPowerUp = function(ship){
-			if(this.powerup){
-				if(ship.name == bts.me){
+		p.checkForPowerUp = function(ship) {
+			if (this.powerup) {
+				if (ship.name == bts.me) {
 					window.socket.emit('collect powerup', this.powerup);
 				}
 				this.removePowerUp();
-			}	
+			}
 		}
 
 		/**
 		 * @method removePowerUp
 		 */
-		p.removePowerUp = function(){
+		p.removePowerUp = function() {
 			this.powerup.delete;
 			this.removeChild(this.getChildByName('powerup'));
 		}
@@ -105,22 +109,24 @@ export default ()=>{
 		 * @method addPowerUp
 		 * @param {Object} powerup 
 		 */
-		p.addPowerUp = function(powerup){
-			let text= new createjs.Container();
-			if(powerup.type == 'life'){
+		p.addPowerUp = function(powerup) {
+			let text = new createjs.Container();
+			if (powerup.type == 'life') {
 				this.drawPowerUp('1Up', text);
-			}else if(powerup.type == 'monitions'){
+			} else if (powerup.type == 'monitions') {
 				this.drawPowerUp('moni', text);
 				this.drawPowerUp('tions', text, 2);
-			}else if(powerup.type == 'speed'){
+			} else if (powerup.type == 'speed') {
 				this.drawPowerUp('speed', text);
-			}else if(powerup.type == 'range'){
+			} else if (powerup.type == 'range') {
 				this.drawPowerUp('range', text);
 			}
 
 			this.addChild(text);
 			createjs.Tween.get(text)
-				.to({alpha: 1}, 500, createjs.Ease.sinIn);
+				.to({
+					alpha: 1
+				}, 500, createjs.Ease.sinIn);
 			this.powerup = powerup;
 		}
 
@@ -129,14 +135,14 @@ export default ()=>{
 		 * 
 		 * @method getTargetShip
 		 */
-		p.getTargetShip = function(){
-			let ships = bts.stage.getChildByName('ships').children.filter((child) =>{ 
+		p.getTargetShip = function() {
+			let ships = bts.stage.getChildByName('ships').children.filter((child) => {
 				return child.name != bts.me;
 			});
 
 			let self = this;
-			if(ships){
-				return ships.find((ship) =>{
+			if (ships) {
+				return ships.find((ship) => {
 					return (ship.position.children[0].graphics.command.x == self.children[0].graphics.command.x && ship.position.children[0].graphics.command.y == self.children[0].graphics.command.y);
 				});
 			}
@@ -146,9 +152,9 @@ export default ()=>{
 		 * @method isTargetInRange
 		 * @param {Section} section
 		 */
-		function isTargetInRange(section){
+		function isTargetInRange(section) {
 			return !!(
-				bts.myship.sectionsInRange.find(section => { 
+				bts.myship.sectionsInRange.find(section => {
 					return section.id == section.id;
 				})
 			);
@@ -160,17 +166,17 @@ export default ()=>{
 		 * @param {String} text the test to by drawn
 		 * @param {Number} i Number of line
 		 */
-		p.drawPowerUp = function(name, text, i = 1){
-			let powerUpText = new createjs.Text(name, "25px monospace", '#EF6461');
-			let powerUpOtuline = new createjs.Text(name, "25px monospace", '#FFF');
+		p.drawPowerUp = function(name, text, i = 1) {
+			let powerUpText = new createjs.Text(name, '25px monospace', '#EF6461');
+			let powerUpOtuline = new createjs.Text(name, '25px monospace', '#FFF');
 			powerUpOtuline.outline = 2;
 			text.addChild(powerUpOtuline, powerUpText);
-			if(i == 2){
+			if (i == 2) {
 				powerUpText.y = powerUpText.getMeasuredHeight();
 				powerUpOtuline.y = powerUpText.getMeasuredHeight();
 			}
 			text.name = 'powerup';
-			text.x = this.children[0].graphics.command.x - powerUpText.getMeasuredWidth()/2;
+			text.x = this.children[0].graphics.command.x - powerUpText.getMeasuredWidth() / 2;
 			text.y = this.children[0].graphics.command.y - powerUpText.getMeasuredHeight();
 		}
 
@@ -179,18 +185,19 @@ export default ()=>{
 		 *
 		 * @method getNeighbors
 		 */
-		p.getNeighbors = function(){
+		p.getNeighbors = function() {
 			let neighbors = [];
-			let sectionPos = this.children[0].graphics.command;
+			let sectionIndex = bts.sections.indexOf(this);
+			neighbors = [
+				bts.sections[sectionIndex - 1],
+				bts.sections[sectionIndex + 1],
+				bts.sections[sectionIndex - bts.fieldSize * 2],
+				bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))],
+				bts.sections[sectionIndex + bts.fieldSize * 2],
+				bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))]
+			]
 
-			neighbors.push(bts.getSectionByCoordinates(sectionPos.x, sectionPos.y - 87));
-			neighbors.push(bts.getSectionByCoordinates(sectionPos.x, sectionPos.y + 87));
-			neighbors.push(bts.getSectionByCoordinates(sectionPos.x - 76, sectionPos.y - 44));
-			neighbors.push(bts.getSectionByCoordinates(sectionPos.x - 76, sectionPos.y + 44));
-			neighbors.push(bts.getSectionByCoordinates(sectionPos.x + 76, sectionPos.y - 44));
-			neighbors.push(bts.getSectionByCoordinates(sectionPos.x + 76, sectionPos.y + 44));
-
-			return neighbors.filter(section =>{
+			return neighbors.filter(section => {
 				return section && section instanceof bts.Section && section.occupied != true;
 			});
 		}

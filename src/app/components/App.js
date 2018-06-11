@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { connect } from "react-redux";
-import gameActions from "../actions/gameActions";
+import { connect } from 'react-redux';
+import gameActions from '../actions/gameActions';
 
 
 import Header from './Header/Header';
@@ -11,8 +11,8 @@ import SideBar from './Sidebar/SideBar';
 const mapStateToProps = state => {
   return { 
     goto: state.game.path,
-    isGameStarted:  state.game.gameStates.isGameStarted,
-    isGameOver:  state.game.gameStates.isGameOver
+    isGameStarted: state.game.gameStates.isGameStarted,
+    isGameOver: state.game.gameStates.isGameOver
   };
 };
 
@@ -37,7 +37,7 @@ class ConnectedApp extends Component {
       return <Redirect to={this.props.goto}/>
     }
     return ( 
-      <div className = "app">
+      <div className = 'app'>
         <Header 
           location = { this.props.location }
           goBack = {this.props.history.goBack}

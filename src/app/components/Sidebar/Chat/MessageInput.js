@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
 const mapStateToProps = state => {
   return { 
@@ -43,10 +43,10 @@ class ConnectedMessageInput extends Component {
 
   render() {
     return ( 
-      <div className = "message-input">
+      <div className = 'message-input'>
         <form onSubmit = { this.handleSubmit }>
           <input 
-            type = "text"
+            type = 'text'
             value = { this.state.text }
             onChange = { this.onTextChange }
           /> 

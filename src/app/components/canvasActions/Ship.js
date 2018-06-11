@@ -93,7 +93,7 @@ export default ()=>{
 		p.drawStats = function(stats){
 			let background = new createjs.Shape();
 
-			let text = new createjs.Text(this.name, "20px monospace", this.color);
+			let text = new createjs.Text(this.name, '20px monospace', this.color);
 
 			let life = new createjs.Container();
 			life.x = text.getMeasuredWidth() + 10;
@@ -144,8 +144,8 @@ export default ()=>{
 		 * @param {Sectin} nextSection The position to move the ship
 		 */
 		p.getClosestPosiblePosition = function(startSection, nextSection){
-			let startPosNeighbors = startSection.getNeighbors();
-			let nextPosNeighbors = nextSection.getNeighbors();
+			let startPosNeighbors = startSection.neighbors;
+			let nextPosNeighbors = nextSection.neighbors;
 			let mutualNeighbors = [];
 
 			startPosNeighbors.forEach(neighbor =>{
@@ -185,6 +185,7 @@ export default ()=>{
 				window.socket.emit('steped on mine', bts.me);
 				return;
 			}
+			let startSection = bts.getSectionByCoordinates(startPos.x, startPos.y);
 
 			if(startPos.x != endPos.x || startPos.y != endPos.y){
 				let newPos = {
@@ -215,28 +216,27 @@ export default ()=>{
 				}
 				let next = bts.getSectionByCoordinates(newPos.x, newPos.y);
 				if(!next){
-					next = bts.getSectionByCoordinates(startPos.x, startPos.y).getNeighbors()[0];
+					next = startSection.neighbors[0];
 				}
-				if(next.occupied == true){
-					next = ship.getClosestPosiblePosition(bts.getSectionByCoordinates(startPos.x, startPos.y), next);
+			if(next.occupied == true){
+					next = ship.getClosestPosiblePosition(startSection, next);
 					if(ship.isInPerviosPositions(next)){
-						next = ship.getClosestPosiblePosition(bts.getSectionByCoordinates(startPos.x, startPos.y), next);
+						next = ship.getClosestPosiblePosition(startSection, next);
 					}
 				}else{
 					if(ship.isInPerviosPositions(next)){
-						next = ship.getClosestPosiblePosition(bts.getSectionByCoordinates(startPos.x, startPos.y), next);
-					}else{
-
+						next = ship.getClosestPosiblePosition(startSection, next);
 					}
 				}
-				ship.prevPos.push(bts.getSectionByCoordinates(startPos.x, startPos.y));
+				ship.prevPos.push(startSection);
 				moveShip(ship, next, endPos);
 				ship.position = next;
+
 				if(ship.sectionsInRange){
 					ship.markSectionsInRange();
 				}
 			}else{
-				ship.position = bts.getSectionByCoordinates(startPos.x, startPos.y);
+				ship.position = startSection;
 				if(ship.name != bts.me){
 					ship.alpha = ship.position.alpha;
 				}
@@ -286,7 +286,7 @@ export default ()=>{
 			
 			bts.sandBorder.forEach((sand) => { 
 				if(bts.stage.getChildByName('range').hitTest(sand.graphics.command.x, sand.graphics.command.y)){
-					createjs.Tween.get(sand).to({alpha: 1}, 100, createjs.Ease.sinIn)
+					createjs.Tween.get(sand).to({alpha: 1}, 10/this.speed, createjs.Ease.sinIn)
 				}
 			});
 
@@ -367,7 +367,7 @@ export default ()=>{
 
 			createjs.Tween.removeTweens(ship.children[0], ship.children[1]);
 			createjs.Tween.get(ship.children[0])
-		  	.to({rotation: angle}, 100, createjs.Ease.sinIn)
+		  	.to({rotation: angle}, 10, createjs.Ease.sinIn)
 		  	.to({ x: nextPos.x, y: nextPos.y}, hipotenuse*10/ship.speed, createjs.Ease.sinIn)
 		  	.call(target.checkForPowerUp.bind(target), [ship])
 		  	.call(bts.moveToNextPosition,[ship, nextPos, endPos]);

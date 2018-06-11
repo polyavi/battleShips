@@ -1,4 +1,4 @@
-import { SET_ROOMS, ADD_ROOM, REMOVE_ROOM, CHANGE_ROOM } from "./actionTypes";
+import { SET_ROOMS, ADD_ROOM, REMOVE_ROOM, CHANGE_ROOM } from './actionTypes';
 
 const setRooms = (rooms) => ({
 	type: SET_ROOMS,

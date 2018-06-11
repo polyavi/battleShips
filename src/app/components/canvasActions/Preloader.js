@@ -60,7 +60,7 @@ export default ()=>{
 			bts.preloader.y = (bts.stage.canvas.height / 2) - (bts.preloader.height / 2);
 			bts.stage.addChild(bts.preloader);
 
-			bts.queue.addEventListener("complete", bts.initGame);
+			bts.queue.addEventListener('complete', bts.initGame);
 			bts.queue.addEventListener('progress', bts.onFileProgress);
 			bts.queue.load();
 		}

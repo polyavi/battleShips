@@ -7,7 +7,7 @@ import {
 	ADD_PENDING_TAB,
 	REMOVE_PENDING_TAB,
 	ADD_MESSAGE
-} from "../actions/actionTypes";
+} from '../actions/actionTypes';
 
 const initialState = {
 	messages: [],

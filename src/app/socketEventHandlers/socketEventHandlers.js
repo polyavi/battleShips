@@ -1,9 +1,9 @@
-import store from "../store/store";
+import store from '../store/store';
 import Init from '../components/canvasActions/Init'
-import gameActions from "../actions/gameActions";
-import roomsActions from "../actions/roomActions";
-import userActions from "../actions/userActions";
-import chatActions from "../actions/chatActions";
+import gameActions from '../actions/gameActions';
+import roomsActions from '../actions/roomActions';
+import userActions from '../actions/userActions';
+import chatActions from '../actions/chatActions';
 
 export default function() {
 	window.socket.on('new user', (data) => {
@@ -41,7 +41,6 @@ export default function() {
 		store.dispatch(gameActions.setGame());
 		store.dispatch(chatActions.toggleChat(true));
 		store.dispatch(chatActions.addChatTab(data.name));
-
 	});
 
 	window.socket.on('joined room', (data) => {

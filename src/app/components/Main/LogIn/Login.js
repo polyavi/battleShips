@@ -6,7 +6,7 @@ class Login extends Component {
     super();
 
     this.state = {
-      username: ""
+      username: ''
     }
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -37,30 +37,30 @@ class Login extends Component {
 
   onSubmit = (e) => {
     e.nativeEvent.preventDefault();
-    if (this.state.username != "") {
+    if (this.state.username != '') {
       window.socket.emit('add user', this.state.username);
     }
   }
 
   render() {
     return ( 
-      <div id = "login">
+      <div id = 'login'>
         <form onSubmit = { this.onSubmit }>
-          <h3 className = "title"> 
+          <h3 className = 'title'> 
             { this.state.isUserNameTaken ? 
-              "This username is taken. Try another." : 
-              "What's your nickname?"
+              'This username is taken. Try another.' : 
+              'What\'s your nickname?'
             } 
             </h3> 
             <input 
-              className = "usernameInput"
-              type = "text"
-              maxLength = "14"
+              className = 'usernameInput'
+              type = 'text'
+              maxLength = '14'
               onChange = { this.update }
               value = { this.state.username }
-              tabIndex = "1" 
+              tabIndex = '1' 
             />
-          <button tabIndex = "2" className = "submit"> Login </button> 
+          <button tabIndex = '2' className = 'submit'> Login </button> 
         </form> 
       </div>
     );

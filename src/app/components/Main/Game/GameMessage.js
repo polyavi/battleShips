@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
 const mapStateToProps = state => {
   return { 
@@ -21,22 +21,22 @@ const ConnectedGameMessage = (props) => {
   }
 
   return ( 
-    <div id = "game-message" > 
+    <div id = 'game-message' > 
     { props.gameStates.isGameOver &&
       <form>
-        <h3 className = "title" > 
-          { props.gameStates.isWinner ? "Congratulations! You won." : "Game over! You lost." } 
+        <h3 className = 'title' > 
+          { props.gameStates.isWinner ? 'Congratulations! You won.' : 'Game over! You lost.' } 
         </h3> 
-        <button onClick = { handlePlayAgain } className = "submit"> Play again </button> 
-        <button onClick = { handleLeaveRoom } className = "submit" > Leave room </button> 
+        <button onClick = { handlePlayAgain } className = 'submit'> Play again </button> 
+        <button onClick = { handleLeaveRoom } className = 'submit' > Leave room </button> 
       </form>
     } 
     { (!props.gameStates.isGameStarted && !props.gameStates.isGameOver) &&
       <div>
-        <h3 className = "title"> 
+        <h3 className = 'title'> 
           { props.isAdmin ? 
-            "Hit start game when you are ready." : 
-            "Waiting for the game to start."
+            'Hit start game when you are ready.' : 
+            'Waiting for the game to start.'
           } 
         </h3> 
       </div>

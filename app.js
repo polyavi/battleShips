@@ -15,7 +15,7 @@ app.get('/', function(req, res) {
 app.use(redirectUnmatched);
 
 function redirectUnmatched(req, res) {
-	res.redirect("/");
+	res.redirect('/');
 }
 
 const FIELD_SIZE = 12;

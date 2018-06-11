@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PlayerList from './PlayerList/PlayerList';
 import Chat from './Chat/Chat';
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
 const mapStateToProps = state => {
   return { 
@@ -12,7 +12,7 @@ const mapStateToProps = state => {
 const ConnectedSideBar = ({isChatVisible}) => {
 
   return ( 
-    <div className = "sidebar" >
+    <div className = 'sidebar' >
     	{isChatVisible ?
     		<Chat /> :
       	<PlayerList /> 

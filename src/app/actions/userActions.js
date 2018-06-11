@@ -1,4 +1,4 @@
-import { SET_USERS, ADD_USER, REMOVE_USER } from "./actionTypes";
+import { SET_USERS, ADD_USER, REMOVE_USER } from './actionTypes';
 
 const setUsers = (data) => ({
 	type: SET_USERS,

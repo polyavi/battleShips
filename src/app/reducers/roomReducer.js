@@ -1,4 +1,4 @@
-import { SET_ROOMS, ADD_ROOM, REMOVE_ROOM, CHANGE_ROOM } from "../actions/actionTypes";
+import { SET_ROOMS, ADD_ROOM, REMOVE_ROOM, CHANGE_ROOM } from '../actions/actionTypes';
 
 const initialState = [];
 

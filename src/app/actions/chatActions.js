@@ -7,7 +7,7 @@ import {
 	ADD_PENDING_TAB,
 	REMOVE_PENDING_TAB,
 	ADD_MESSAGE
-} from "./actionTypes";
+} from './actionTypes';
 
 const toggleChat = (isVisible) => ({
 	type: TOGGLE_CHAT,

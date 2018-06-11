@@ -53,25 +53,25 @@ class CreateRoom extends Component {
 
   render() {
     return ( 
-      <div id = "join-room" >
+      <div id = 'join-room' >
         <form onSubmit = { this.onSubmit }>
-          <h3 className = "title" > Enter room name. </h3> 
+          <h3 className = 'title' > Enter room name. </h3> 
           <input 
-            className = "roomnameInput"
-            type = "text"
-            maxLength = "14"
+            className = 'roomnameInput'
+            type = 'text'
+            maxLength = '14'
             onChange = { this.updateRoomname }
             value = { this.state.room }
           /> 
-          <h3 className = "title"> Enter password </h3> 
+          <h3 className = 'title'> Enter password </h3> 
           <input 
-            className = "passwordInput"
-            type = "password"
-            maxLength = "14"
+            className = 'passwordInput'
+            type = 'password'
+            maxLength = '14'
             onChange = { this.updatePass }
             value = { this.state.pass }
           /> 
-          <button className = "submit" > Create room </button> 
+          <button className = 'submit' > Create room </button> 
           </form> 
       </div>
     );

@@ -17,13 +17,13 @@ export default ()=>{
 				id:'sea', 
 				src:'images/sea.jpg'
 			},{
-				id:"explosion", 
+				id:'explosion', 
 				src:'images/explosion.png'
 			},{
-				id:"island", 
+				id:'island', 
 				src:'images/island.png'
 			},{
-				id:"sand", 
+				id:'sand', 
 				src:'images/sand.jpg'
 			}
 		];
