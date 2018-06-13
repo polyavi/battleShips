@@ -265,10 +265,10 @@ function logInExistingRoom(roomProps, socket) {
 			admin: false
 		});
 
-		io.to(room.name).emit('system message', createMessage(
+		socket.to(room.name).emit('system message', createMessage(
 			' joined the game.',
 			socket,
-			room
+			room.name
 		));
 
 		setNewPlayer(socket, room);
@@ -393,7 +393,7 @@ function setFieldProps(room) {
 	room.availablePositions = SHIP_POSITIONS.slice();
 	room.positions = [];
 	room.occupiedSections = [];
-	room.alivePlayers = room.length;
+	room.alivePlayers = 0;
 	room.obsticles = generateObsticles(room);
 	room.powerups = generatePowerUps(room);
 	room.mines = generateMines(room);
@@ -417,6 +417,8 @@ function setNewPlayer(socket, room) {
 		color: socket.color
 	});
 	room.availablePositions.splice(randomPosition, 1);
+	room.alivePlayers +=1;
+
 }
 
 /**
@@ -515,10 +517,10 @@ function replacePowerup(powerup, room, socket){
 function initiateHitEvents(socket, data){
 			if (socket && socket.props && socket.props.monitions > 0) {
 			let target = getSocketByUsername(data.name);
-
 			if (target.props.life > 0) {
 				socket.props.monitions -= 1;
-				socket.props.life -= 1;		
+				target.props.life -= 1;		
+				console.log(target.props);
 				io.to(socket.room).emit('prop change', {
 					props: [generateProp('monitions', socket), generateProp('life', target)],
 				});
@@ -568,7 +570,7 @@ function sinkShip(attacker, attacked){
 
 	room.alivePlayers -=1;
 	io.to(attacker.room).emit('player sunk', attacked);
-
+	console.log(room.alivePlayers)
 	if (room.alivePlayers == 1) {
 		io.to(attacker.room).emit('game over', attacker.username);
 		room.restart = false;
@@ -594,9 +596,9 @@ function restartGame(socket){
 	if (!room.restart) {
 		room.restart = true;
 		setFieldProps(room);
+		initField(socket);
 	}
 	setNewPlayer(socket, room);
-	initField(socket);
 
 	socket.emit('restart', socket.room);
 }

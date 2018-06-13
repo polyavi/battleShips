@@ -11,8 +11,11 @@ export default function() {
 	});
 
 	window.socket.on('remove user', (userId) => {
-		store.dispatch(chatActions.hideChatTab(store.getState().userData.users.find(user => user.id == userId).username))
-		store.dispatch(userActions.removeUser(userId));
+		let user = store.getState().userData.users.find(user => user.id == userId);
+		if(user){
+			store.dispatch(chatActions.hideChatTab(user.username));
+			store.dispatch(userActions.removeUser(userId));
+		}
 	});
 
 	window.socket.on('logged in', (data) => {
@@ -105,7 +108,7 @@ export default function() {
   })
 
   window.socket.on('restart', () => {
-  	window.bts.delete;
+  	window.bts = {};
   	Init();
   	window.bts.me = store.getState().userData.me.name;
   	store.dispatch(gameActions.setGame());
@@ -114,7 +117,7 @@ export default function() {
   window.socket.on('room change', (room) =>{
   	store.dispatch(roomsActions.changeRoom({roomId: room.id, length: room.length}));
   });
-  
+
   window.socket.on('close room', (room) => {
 	  store.dispatch(chatActions.hideChatTab(store.getState().rooms.find(item => item.id == room.id).name));
 	  store.dispatch(roomsActions.changeRoom({roomId: room.id, length: room.length}));
