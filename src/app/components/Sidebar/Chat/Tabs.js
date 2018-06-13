@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import chatActions from '../../../actions/chatActions';
-
+import TabNode from './TabNode';
 const mapStateToProps = state => {
   return {
     chatTabs: state.chat.chatTabs,
@@ -10,7 +10,14 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedTabs = ({chatTabs, penndingChats, activeChat}) => {
+const mapDispatchToProps = dispatch => {
+  return {
+    activateTab: tab => dispatch(chatActions.activateTab(tab)),
+    hideChatTab: tab => dispatch(chatActions.hideChatTab(tab)),
+  };
+};
+
+const ConnectedTabs = ({chatTabs, penndingChats, activeChat, activateTab, hideChatTab}) => {
   let tabNodes;
 
   if (chatTabs.length > 0) {
@@ -22,10 +29,12 @@ const ConnectedTabs = ({chatTabs, penndingChats, activeChat}) => {
       if (activeChat == tab.name) classNames.push('active') 
         else if (penndingChats.indexOf(tab.name) > -1 ) classNames.push('alert');
 
-      return (<Tab
+      return (<TabNode
         key = { index }
         name = { tab.name }
         classNames = { classNames }
+        activateTab = {activateTab}
+        hideChatTab = {hideChatTab}
       />)
     })
   }
@@ -33,38 +42,6 @@ const ConnectedTabs = ({chatTabs, penndingChats, activeChat}) => {
   return (<div className = 'tabs-container'> { tabNodes } </div>);
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    activateTab: tab => dispatch(chatActions.activateTab(tab)),
-    hideChatTab: tab => dispatch(chatActions.hideChatTab(tab)),
-  };
-};
-
-const ConnectedTab = ({ name, classNames, ...props}) => {
-  let handleTabClick = (e) => {
-    if(props.activeChat != name){
-      props.activateTab(name);
-    }
-  }
-
-  let handleTabClose = (e) => {
-    e.stopPropagation();
-    props.hideChatTab(name);
-  }
-
-  return ( 
-    <div className = { classNames.join(' ') } id = { name } onClick = { handleTabClick }> 
-      { name } 
-      { name != 'global' && 
-        <span className = 'close'
-          onClick = { handleTabClose } > x 
-        </span> 
-      }
-    </div> 
-  );
-}
-
-const Tabs = connect(mapStateToProps)(ConnectedTabs);
-const Tab = connect(mapStateToProps, mapDispatchToProps)(ConnectedTab);
+const Tabs = connect(mapStateToProps, mapDispatchToProps)(ConnectedTabs);
 
 export default Tabs;

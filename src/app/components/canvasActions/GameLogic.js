@@ -16,7 +16,7 @@ export default ()=>{
 			bts.stage.removeChild(bts.preloader);
 
 			bts.backgroundImage = bts.queue.getResult('sea');
-			bts.island = bts.queue.getResult('island');
+			bts.rock = bts.queue.getResult('rock');
 			bts.sand = bts.queue.getResult('sand');
 
 			bts.shipSpritesheet = new createjs.SpriteSheet(
@@ -50,24 +50,23 @@ export default ()=>{
 		 * @param {Object} data The field data
 		 */
 		function buidField(data) {
-				bts.fieldSize = data.size;
-				bts.stage.removeAllChildren();
+			bts.fieldSize = data.size;
+			bts.stage.removeAllChildren();
 
-				let field = new bts.Field();
+			let field = new bts.Field();
 
-				drawObsticles(data.obsticles, field);
-				field.setPowerUpsInField(data.powerups);
-				field.setMines(data.mines);
-				bts.stage.addEventListener('stagemousedown', handleStageMovement);
+			drawObsticles(data.obsticles, field);
+			field.setPowerUpsInField(data.powerups);
+			field.setMines(data.mines);
+			bts.stage.addEventListener('stagemousedown', handleStageMovement);
 
-				let sandSections = new createjs.Container();
-				sandSections.addChild(...bts.sandBorder);
-				bts.stage.addChild(sandSections);
+			let sandSections = new createjs.Container();
+			sandSections.addChild(...bts.sandBorder);
+			bts.stage.addChild(sandSections);
 
-				var ships = new createjs.Container();
-				ships.name = 'ships';
-				bts.stage.addChild(ships);
-				console.log(bts.stage);
+			var ships = new createjs.Container();
+			ships.name = 'ships';
+			bts.stage.addChild(ships);
 		}
 
 		/**
@@ -79,8 +78,7 @@ export default ()=>{
 		 */
 		function drawObsticles(data, field){
 			for(let i = 0; i< data.length; i+=1){
-			let section = field.children[data[i]].children[0].graphics.command;
-			field.drawIsland(section);
+			field.children[data[i]].drawRock();
 			}
 		}
 

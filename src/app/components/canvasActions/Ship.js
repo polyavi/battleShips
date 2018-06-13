@@ -47,12 +47,14 @@ export default ()=>{
 			this.explosion = new createjs.Sprite(bts.explosionSpriteSheet);
 			this.explosion.alpha = 0;
 			bts.stage.addChild(this.explosion);
+
 			let sprite = new createjs.Sprite(bts.shipSpritesheet);
 			sprite.regX = 55/2;
 			sprite.regY = 110/2;
 
 			sprite.x = this.explosion.x = position.x;
 			sprite.y = this.explosion.y = position.y;
+
 			this.position = bts.getSectionByCoordinates(sprite.x, sprite.y);
 			sprite.gotoAndPlay('ship');
 			this.addChild(sprite);
@@ -167,7 +169,8 @@ export default ()=>{
 					return this.prevPos.pop();
 				}
 			}
-			return mutualNeighbors[0];
+			mutualNeighbors[0].alpha = 0.5;
+			return mutualNeighbors[mutualNeighbors.length - 1];
 		}
 
 		/**
@@ -193,11 +196,12 @@ export default ()=>{
 					y: startPos.y
 				};
 
-				if(endPos.x == startPos.x){
+				if(endPos.x < startPos.x){
+					newPos.x -= 76;
 					if(endPos.y > startPos.y){
-						newPos.y += 87;
+						newPos.y += 44;
 					}else{
-						newPos.y -= 87;
+						newPos.y -= 44;
 					}
 				}else if(endPos.x > startPos.x){
 					newPos.x += 76;
@@ -207,11 +211,10 @@ export default ()=>{
 						newPos.y -= 44;
 					}
 				}else{
-					newPos.x -= 76;
 					if(endPos.y > startPos.y){
-						newPos.y += 44;
+						newPos.y += 87;
 					}else{
-						newPos.y -= 44;
+						newPos.y -= 87;
 					}
 				}
 				let next = bts.getSectionByCoordinates(newPos.x, newPos.y);
@@ -295,23 +298,7 @@ export default ()=>{
 					section.getTargetShip().alpha = 1;
 				}
 				createjs.Tween.get(section).to({alpha: 1}, 10/this.speed, createjs.Ease.sinIn)
-				if(section.island){
-					createjs.Tween.get(section.island).to({alpha: 1}, 10/this.speed, createjs.Ease.sinIn)
-		  	}
 			})
-		}
-
-		/**
-		 * Gets a section by given coordinates
-		 *
-		 * @method getSectionByCoordinates
-		 * @param {Number} x 
-		 * @param {Number} y 
-		 */
-		bts.getSectionByCoordinates = function(x, y){
-			return bts.stage.getChildByName('field').children.find((section) => {
-			 return section.children[0].hitTest(x, y) == true 
-			});
 		}
 
 		/**

@@ -6,7 +6,7 @@ import chatActions from '../../actions/chatActions';
 const mapStateToProps = state => {
   return {
     isChatVisible: state.chat.isChatVisible,
-    isGameStarted: state.game.gameStates.isGameStarted,
+    isGameStarted: state.game.isGameStarted,
     isAdmin: state.game.isAdmin
   };
 };

@@ -9,6 +9,7 @@ export default function() {
 	window.socket.on('new user', (data) => {
 		store.dispatch(userActions.addUser(data));
 	});
+
 	window.socket.on('remove user', (userId) => {
 		store.dispatch(chatActions.hideChatTab(store.getState().userData.users.find(user => user.id == userId).username))
 		store.dispatch(userActions.removeUser(userId));
@@ -66,6 +67,7 @@ export default function() {
 			length: 1
 		}));
 	});
+
 	window.socket.on('removed room', (roomId) => {
   	if(store.getState().game.connectedRoom == roomId){
 	    store.dispatch(gameActions.changeLocation('rooms'));
@@ -92,6 +94,7 @@ export default function() {
   	if(message.to != store.getState().chat.activeChat){
 	    store.dispatch(chatActions.addPendingTab(message.to, true));
 	  }
+	  store.dispatch(chatActions.showChatTab(message.to));
     store.dispatch(chatActions.addMessage(message, true));
   });
 
@@ -121,5 +124,4 @@ export default function() {
   	store.dispatch(gameActions.changeLocation('rooms'));
   	store.dispatch(roomsActions.changeRoom({roomId: store.getState().game.connectedRoom, length: length - 1}));
   });
-
 }

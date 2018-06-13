@@ -3,7 +3,6 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import gameActions from '../actions/gameActions';
 
-
 import Header from './Header/Header';
 import Main from './Main/Main';
 import SideBar from './Sidebar/SideBar';
@@ -11,8 +10,8 @@ import SideBar from './Sidebar/SideBar';
 const mapStateToProps = state => {
   return { 
     goto: state.game.path,
-    isGameStarted: state.game.gameStates.isGameStarted,
-    isGameOver: state.game.gameStates.isGameOver
+    isGameStarted: state.game.isGameStarted,
+    isGameOver: state.game.isGameOver
   };
 };
 
@@ -32,6 +31,7 @@ class ConnectedApp extends Component {
       this.props.changeLocation('');
     }
   }
+
   render() {
     if(this.props.goto && this.props.goto != '' && this.props.location.pathname.indexOf('/' + this.props.goto) == -1){
       return <Redirect to={this.props.goto}/>

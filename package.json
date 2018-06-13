@@ -1,7 +1,7 @@
 {
   "name": "socket-chat-example",
   "version": "0.0.1",
-  "description": "my first socket.io app",
+  "description": "Battleships game",
   "dependencies": {
     "babel-loader": "^7.1.4",
     "babel-preset-es2015": "^6.24.1",

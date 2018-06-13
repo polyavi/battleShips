@@ -4,11 +4,9 @@ const initialState = {
 	path: '',
 	connectedRoom: '',
 	isAdmin: false,
-	gameStates: {
-		isGameStarted: false,
-		isGameOver: false,
-		isWinner: false
-	}
+	isGameStarted: false,
+	isGameOver: false,
+	isWinner: false
 }
 
 const gameReducer = (state = initialState, action) => {
@@ -24,20 +22,18 @@ const gameReducer = (state = initialState, action) => {
 			};
 		case SET_GAME:
 			return { ...state,
-				gameStates: Object.assign( {}, ...initialState.gameStates)
+				isGameStarted: false,
+				isGameOver: false,
+				isWinner: false
 			};
 		case START_GAME:
 			return { ...state,
-				gameStates: { ...state.gameStates,
-					isGameStarted: true
-				}
+				isGameStarted: true
 			};
 		case FINISH_GAME:
 			return { ...state,
-				gameStates: {
-					isGameOver: true,
-					isWinner: action.payload
-				}
+				isGameOver: true,
+				isWinner: action.payload
 			};
 		default:
 			return state;

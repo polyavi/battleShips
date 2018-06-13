@@ -102,7 +102,7 @@ export default () => {
 		 * @method removePowerUp
 		 */
 		p.removePowerUp = function() {
-			this.powerup.delete;
+			this.powerup = undefined;
 			this.removeChild(this.getChildByName('powerup'));
 		}
 		/**
@@ -188,20 +188,72 @@ export default () => {
 		p.getNeighbors = function() {
 			let neighbors = [];
 			let sectionIndex = bts.sections.indexOf(this);
-			neighbors = [
-				bts.sections[sectionIndex - 1],
-				bts.sections[sectionIndex + 1],
-				bts.sections[sectionIndex - bts.fieldSize * 2],
-				bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))],
-				bts.sections[sectionIndex + bts.fieldSize * 2],
-				bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))]
-			]
-
+			if(sectionIndex%24 == 0){
+				neighbors = [
+					bts.sections[sectionIndex + 1],
+					bts.sections[sectionIndex + bts.fieldSize * 2],
+					bts.sections[sectionIndex - bts.fieldSize * 2]
+				]
+				if(!sectionIndex/24%2 == 0){
+					neighbors.push(bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))])
+					neighbors.push(bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))])
+				}
+			}else if(sectionIndex%24 == 23){
+				neighbors = [
+					bts.sections[sectionIndex - 1],
+					bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))],
+					bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))]
+				]
+				if(!Math.floor(sectionIndex/24)%2 == 0){
+					neighbors.push(bts.sections[sectionIndex + bts.fieldSize * 2]),
+					neighbors.push(bts.sections[sectionIndex - bts.fieldSize * 2])
+				}
+			}else {
+				neighbors = [
+					bts.sections[sectionIndex - 1],
+					bts.sections[sectionIndex + 1],
+					bts.sections[sectionIndex - bts.fieldSize * 2],
+					bts.sections[sectionIndex + bts.fieldSize * 2],
+					bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))],
+					bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))]
+				]
+			}
+			
 			return neighbors.filter(section => {
 				return section && section instanceof bts.Section && section.occupied != true;
 			});
 		}
+		/**
+			* Gets a section by given coordinates
+			*
+			* @method getSectionByCoordinates
+			* @param {Number} x 
+			* @param {Number} y 
+			*/
+		bts.getSectionByCoordinates = function(x, y){
+			return bts.stage.getChildByName('field').children.find((section) => {
+			 return section.children[0].hitTest(x, y) == true 
+			});
+		}
+		/**
+		 * Positions the obsticles/rock
+		 *
+		 * @method drawRock
+		 * @param {Object}  position  Object with x and y coordinates
+		 */
+		p.drawRock = function(){
+			let rock = new createjs.Container();
+			let bitmap = new createjs.Bitmap(bts.rock);
+			bitmap.scaleX = bitmap.scaleY = 0.1;
 
+			bitmap.x = this.children[0].graphics.command.x - bitmap.image.naturalWidth*0.1/2;
+			bitmap.y = this.children[0].graphics.command.y - bitmap.image.naturalHeight*0.1/2;
+
+			rock.addChild(bitmap);
+			rock.name = 'rock';
+			this.occupied = true;
+			this.addChild(rock);
+		}
 		bts.Section = Section;
 	}())
 }

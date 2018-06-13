@@ -1,44 +1,44 @@
 /**
  * @module BattleShips
  */
-export default ()=>{
-  window.bts = window.bts || {};
+export default () => {
+	window.bts = window.bts || {};
 
-	(function () {
+	(function() {
 		'use strict';
 		bts.zoom;
 
-		bts.images = [
-			{
-				id:'ships', 
-				src:'images/ships.png'
-			},
-			{
-				id:'sea', 
-				src:'images/sea.jpg'
-			},{
-				id:'explosion', 
-				src:'images/explosion.png'
-			},{
-				id:'island', 
-				src:'images/island.png'
-			},{
-				id:'sand', 
-				src:'images/sand.jpg'
-			}
-		];
+		bts.images = [{
+			id: 'ships',
+			src: 'images/ships.png'
+		}, {
+			id: 'sea',
+			src: 'images/sea.jpg'
+		}, {
+			id: 'explosion',
+			src: 'images/explosion.png'
+		}, {
+			id: 'rock',
+			src: 'images/rock.png'
+		}, {
+			id: 'sand',
+			src: 'images/sand.jpg'
+		}];
 
 		bts.shipsSpritesheetData = {
 			frames: [
 				[630, 135, 55, 110],
 			],
-	    animations: {
-	    	ship: [0],
-	    }
+			animations: {
+				ship: [0],
+			}
 		};
 
 		bts.explosionSpritesheetData = {
-			frames: {width: 64, height: 64},
+			frames: {
+				width: 64,
+				height: 64
+			},
 			animations: {
 				explode: [0, 24, false]
 			}
