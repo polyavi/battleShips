@@ -16,7 +16,6 @@ export default function() {
 	});
 
 	window.socket.on('logged in', (data) => {
-		store.dispatch(gameActions.changeLocation('rooms'));
 		store.dispatch(userActions.setUsers({users: data.allUsers,
 			me: {
 				name: data.username,
@@ -27,7 +26,6 @@ export default function() {
 	});
 
 	window.socket.on('created room', (data) => {
-		store.dispatch(gameActions.changeLocation('game'));
 		store.dispatch(roomsActions.addRoom({
 			id: data.roomId,
 			name: data.name,
@@ -45,7 +43,6 @@ export default function() {
 	});
 
 	window.socket.on('joined room', (data) => {
-		store.dispatch(gameActions.changeLocation('game'));
 		store.dispatch(gameActions.createConnection({
 			roomId: data.roomId,
 			isAdmin: data.admin
@@ -69,10 +66,6 @@ export default function() {
 	});
 
 	window.socket.on('removed room', (roomId) => {
-  	if(store.getState().game.connectedRoom == roomId){
-	    store.dispatch(gameActions.changeLocation('rooms'));
-	  }
-
 	  store.dispatch(chatActions.hideChatTab(store.getState().rooms.find(room => room.id == roomId).name));
 
 	  store.dispatch(roomsActions.removeRoom(roomId));
@@ -120,8 +113,6 @@ export default function() {
 
   window.socket.on('close room', () => {
   	let length = store.getState().rooms.find(room => room.id == store.getState().game.connectedRoom).length;
-
-  	store.dispatch(gameActions.changeLocation('rooms'));
   	store.dispatch(roomsActions.changeRoom({roomId: store.getState().game.connectedRoom, length: length - 1}));
   });
 }

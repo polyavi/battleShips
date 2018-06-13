@@ -139,41 +139,6 @@ export default ()=>{
 		}
 
 		/**
-		 * Gets the firts posible for movement position that is a neibor to both given sections
-		 *
-		 * @method getClosestPosiblePosition
-		 * @param {Section} startSection The position ship is in
-		 * @param {Sectin} nextSection The position to move the ship
-		 */
-		p.getClosestPosiblePosition = function(startSection, nextSection){
-			let startPosNeighbors = startSection.neighbors;
-			let nextPosNeighbors = nextSection.neighbors;
-			let mutualNeighbors = [];
-
-			startPosNeighbors.forEach(neighbor =>{
-				let mutual = nextPosNeighbors.find(section => {
-					return section.id == neighbor.id && !this.isInPerviosPositions(section);
-				});
-				if(mutual){
-					mutualNeighbors.push(mutual);
-				}
-			});
-
-			if(mutualNeighbors.length == 0){
-				let next = startPosNeighbors.filter(section => {
-					return !this.isInPerviosPositions(section);
-				});
-				if(next.length > 0){
-					return next[next.length - 1];
-				}else{
-					return this.prevPos.pop();
-				}
-			}
-			mutualNeighbors[0].alpha = 0.5;
-			return mutualNeighbors[mutualNeighbors.length - 1];
-		}
-
-		/**
 		 * Calculates the next position to move the ship to
 		 *
 		 * @method moveToNextPosition
@@ -182,62 +147,42 @@ export default ()=>{
 		 * @param {Object} endPos The position to move the ship
 		 */
 		bts.moveToNextPosition = function(ship, startPos, endPos){
-			if(ship.position.mine == true && this.name == bts.me){
+			if(ship.position.mine == true && ship.name == bts.me){
 				ship.position.mine = false;
 				ship.explodingAnimation();
 				window.socket.emit('steped on mine', bts.me);
 				return;
 			}
+
 			let startSection = bts.getSectionByCoordinates(startPos.x, startPos.y);
+			let endSection = bts.getSectionByCoordinates(endPos.x, endPos.y);
+			let closest = {};
 
-			if(startPos.x != endPos.x || startPos.y != endPos.y){
-				let newPos = {
-					x: startPos.x,
-					y: startPos.y
-				};
+			if(startSection.id != endSection.id){
+				if(!startSection.neighbors.find(neighbor => neighbor.id == endSection.id)){
+					let distances = [];
 
-				if(endPos.x < startPos.x){
-					newPos.x -= 76;
-					if(endPos.y > startPos.y){
-						newPos.y += 44;
-					}else{
-						newPos.y -= 44;
-					}
-				}else if(endPos.x > startPos.x){
-					newPos.x += 76;
-					if(endPos.y > startPos.y){
-						newPos.y += 44;
-					}else{
-						newPos.y -= 44;
+					startSection.neighbors.forEach( (neighbor, index) =>{
+						distances.push(bts.getDistanceBetweenSections(neighbor, endSection));
+					});
+
+					closest = distances[0];
+					for(let i = 1; i < distances.length; i+=1){
+						if(distances[i].distance < closest.distance){
+							closest = distances[i];
+						}
 					}
 				}else{
-					if(endPos.y > startPos.y){
-						newPos.y += 87;
-					}else{
-						newPos.y -= 87;
-					}
-				}
-				let next = bts.getSectionByCoordinates(newPos.x, newPos.y);
-				if(!next){
-					next = startSection.neighbors[0];
-				}
-				if(next.occupied == true){
-					next = ship.getClosestPosiblePosition(startSection, next);
-					if(ship.isInPerviosPositions(next)){
-						next = ship.getClosestPosiblePosition(startSection, next);
-					}
-				}else{
-					if(ship.isInPerviosPositions(next)){
-						next = ship.getClosestPosiblePosition(startSection, next);
-					}
-				}
-				ship.prevPos.push(startSection);
-				moveShip(ship, next, endPos);
-				ship.position = next;
+					closest.section = startSection.neighbors.find(neighbor => {
+						return neighbor.id == endSection.id;
+					});
+				}			
+				ship.position = closest.section;
 
 				if(ship.sectionsInRange){
 					ship.markSectionsInRange();
 				}
+				moveShip(ship, closest.section, endPos);
 			}else{
 				ship.position = startSection;
 				if(ship.name != bts.me){
@@ -289,7 +234,7 @@ export default ()=>{
 			
 			bts.sandBorder.forEach((sand) => { 
 				if(bts.stage.getChildByName('range').hitTest(sand.graphics.command.x, sand.graphics.command.y)){
-					createjs.Tween.get(sand).to({alpha: 1}, 10/this.speed, createjs.Ease.sinIn)
+					createjs.Tween.get(sand).to({alpha: 1}, 100/this.speed, createjs.Ease.sinIn)
 				}
 			});
 
@@ -297,7 +242,7 @@ export default ()=>{
 				if(section.getTargetShip()){
 					section.getTargetShip().alpha = 1;
 				}
-				createjs.Tween.get(section).to({alpha: 1}, 10/this.speed, createjs.Ease.sinIn)
+				createjs.Tween.get(section).to({alpha: 1}, 100/this.speed, createjs.Ease.sinIn)
 			})
 		}
 

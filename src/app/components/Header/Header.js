@@ -55,8 +55,7 @@ const ConnectedHeader = (props) => {
           </Link>
         </li>
       }
-      {
-        ( props.location.pathname.indexOf('/game') > -1 && 
+      {( props.location.pathname.indexOf('/game') > -1 && 
         props.isAdmin && 
         !props.isGameStarted) &&
         <li>
@@ -67,8 +66,7 @@ const ConnectedHeader = (props) => {
         </li>
       }
 
-      {
-        (props.location.pathname.indexOf('/game') > -1) &&
+      {(props.location.pathname.indexOf('/game') > -1) &&
         <li>
           <span to = '/rooms' onClick = { handleLeaveRoom }>
           <i className = 'icon-exit'> </i>
@@ -77,7 +75,7 @@ const ConnectedHeader = (props) => {
         </li>
       }
 
-      { (props.location.pathname != '/') &&
+      {(props.location.pathname != '/') &&
           <li>
             <span onClick = { toggleChat } className = { props.isChatVisible ? 'shown' : '' }>
               <i className = 'icon-chat' ></i> 

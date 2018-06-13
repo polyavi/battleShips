@@ -9,7 +9,7 @@ import SideBar from './Sidebar/SideBar';
 
 const mapStateToProps = state => {
   return { 
-    goto: state.game.path,
+    connectedRoom: state.game.connectedRoom,
     isGameStarted: state.game.isGameStarted,
     isGameOver: state.game.isGameOver
   };
@@ -26,16 +26,29 @@ class ConnectedApp extends Component {
     super(props);
   }
 
-  componentDidUpdate(){
-    if(this.props.goto != ''){
-      this.props.changeLocation('');
-    }
+  componentDidMount(){
+    window.socket.on('logged in', () => {
+      this.props.history.push("/rooms");
+    });
+    window.socket.on('created room', (data) => {
+      this.props.history.push("/game");
+    });
+
+    window.socket.on('joined room', (data) => {
+      this.props.history.push("/game");
+    });
+
+    window.socket.on('removed room', (roomId) => {
+      if(this.props.connectedRoom == roomId){
+        this.props.history.push("/rooms");
+      }
+    });
+    window.socket.on('close room', () => {
+      this.props.history.push("/rooms");
+    });
   }
 
   render() {
-    if(this.props.goto && this.props.goto != '' && this.props.location.pathname.indexOf('/' + this.props.goto) == -1){
-      return <Redirect to={this.props.goto}/>
-    }
     return ( 
       <div className = 'app'>
         <Header 

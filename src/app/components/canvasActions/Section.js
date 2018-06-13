@@ -254,6 +254,15 @@ export default () => {
 			this.occupied = true;
 			this.addChild(rock);
 		}
+
+		bts.getDistanceBetweenSections = function(startSection, endSection){
+			return {
+				section: startSection,
+				distance: Math.abs(startSection.children[0].graphics.command.x -
+					endSection.children[0].graphics.command.x) + Math.abs(startSection.children[0].graphics.command.y -
+					endSection.children[0].graphics.command.y)
+			}
+		}
 		bts.Section = Section;
 	}())
 }

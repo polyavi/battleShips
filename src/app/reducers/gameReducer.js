@@ -1,7 +1,6 @@
-import { CHANGE_LOCATION, CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME } from '../actions/actionTypes';
+import { CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME } from '../actions/actionTypes';
 
 const initialState = {
-	path: '',
 	connectedRoom: '',
 	isAdmin: false,
 	isGameStarted: false,
@@ -11,10 +10,6 @@ const initialState = {
 
 const gameReducer = (state = initialState, action) => {
 	switch (action.type) {
-		case CHANGE_LOCATION:
-			return { ...state,
-				path: action.payload
-			};
 		case CREATE_CONNECTION:
 			return { ...state,
 				isAdmin: action.payload.isAdmin,

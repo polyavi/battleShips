@@ -1,9 +1,4 @@
-import { CHANGE_LOCATION, CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME } from './actionTypes';
-
-const changeLocation = location => ({
-	type: CHANGE_LOCATION,
-	payload: location
-});
+import { CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME } from './actionTypes';
 
 const createConnection = connection => ({
 	type: CREATE_CONNECTION,
@@ -25,7 +20,6 @@ const setGame = () => ({
 
 export default{
 	createConnection,
-	changeLocation,
 	setGame,
 	startGame,
 	finishGame
