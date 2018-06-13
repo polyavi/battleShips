@@ -118,7 +118,7 @@ function createNewRoom(roomProps, socket){
 	if(socket){	
 		socket.join(roomProps.room);
 		let room = io.sockets.adapter.rooms[roomProps.room];
-		setRoom(roomProps.room, roomProps.pass, socket, room);
+		setRoom(roomProps, socket, room);
 
 		socket.emit('created room', {
 			userId: socket.id,
@@ -146,19 +146,18 @@ function createNewRoom(roomProps, socket){
  * @param {String} password 
  * @param {Object} socket 
  */
-function setRoom(roomname, password, socket, room) {
+function setRoom(roomInpit, socket, room) {
 
-	room.name = roomname;
+	room.name = roomInpit.room;
 	room.admin = socket.id;
 	room.id = room.name + socket.id;
 
-	if (password != '') {
+	if (roomInpit.pass != '') {
 		room.hasPass = true;
-		room.pass = password;
+		room.pass = roomInpit.pass;
 	} else {
 		room.hasPass = false;
 	}
-
 	setFieldProps(room);
 	setNewPlayer(socket, room);
 }
@@ -174,16 +173,17 @@ function leaveRoom(socket){
 	if(socket){
 		let room = io.sockets.adapter.rooms[socket.room];
 
-		io.to(socket.room).emit('system message', createMessage(
+		socket.to(socket.room).emit('system message', createMessage(
 				' left the game.',
 				socket,
-				room
+				socket.room
 			));
 
 		io.to(socket.room).emit('remove ship', socket.username);
 
-		socket.emit('close room')
-		socket.emit('system message', createMessage(' left ' + socket.room, socket, room.name));
+		socket.emit('close room', {id: room.id, length: room.length - 1});
+		socket.broadcast.emit('room change', {id: room.id, length: room.length - 1});
+		socket.emit('system message', createMessage(' left ' + socket.room, socket, 'global'));
 
 		socket.leave(socket.room);
 		socket.room = '';
@@ -252,7 +252,7 @@ function getAllRoomsData() {
  */
 function logInExistingRoom(roomProps, socket) {
 	let room = io.sockets.adapter.rooms[roomProps.room];
-	if (room && room.hasPass && room.pass !== roomProps.password) {
+	if (room && room.hasPass && room.pass !== roomProps.pass) {
 		socket.emit('wrong pass');
 	} else {
 		socket.join(room.name);

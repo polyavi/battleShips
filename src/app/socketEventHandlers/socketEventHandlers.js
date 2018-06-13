@@ -111,8 +111,12 @@ export default function() {
   	store.dispatch(gameActions.setGame());
   })
 
-  window.socket.on('close room', () => {
-  	let length = store.getState().rooms.find(room => room.id == store.getState().game.connectedRoom).length;
-  	store.dispatch(roomsActions.changeRoom({roomId: store.getState().game.connectedRoom, length: length - 1}));
+  window.socket.on('room change', (room) =>{
+  	store.dispatch(roomsActions.changeRoom({roomId: room.id, length: room.length}));
+  });
+  
+  window.socket.on('close room', (room) => {
+	  store.dispatch(chatActions.hideChatTab(store.getState().rooms.find(item => item.id == room.id).name));
+	  store.dispatch(roomsActions.changeRoom({roomId: room.id, length: room.length}));
   });
 }
