@@ -13,14 +13,11 @@ export default ()=>{
 			this.fillColor = fill;
 			this.strokeColor = stroke;
 			this.initialize();
-		}
+		};
 
 		var p = Preloader.prototype = new createjs.Container();
 		p.width = 400;
 		p.height = 40;
-		p.fillColor;
-		p.strokeColor;
-		p.bar;
 		p.Container_initialize = p.initialize;
 		// :methods
 		/**
@@ -31,7 +28,7 @@ export default ()=>{
 		p.initialize = function () {
 			this.Container_initialize();
 			this.drawPreloader();
-		}
+		};
 
 		p.drawPreloader = function () {
 			var outline = new createjs.Shape();
@@ -43,12 +40,12 @@ export default ()=>{
 			this.bar.graphics.drawRect(0, 0, this.width, this.height);
 			this.bar.scaleX = 0;
 			this.addChild(this.bar, outline);
-		}
+		};
 
 		p.update = function (perc) {
 			perc = perc > 1 ? 1 : perc;
 			this.bar.scaleX = perc;
-		}
+		};
 
 		bts.init = function () {
 			bts.stage = new createjs.Stage(document.getElementById('canvas'));
@@ -63,19 +60,19 @@ export default ()=>{
 			bts.queue.addEventListener('complete', bts.initGame);
 			bts.queue.addEventListener('progress', bts.onFileProgress);
 			bts.queue.load();
-		}
+		};
 
 		bts.onFileProgress = function (e) {
 			bts.preloader.update(e.progress);
-		}
+		};
 
 		bts.preload = function () {
 			bts.queue = new createjs.LoadQueue();
 			bts.queue.loadManifest(bts.images,false);
 
 			bts.init();
-		}
+		};
 		// add to namespace
 		bts.Preloader = Preloader;
 	}());
-}
+};

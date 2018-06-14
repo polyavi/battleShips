@@ -1,5 +1,5 @@
 import store from '../store/store';
-import Init from '../components/canvasActions/Init'
+import Init from '../components/canvasActions/Init';
 import gameActions from '../actions/gameActions';
 import roomsActions from '../actions/roomActions';
 import userActions from '../actions/userActions';
@@ -96,7 +96,7 @@ export default function() {
 
   window.socket.on('allow movement', () => {
   	store.dispatch(gameActions.startGame());
-  })
+  });
 
   window.socket.on('game over', (username) => {
   	let me = store.getState().userData.me.name;
@@ -105,14 +105,14 @@ export default function() {
   	} else {
   		store.dispatch(gameActions.finishGame(false));
   	}
-  })
+  });
 
   window.socket.on('restart', () => {
   	window.bts = {};
   	Init();
   	window.bts.me = store.getState().userData.me.name;
   	store.dispatch(gameActions.setGame());
-  })
+  });
 
   window.socket.on('room change', (room) =>{
   	store.dispatch(roomsActions.changeRoom({roomId: room.id, length: room.length}));

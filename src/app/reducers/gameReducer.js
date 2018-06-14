@@ -8,7 +8,7 @@ const initialState = {
 	isWinner: false
 }
 
-const gameReducer = (state = initialState, action) => {
+const gameReducer = (state = initialState,  action) => {
 	switch (action.type) {
 		case CREATE_CONNECTION:
 			return { ...state,

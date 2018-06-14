@@ -25,4 +25,4 @@ export default{
 	addRoom,
 	removeRoom,
 	changeRoom
-}
+};

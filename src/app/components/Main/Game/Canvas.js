@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Init from '../../canvasActions/Init'
+import Init from '../../canvasActions/Init';
 import { connect } from 'react-redux';
 const mapStateToProps = state => {
   return { 
@@ -14,7 +14,7 @@ class ConnectedCanvas extends Component {
     this.state = {
       width: document.getElementsByTagName('body')[0].clientWidth*0.8,
       height: document.getElementsByTagName('body')[0].clientHeight - 50
-    }
+    };
   }
 
   componentDidMount() {
@@ -28,7 +28,7 @@ class ConnectedCanvas extends Component {
         width: document.getElementsByTagName('main')[0].clientWidth,
         height: document.getElementsByTagName('main')[0].clientHeight
       });
-    }
+    };
   }
 
   render() {

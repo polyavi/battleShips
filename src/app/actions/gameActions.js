@@ -23,4 +23,4 @@ export default{
 	setGame,
 	startGame,
 	finishGame
-}
+};

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 const mapStateToProps = state => {
@@ -10,12 +9,12 @@ const ConnectedGameMessage = (props) => {
   let handlePlayAgain = (e) => {
     e.nativeEvent.preventDefault();
     window.socket.emit('play again');
-  }
+  };
 
   let handleLeaveRoom = (e) => {
     e.nativeEvent.preventDefault();
     window.socket.emit('leave room');
-  }
+  };
 
   return ( 
     <div id = 'game-message' > 

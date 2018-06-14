@@ -38,10 +38,10 @@ export default ()=>{
 			bts.canvasCenter = {
 				x: bts.stage.canvas.clientWidth/2,
 				y: bts.stage.canvas.clientHeight/2
-			}
+			};
 
 			addSocketListeners();
-		}
+		};
 
 		/**
 		 * Initiates drawing of sections, powerups, mines, ships and obsticles
@@ -93,13 +93,13 @@ export default ()=>{
 				mouseY: bts.stage.mouseY,
 				x: bts.stage.x,
 				y: bts.stage.y 
-			}
+			};
 
 			bts.stage.addEventListener('stagemousemove', function(e){
 				let newPosition = {
 					x: (bts.startPos.x + (bts.stage.mouseX - bts.startPos.mouseX)),
 					y: (bts.startPos.y + (bts.stage.mouseY - bts.startPos.mouseY))
-				}
+				};
 				if(newPosition.x > -88*(bts.fieldSize*3/2 + 2) && newPosition.x < 100){
 					bts.stage.x = newPosition.x;
 				}
@@ -110,7 +110,7 @@ export default ()=>{
 
 			bts.stage.addEventListener('stagemouseup', function (e) {
 				bts.stage.removeAllEventListeners();
-				bts.stage.addEventListener('stagemousedown', handleStageMovement)
+				bts.stage.addEventListener('stagemousedown', handleStageMovement);
 			});
 		}
 
@@ -122,11 +122,11 @@ export default ()=>{
 			let ships = bts.stage.getChildByName('ships').children;
 
 			data.positions.forEach(item =>{
-				if(!ships.find(ship => { return ship.name == item.username})){
+				if(!ships.find(ship => { return ship.name == item.username;})){
 					let position = {
 						x: bts.sections[item.position].children[0].graphics.command.x,
 						y: bts.sections[item.position].children[0].graphics.command.y
-					}
+					};
 					let section = bts.getSectionByCoordinates(position.x, position.y);
 
 					let newShip = new bts.Ship(item.username, item.color, position, data.props);
@@ -159,7 +159,7 @@ export default ()=>{
 		 * @param {Object} data new position and name of ship
 		 */
 		function handleNewPosition(data){
-			let ship = bts.stage.getChildByName('ships').children.find(item =>{ return item.name == data.name});
+			let ship = bts.stage.getChildByName('ships').children.find(item =>{ return item.name == data.name;});
 				
 				bts.moveToNextPosition(
 					ship, 
@@ -171,7 +171,7 @@ export default ()=>{
 						x: data.end.x,
 						y: data.end.y
 					}
-				)
+				);
 		}
 
 		/**
@@ -192,7 +192,7 @@ export default ()=>{
 					}
 					ship.drawStats(ship.getChildByName('stats'));
 				}
-			})
+			});
 		}
 
 		/**
@@ -206,7 +206,7 @@ export default ()=>{
 					bts.stage.getChildByName('field').children.forEach(section =>{
 						bts.stage.removeChild(bts.stage.getChildByName('range'));
 						section.removeAllEventListeners();
-					})
+					});
 				}
 		}
 
@@ -224,7 +224,7 @@ export default ()=>{
 
 			window.socket.on('positions', function(data) {
 				positionShips(data);
-			})
+			});
 
 			window.socket.on('allow movement', function(){
 				bts.stage.getChildByName('field').children.forEach(section =>{
@@ -232,22 +232,22 @@ export default ()=>{
 						section.addEventListener('click', section.handleInteraction);
 						section.neighbors = section.getNeighbors();
 					}
-				})
-			})
+				});
+			});
 
 			window.socket.on('new position', (data)=>{
 				handleNewPosition(data);
-			})
+			});
 
 			window.socket.on('remove powerup', (powerup)=>{
 				let section = bts.stage.getChildByName('field').children[powerup.section];
 				section.removePowerUp();
-			})
+			});
 
 			window.socket.on('add powerup', (powerup)=>{
 				let section = bts.stage.getChildByName('field').children[powerup.section];
 				section.addPowerUp(powerup);
-			})
+			});
 
 			window.socket.on('prop change', function(data){
 				handlePropChanges(data);
@@ -260,9 +260,9 @@ export default ()=>{
 			window.socket.on('remove ship', function(shipName) {
 				let ship = bts.stage.getChildByName('ships').getChildByName(shipName);
 				bts.stage.getChildByName('ships').removeChild(ship);
-			})
+			});
 		}
 		
 		bts.preload();
-	}())
-}
+	}());
+};

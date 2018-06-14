@@ -46,4 +46,4 @@ export {
 	ADD_PENDING_TAB,
 	REMOVE_PENDING_TAB, 
 	ADD_MESSAGE
-}
+};

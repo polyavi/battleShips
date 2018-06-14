@@ -46,7 +46,8 @@ const removePendingTab = (tab) => ({
 
 const addMessage = (message, isSystem) => ({
 	type: ADD_MESSAGE,
-	payload: { ...message,
+	payload: { 
+		message,
 		isSystem
 	}
 });
@@ -60,4 +61,4 @@ export default {
 	addPendingTab,
 	removePendingTab,
 	addMessage
-}
+};

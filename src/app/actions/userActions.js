@@ -19,4 +19,4 @@ export default{
 	setUsers,
 	addUser,
 	removeUser
-}
+};

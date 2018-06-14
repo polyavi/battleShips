@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PlayerList from './PlayerList/PlayerList';
 import Chat from './Chat/Chat';
 import { connect } from 'react-redux';
@@ -10,7 +10,6 @@ const mapStateToProps = state => {
 };
 
 const ConnectedSideBar = ({isChatVisible}) => {
-
   return ( 
     <div className = 'sidebar' >
     	{isChatVisible ?

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 const RoomNode = ({room}) =>{
-	return <li 
+	return (<li 
 		className={room.hasPass ? 'pass' : 'no-pass'}>
 		{room.length == 6 ? <span>{room.name}</span> :
 		<Link to={'/joinroom#' + room.name + '&' + room.hasPass } className='clickable'>{room.name}</Link>}
@@ -14,7 +14,7 @@ const RoomNode = ({room}) =>{
 				}
 			</span>
 		</div>
-	</li>
+	</li>);
 }
 
 export default RoomNode;

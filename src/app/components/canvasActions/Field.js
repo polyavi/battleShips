@@ -18,11 +18,11 @@ export default () => {
 			this.center = {
 				x: bts.stage.canvas.clientWidth / 2,
 				y: bts.stage.canvas.clientHeight / 2
-			}
+			};
 			this.size = bts.fieldSize;
 
 			this.initialize();
-		}
+		};
 
 		let p = Field.prototype = new createjs.Container();
 		p.Container_initialize = p.initialize;
@@ -36,7 +36,7 @@ export default () => {
 		p.initialize = function() {
 			this.Container_initialize();
 			this.drawField();
-		}
+		};
 
 		/**
 		 * Draws all sections and the sand border around the field
@@ -66,7 +66,7 @@ export default () => {
 			this.name = 'field';
 
 			bts.stage.addChild(this);
-		}
+		};
 
 		/**
 		 * Draws a sand section 
@@ -88,7 +88,7 @@ export default () => {
 				bts.sections.push(section);
 				section.alpha = 0;
 			}
-		}
+		};
 
 		/**
 		 * Positions the power ups on the map
@@ -102,7 +102,7 @@ export default () => {
 				let section = this.children[powerups[i].section];
 				section.addPowerUp(powerups[i]);
 			}
-		}
+		};
 
 		/**
 		 * Positions the mines on the map
@@ -116,7 +116,7 @@ export default () => {
 				let section = this.children[mines[i]];
 				section.mine = true;
 			}
-		}
+		};
 
 		/**
 		 * Draws a sand section 
@@ -132,5 +132,5 @@ export default () => {
 			bts.sandBorder.push(sand);
 		}
 		bts.Field = Field;
-	}())
-}
+	}());
+};

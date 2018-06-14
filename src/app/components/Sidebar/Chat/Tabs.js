@@ -22,11 +22,11 @@ const ConnectedTabs = ({chatTabs, penndingChats, activeChat, activateTab, hideCh
 
   if (chatTabs.length > 0) {
     tabNodes = chatTabs.filter(tab => {
-      return tab.isVisible === true
+      return tab.isVisible === true;
   }).map((tab, index) => {
       let classNames = ['tab'];
 
-      if (activeChat == tab.name) classNames.push('active') 
+      if (activeChat == tab.name) classNames.push('active');
         else if (penndingChats.indexOf(tab.name) > -1 ) classNames.push('alert');
 
       return (<TabNode

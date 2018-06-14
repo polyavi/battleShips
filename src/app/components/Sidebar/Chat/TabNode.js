@@ -6,12 +6,12 @@ const TabNode = ({ name, classNames, ...props}) => {
     if(props.activeChat != name){
       props.activateTab(name);
     }
-  }
+  };
 
   let handleTabClose = (e) => {
     e.stopPropagation();
     props.hideChatTab(name);
-  }
+  };
 
   return ( 
     <div className = { classNames.join(' ') } id = { name } onClick = { handleTabClick }> 

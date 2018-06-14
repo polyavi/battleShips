@@ -12,17 +12,17 @@ class ConnectedMessageInput extends Component {
     super(props);
     this.state = {
       text: ''
-    }
+    };
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onTextChange = this.onTextChange.bind(this);
   }
 
-  handleSubmit = (e) => {
+  handleSubmit(e) {
     e.nativeEvent.preventDefault();
     if (this.state.text != '') {
       if (this.props.activeChat == 'global') {
-        window.socket.emit('global message', this.state.text)
+        window.socket.emit('global message', this.state.text);
       } else {
         window.socket.emit('direct message', {
           text: this.state.text,
@@ -35,7 +35,7 @@ class ConnectedMessageInput extends Component {
     }
   }
 
-  onTextChange = (e) => {
+  onTextChange(e){
     this.setState({
       text: e.target.value
     });

@@ -18,12 +18,13 @@ const initialState = {
 		isVisible: true
 	}],
 	isChatVisible: false
-}
+};
 
 const chatReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case TOGGLE_CHAT:
-			if (action.payload !== null) return { ...state,
+			if (action.payload !== null) return { 
+				...state,
 				isChatVisible: action.payload
 			};
 			else return { ...state,

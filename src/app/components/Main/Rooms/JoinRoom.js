@@ -7,7 +7,7 @@ class JoinRoom extends Component {
 
     this.state = {
       pass: ''
-    }
+    };
 
     this.onSubmit = this.onSubmit.bind(this);
     this.updatePass = this.updatePass.bind(this);
@@ -21,14 +21,14 @@ class JoinRoom extends Component {
 
     window.socket.on('wrong pass', ()=>{
       this.setState({wrongPass: true, pass: ''});
-    })
+    });
   }
 
-  updatePass = (event) => {
+  updatePass(event){
     this.setState({ pass: event.target.value});
   }
 
-  onSubmit = (e) => {
+  onSubmit(e){
     e.nativeEvent.preventDefault();
 
     if(this.state.room == ''){

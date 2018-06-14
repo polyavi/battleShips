@@ -8,7 +8,7 @@ class CreateRoom extends Component {
     this.state = {
       room:'',
       pass: ''
-    }
+    };
 
     this.onSubmit = this.onSubmit.bind(this);
     this.updateRoomname = this.updateRoomname.bind(this);
@@ -23,26 +23,26 @@ class CreateRoom extends Component {
     this.setState({
       room: '',
       pass: ''
-    })
+    });
   }
 
   componentWillUnmount() {
     this._ismounted = false;
   }
 
-  updateRoomname = (event) => {
+  updateRoomname(event){
     this.setState({
       room: event.target.value
     });
   }
 
-  updatePass = (event) => {
+  updatePass(event){
     this.setState({
       pass: event.target.value
     });
   }
 
-  onSubmit = (e) => {
+  onSubmit(e){
     e.nativeEvent.preventDefault();
 
     window.socket.emit('create room', {

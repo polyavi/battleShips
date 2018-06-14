@@ -6,7 +6,6 @@ export default () => {
 
 	(function() {
 		'use strict';
-		bts.zoom;
 
 		bts.images = [{
 			id: 'ships',
@@ -48,5 +47,5 @@ export default () => {
 		bts.sections = [];
 		bts.startPos = {};
 		bts.sandBorder = [];
-	}())
-}
+	}());
+};

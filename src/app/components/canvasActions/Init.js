@@ -1,9 +1,9 @@
-import Data from './Data'
-import Field from './Field'
-import Preloader from './Preloader'
-import Section from './Section'
-import Ship from './Ship'
-import GameLogic from './GameLogic'
+import Data from './Data';
+import Field from './Field';
+import Preloader from './Preloader';
+import Section from './Section';
+import Ship from './Ship';
+import GameLogic from './GameLogic';
 
 export default () =>{
 	Data();
@@ -12,4 +12,4 @@ export default () =>{
 	Section();
 	Ship();
 	GameLogic();
-}
+};

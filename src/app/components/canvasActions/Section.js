@@ -17,7 +17,7 @@ export default () => {
 			this.powerup = '';
 			this.neighbors = [];
 			this.initialize(position);
-		}
+		};
 
 		let p = Section.prototype = new createjs.Container();
 
@@ -31,7 +31,7 @@ export default () => {
 		p.initialize = function(position) {
 			this.Container_initialize();
 			this.drawSection(position);
-		}
+		};
 
 		/**
 		 * Draws Section
@@ -43,7 +43,7 @@ export default () => {
 			let section = new createjs.Shape();
 			section.graphics.beginBitmapFill(bts.backgroundImage).beginStroke(bts.strokeColor).drawPolyStar(position.x, position.y, 50, 6, 0, 0);
 			this.addChild(section);
-		}
+		};
 
 		/**
 		 * Handles click on Section
@@ -78,10 +78,10 @@ export default () => {
 							x: target.graphics.command.x,
 							y: target.graphics.command.y
 						}
-					)
+					);
 				}
 			}
-		}
+		};
 
 		/**
 		 * Checks if there is power up in the Section, determines if it shoud send socket event and removes power up
@@ -96,7 +96,7 @@ export default () => {
 				}
 				this.removePowerUp();
 			}
-		}
+		};
 
 		/**
 		 * @method removePowerUp
@@ -104,7 +104,7 @@ export default () => {
 		p.removePowerUp = function() {
 			this.powerup = undefined;
 			this.removeChild(this.getChildByName('powerup'));
-		}
+		};
 		/**
 		 * @method addPowerUp
 		 * @param {Object} powerup 
@@ -128,7 +128,7 @@ export default () => {
 					alpha: 1
 				}, 500, createjs.Ease.sinIn);
 			this.powerup = powerup;
-		}
+		};
 
 		/**
 		 * Checks if there is a ship in the Section and returns it
@@ -146,7 +146,7 @@ export default () => {
 					return (ship.position.children[0].graphics.command.x == self.children[0].graphics.command.x && ship.position.children[0].graphics.command.y == self.children[0].graphics.command.y);
 				});
 			}
-		}
+		};
 
 		/**
 		 * @method isTargetInRange
@@ -178,7 +178,7 @@ export default () => {
 			text.name = 'powerup';
 			text.x = this.children[0].graphics.command.x - powerUpText.getMeasuredWidth() / 2;
 			text.y = this.children[0].graphics.command.y - powerUpText.getMeasuredHeight();
-		}
+		};
 
 		/**
 		 * Gets the 6 surrounding section of the given one
@@ -193,20 +193,20 @@ export default () => {
 					bts.sections[sectionIndex + 1],
 					bts.sections[sectionIndex + bts.fieldSize * 2],
 					bts.sections[sectionIndex - bts.fieldSize * 2]
-				]
+				];
 				if(!sectionIndex/24%2 == 0){
-					neighbors.push(bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))])
-					neighbors.push(bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))])
+					neighbors.push(bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))]);
+					neighbors.push(bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))]);
 				}
 			}else if(sectionIndex%24 == 23){
 				neighbors = [
 					bts.sections[sectionIndex - 1],
 					bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))],
 					bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))]
-				]
+				];
 				if(!Math.floor(sectionIndex/24)%2 == 0){
-					neighbors.push(bts.sections[sectionIndex + bts.fieldSize * 2]),
-					neighbors.push(bts.sections[sectionIndex - bts.fieldSize * 2])
+					neighbors.push(bts.sections[sectionIndex + bts.fieldSize * 2]);
+					neighbors.push(bts.sections[sectionIndex - bts.fieldSize * 2]);
 				}
 			}else {
 				neighbors = [
@@ -216,13 +216,13 @@ export default () => {
 					bts.sections[sectionIndex + bts.fieldSize * 2],
 					bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))],
 					bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))]
-				]
+				];
 			}
 			
 			return neighbors.filter(section => {
 				return section && section instanceof bts.Section && section.occupied != true;
 			});
-		}
+		};
 		/**
 			* Gets a section by given coordinates
 			*
@@ -232,9 +232,9 @@ export default () => {
 			*/
 		bts.getSectionByCoordinates = function(x, y){
 			return bts.stage.getChildByName('field').children.find((section) => {
-			 return section.children[0].hitTest(x, y) == true 
+			 return section.children[0].hitTest(x, y) == true;
 			});
-		}
+		};
 		/**
 		 * Positions the obsticles/rock
 		 *
@@ -253,7 +253,7 @@ export default () => {
 			rock.name = 'rock';
 			this.occupied = true;
 			this.addChild(rock);
-		}
+		};
 
 		bts.getDistanceBetweenSections = function(startSection, endSection){
 			return {
@@ -261,8 +261,8 @@ export default () => {
 				distance: Math.abs(startSection.children[0].graphics.command.x -
 					endSection.children[0].graphics.command.x) + Math.abs(startSection.children[0].graphics.command.y -
 					endSection.children[0].graphics.command.y)
-			}
-		}
+			};
+		};
 		bts.Section = Section;
-	}())
-}
+	}());
+};

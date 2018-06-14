@@ -24,7 +24,7 @@ const ConnectedHeader = (props) => {
     }else{
       window.socket.emit('leave room');
     }
-  }
+  };
 
   function toggleChat() {
     props.toggleChat(null);

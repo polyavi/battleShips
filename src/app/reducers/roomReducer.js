@@ -12,11 +12,11 @@ const roomReducer = (state = initialState, action) => {
 			return state.filter(article => article.id != action.payload);
 		case CHANGE_ROOM:
 			return state.map(room => {
-					if (room.id == action.payload.roomId) {
-						room.length = action.payload.length
-					}
-					return room;
-				});
+				if (room.id == action.payload.roomId) {
+					room.length = action.payload.length;
+				}
+				return room;
+			});
 		default:
 			return state;
 	}

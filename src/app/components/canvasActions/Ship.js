@@ -21,7 +21,7 @@ export default ()=>{
 			this.prevPos = [];
 
 			this.initialize(name, position);
-		}
+		};
 
 		let p = Ship.prototype = new createjs.Container();
 		p.Container_initialize = p.initialize;
@@ -34,7 +34,7 @@ export default ()=>{
 		p.initialize = function (name, position) {
 			this.Container_initialize();
 			this.drawShip(name, position);
-		}
+		};
 
 		/**
 		 * Draws ship on map
@@ -65,7 +65,7 @@ export default ()=>{
 			this.name = name;
 			this.drawStats(stats);
 			bts.stage.getChildByName('ships').addChild(this);
-		}
+		};
 
 		/**
 		 * Draws the shape marking the range of the ship
@@ -84,7 +84,7 @@ export default ()=>{
 			bts.stage.addChild(this.rangeSection);
 
 			this.markSectionsInRange();
-		}
+		};
 
 		/**
 		 * Draws the info bubble of the ship
@@ -109,7 +109,7 @@ export default ()=>{
 			stats.name = 'stats';
 
 			this.addChild(stats);
-		}
+		};
 
 		/**
 		 * Draws the number of lifes indicator
@@ -124,7 +124,7 @@ export default ()=>{
 				lifeLine.graphics.beginFill(this.color).drawRoundRect(i*15, 0, 10, 20, 5);	
 				life.addChild(lifeLine);		
 			}
-		}
+		};
 
 		/**
 		 * Positions the explosion Srite in the middle of the ship and plays animation
@@ -136,7 +136,7 @@ export default ()=>{
 			this.explosion.y = this.position.children[0].graphics.command.y - 32;
 			this.explosion.alpha = 1;
 			this.explosion.gotoAndPlay('explode');
-		}
+		};
 
 		/**
 		 * Calculates the next position to move the ship to
@@ -193,7 +193,7 @@ export default ()=>{
 				}
 				return;
 			}
-		}
+		};
 
 		/**
 		 * Gets the firts posible for movement position that is a neibor to both given sections
@@ -205,7 +205,7 @@ export default ()=>{
 			return !!this.prevPos.find(previous =>{
 				return previous.id == section.id;
 			});
-		}
+		};
 
 		/**
 		 * Emits socket event for attack with the target name
@@ -219,7 +219,7 @@ export default ()=>{
 					window.socket.emit('hit', {name: targetShip.name});
 				}
 			}
-		}
+		};
 
 		/**
 		 * Sets the sections that intersect with range shape of the ship and reveals them if not visible
@@ -234,7 +234,7 @@ export default ()=>{
 			
 			bts.sandBorder.forEach((sand) => { 
 				if(bts.stage.getChildByName('range').hitTest(sand.graphics.command.x, sand.graphics.command.y)){
-					createjs.Tween.get(sand).to({alpha: 1}, 100/this.speed, createjs.Ease.sinIn)
+					createjs.Tween.get(sand).to({alpha: 1}, 100/this.speed, createjs.Ease.sinIn);
 				}
 			});
 
@@ -242,9 +242,9 @@ export default ()=>{
 				if(section.getTargetShip()){
 					section.getTargetShip().alpha = 1;
 				}
-				createjs.Tween.get(section).to({alpha: 1}, 100/this.speed, createjs.Ease.sinIn)
-			})
-		}
+				createjs.Tween.get(section).to({alpha: 1}, 100/this.speed, createjs.Ease.sinIn);
+			});
+		};
 
 		/**
 		 * Calculates ships rotaion angle
@@ -286,7 +286,7 @@ export default ()=>{
 			let nextPos = {
 				x: target.children[0].graphics.command.x,
 				y: target.children[0].graphics.command.y
-			}
+			};
 
 			let hipotenuse = Math.sqrt(Math.pow(Math.abs(ship.children[0].x - nextPos.x),2) + Math.pow(Math.abs(ship.children[0].y - nextPos.y),2));
 			let angle = calculateAngle({x: ship.children[0].x, y: ship.children[0].y}, nextPos, hipotenuse);
@@ -310,5 +310,5 @@ export default ()=>{
 
 		// add to namespace
 		bts.Ship = Ship;	
-	}())
-}
+	}());
+};

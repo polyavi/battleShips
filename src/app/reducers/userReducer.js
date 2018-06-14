@@ -10,7 +10,7 @@ const initialState = {
 		id: ''
 	},
 	users: []
-}
+};
 
 const userReducer = (state = initialState, action) => {
 	switch (action.type) {

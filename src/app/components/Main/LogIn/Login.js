@@ -7,7 +7,7 @@ class Login extends Component {
 
     this.state = {
       username: ''
-    }
+    };
 
     this.onSubmit = this.onSubmit.bind(this);
     this.update = this.update.bind(this);
@@ -22,20 +22,20 @@ class Login extends Component {
         isUserNameTaken: true,
         username: ''
       });
-    })
+    });
   }
 
   componentWillUnmount() {
     this._ismounted = false;
   }
 
-  update = (event) => {
+  update(event){
     this.setState({
       username: event.target.value
     });
   }
 
-  onSubmit = (e) => {
+  onSubmit(e){
     e.nativeEvent.preventDefault();
     if (this.state.username != '') {
       window.socket.emit('add user', this.state.username);

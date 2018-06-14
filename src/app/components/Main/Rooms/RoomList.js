@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
 import { connect } from 'react-redux';
-import RoomNode from './RoomNode'
+import RoomNode from './RoomNode';
 
 const mapStateToProps = state => {
   return { 
@@ -12,7 +11,7 @@ const ConnectedRoomList = ({rooms}) =>{
 	let roomNodes;
 	if(rooms.length > 0){
 		roomNodes = rooms.map((room) =>{
-			return <RoomNode room={room} key={room.id}/>
+			return (<RoomNode room={room} key={room.id}/>);
 		});
 	}
 	

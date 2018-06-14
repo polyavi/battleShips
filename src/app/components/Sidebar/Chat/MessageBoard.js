@@ -12,11 +12,11 @@ const ConnectedMessageBoard = ({ messages, me }) => {
 	let messageNodes;
 	if (messages && messages.length > 0) {
 		messageNodes = messages.map((message, index) => {
-			return <Message 
+			return (<Message 
 				message = { message }
 				key = { index }
 				me = { me }
-			/>;
+			/>);
 		})
 	}
 

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
-import Tabs from './Tabs'
-import MessageBoard from './MessageBoard'
-import MessageInput from './MessageInput'
+import Tabs from './Tabs';
+import MessageBoard from './MessageBoard';
+import MessageInput from './MessageInput';
 
 const Chat = () => {
   return ( 

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Switch, Route } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom';
 
-import Canvas from './Game/Canvas'
-import GameMessage from './Game/GameMessage'
+import Canvas from './Game/Canvas';
+import GameMessage from './Game/GameMessage';
 import JoinRoom from './Rooms/JoinRoom';
 import CreateRoom from './Rooms/CreateRoom';
-import Login from './Login/Login'
-import RoomList from './Rooms/RoomList'
+import Login from './Login/Login';
+import RoomList from './Rooms/RoomList';
 
 const Main = ({isGameStarted, isGameOver}) =>{
   return (
