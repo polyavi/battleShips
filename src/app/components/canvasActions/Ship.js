@@ -141,6 +141,38 @@ export default ()=>{
 		/**
 		 * Calculates the next position to move the ship to
 		 *
+		 * @method getNextSection
+		 * @param {Section} startSection The section ship is in
+		 * @param {Section} endSection The section to move the ship
+		 * @returns {Section} the next section to move the ship to
+		 */
+
+		bts.getNextSection = function(startSection, endSection){
+			let closest = {};
+			if(!startSection.neighbors.find(neighbor => neighbor.id == endSection.id)){
+				let distances = [];
+
+				startSection.neighbors.forEach( (neighbor, index) =>{
+					distances.push(bts.getDistanceBetweenSections(neighbor, endSection));
+				});
+
+				closest = distances[0];
+				for(let i = 1; i < distances.length; i+=1){
+					if(distances[i].distance < closest.distance){
+						closest = distances[i];
+					}
+				}
+			}else{
+				closest.section = startSection.neighbors.find(neighbor => {
+					return neighbor.id == endSection.id;
+				});
+			}						
+			return closest.section;
+		};
+
+		/**
+		 * Intiates all actions connected to ship movent to next section
+		 *
 		 * @method moveToNextPosition
 		 * @param {Ship} ship The position ship is in
 		 * @param {Object} startPos The position ship is in
@@ -156,33 +188,16 @@ export default ()=>{
 
 			let startSection = bts.getSectionByCoordinates(startPos.x, startPos.y);
 			let endSection = bts.getSectionByCoordinates(endPos.x, endPos.y);
-			let closest = {};
 
 			if(startSection.id != endSection.id){
-				if(!startSection.neighbors.find(neighbor => neighbor.id == endSection.id)){
-					let distances = [];
-
-					startSection.neighbors.forEach( (neighbor, index) =>{
-						distances.push(bts.getDistanceBetweenSections(neighbor, endSection));
-					});
-
-					closest = distances[0];
-					for(let i = 1; i < distances.length; i+=1){
-						if(distances[i].distance < closest.distance){
-							closest = distances[i];
-						}
-					}
-				}else{
-					closest.section = startSection.neighbors.find(neighbor => {
-						return neighbor.id == endSection.id;
-					});
-				}			
-				ship.position = closest.section;
+				let nextSection = bts.getNextSection(startSection, endSection);
+				ship.position = nextSection;
 
 				if(ship.sectionsInRange){
 					ship.markSectionsInRange();
 				}
-				moveShip(ship, closest.section, endPos);
+
+				moveShip(ship, nextSection, endPos);
 			}else{
 				ship.position = startSection;
 				if(ship.name != bts.me){

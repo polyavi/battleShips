@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 const mapStateToProps = state => {
@@ -31,7 +31,7 @@ const ConnectedMessageBoard = ({ messages, me }) => {
 	);
 }
 
-const Message = ({ message, index, me }) => {
+const Message = ({ message, me }) => {
 	let style = {
 		color: message.sender.color
 	}

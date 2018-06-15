@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import chatActions from '../../../actions/chatActions';
 import TabNode from './TabNode';

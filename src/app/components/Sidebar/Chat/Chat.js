@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import Tabs from './Tabs';
 import MessageBoard from './MessageBoard';

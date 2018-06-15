@@ -188,40 +188,26 @@ export default () => {
 		p.getNeighbors = function() {
 			let neighbors = [];
 			let sectionIndex = bts.sections.indexOf(this);
-			if(sectionIndex%24 == 0){
-				neighbors = [
-					bts.sections[sectionIndex + 1],
-					bts.sections[sectionIndex + bts.fieldSize * 2],
-					bts.sections[sectionIndex - bts.fieldSize * 2]
-				];
-				if(!sectionIndex/24%2 == 0){
-					neighbors.push(bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))]);
-					neighbors.push(bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))]);
+			let neighborIndexes = [
+				sectionIndex - 1, 
+				sectionIndex + 1, 
+				sectionIndex - bts.fieldSize * 2, 
+				sectionIndex + bts.fieldSize * 2,
+				sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24))),
+				sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))
+			];
+			neighborIndexes.forEach(neighbor => {
+				let section = bts.sections[neighbor];
+				if(section && section instanceof bts.Section && section.occupied != true){
+					let neighborPosition = section.children[0].graphics.command;
+					let sectionPosition = this.children[0].graphics.command;
+					if(Math.abs(neighborPosition.x - sectionPosition.x) < 100 && Math.abs(neighborPosition.y - sectionPosition.y) < 100){
+						neighbors.push(section);
+					}
 				}
-			}else if(sectionIndex%24 == 23){
-				neighbors = [
-					bts.sections[sectionIndex - 1],
-					bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))],
-					bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))]
-				];
-				if(!Math.floor(sectionIndex/24)%2 == 0){
-					neighbors.push(bts.sections[sectionIndex + bts.fieldSize * 2]);
-					neighbors.push(bts.sections[sectionIndex - bts.fieldSize * 2]);
-				}
-			}else {
-				neighbors = [
-					bts.sections[sectionIndex - 1],
-					bts.sections[sectionIndex + 1],
-					bts.sections[sectionIndex - bts.fieldSize * 2],
-					bts.sections[sectionIndex + bts.fieldSize * 2],
-					bts.sections[sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24)))],
-					bts.sections[sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))]
-				];
-			}
-			
-			return neighbors.filter(section => {
-				return section && section instanceof bts.Section && section.occupied != true;
 			});
+			
+			return neighbors;
 		};
 		/**
 			* Gets a section by given coordinates

@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import chatActions from '../../../actions/chatActions';
+import React from 'react';
 
 const TabNode = ({ name, classNames, ...props}) => {
   let handleTabClick = (e) => {
