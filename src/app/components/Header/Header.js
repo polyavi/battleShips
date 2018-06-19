@@ -7,7 +7,8 @@ const mapStateToProps = state => {
   return {
     isChatVisible: state.chat.isChatVisible,
     isGameStarted: state.game.isGameStarted,
-    isAdmin: state.game.isAdmin
+    isAdmin: state.game.isAdmin,
+    numberOfPlayers: state.game.numberOfPlayers
   };
 };
 
@@ -59,7 +60,7 @@ const ConnectedHeader = (props) => {
         props.isAdmin && 
         !props.isGameStarted) &&
         <li>
-          <span onClick = { startGame }> 
+          <span onClick = { startGame } className={props.numberOfPlayers < 2 ? "disabled" : ""}> 
             <i className = 'icon-dice'> </i>
             Start game
           </span>

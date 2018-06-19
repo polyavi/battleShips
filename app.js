@@ -36,7 +36,7 @@ const PLAYER_PROPS = {
 
 io.on('connection', function(socket) {
 
-	socket.on('add user', function(username) { addNewUser(socket, username); });
+	socket.on('add user', function(username) { console.log(socket.conn.remoteAddress); addNewUser(socket, username); });
 
 	socket.on('join room', function(roomProps) { if(socket) logInExistingRoom(roomProps, socket);	});
 
@@ -264,6 +264,7 @@ function logInExistingRoom(roomProps, socket) {
 			length: room.length,
 			admin: false
 		});
+		socket.to(room.name).emit('add player to game', room.length);
 
 		socket.to(room.name).emit('system message', createMessage(
 			' joined the game.',
@@ -428,11 +429,14 @@ function setNewPlayer(socket, room) {
 	* @param {Object} socket 
 	*/
 function startGame(socket){
-	io.to(socket.room).emit('allow movement');
+	
 	let room = io.sockets.adapter.rooms[socket.room];
-	room.gameStarted = true;
+	if(room.length > 1){
+		io.to(socket.room).emit('allow movement');
+		room.gameStarted = true;
 
-	io.to(socket.room).emit('system message', createMessage(' started the game.',socket, socket.room));
+		io.to(socket.room).emit('system message', createMessage(' started the game.',socket, socket.room));
+	}
 }
 
 /**
@@ -546,9 +550,10 @@ function initiateHitEvents(socket, data){
 function resetStats(socket){
 	socket.props.range = PLAYER_PROPS.range;
 	socket.props.speed = PLAYER_PROPS.speed;
+	socket.props.life -= 1;
 
 	io.to(socket.room).emit('prop change', {
-		props: [generateProp('speed', socket), generateProp('range', socket)]
+		props: [generateProp('speed', socket), generateProp('range', socket), generateProp('life', socket)]
 	});
 
 	io.to(socket.room).emit('system message', createMessage(
@@ -556,6 +561,7 @@ function resetStats(socket){
 		socket,
 		socket.room
 	));
+
 }
 
 /**

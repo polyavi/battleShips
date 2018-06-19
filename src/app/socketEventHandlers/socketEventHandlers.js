@@ -38,7 +38,8 @@ export default function() {
 		}));
 		store.dispatch(gameActions.createConnection({
 			roomId: data.roomId,
-			isAdmin: data.admin
+			isAdmin: data.admin,
+			length: 1
 		}));
 		store.dispatch(gameActions.setGame());
 		store.dispatch(chatActions.toggleChat(true));
@@ -50,12 +51,16 @@ export default function() {
 			roomId: data.roomId,
 			isAdmin: data.admin
 		}));
-
+		
 		store.dispatch(roomsActions.changeRoom({roomId: data.roomId, length: data.length}));
-  	store.dispatch(gameActions.setGame());
+  		store.dispatch(gameActions.setGame());
 
 		store.dispatch(chatActions.toggleChat(true));
 		store.dispatch(chatActions.addChatTab(store.getState().rooms.find(room => room.id == data.roomId).name));
+	});
+	
+	window.socket.on('add player to game', (length)=>{
+		store.dispatch(gameActions.addPlayer(length));
 	});
 
 	window.socket.on('new room', (data) => {

@@ -1,11 +1,12 @@
-import { CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME } from '../actions/actionTypes';
+import { CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME, ADD_PLAYER } from '../actions/actionTypes';
 
 const initialState = {
 	connectedRoom: '',
 	isAdmin: false,
 	isGameStarted: false,
 	isGameOver: false,
-	isWinner: false
+	isWinner: false,
+	numberOfPlayers: 0
 }
 
 const gameReducer = (state = initialState,  action) => {
@@ -13,7 +14,12 @@ const gameReducer = (state = initialState,  action) => {
 		case CREATE_CONNECTION:
 			return { ...state,
 				isAdmin: action.payload.isAdmin,
-				connectedRoom: action.payload.roomId
+				connectedRoom: action.payload.roomId,
+				numberOfPlayers: action.payload.length
+			};
+		case ADD_PLAYER:
+			return { ...state,
+				numberOfPlayers: action.payload
 			};
 		case SET_GAME:
 			return { ...state,

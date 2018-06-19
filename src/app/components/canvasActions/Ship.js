@@ -93,6 +93,7 @@ export default ()=>{
 		 * @param {createjs.Container} stats Container for the text and the number of lifes indicator
 		 */
 		p.drawStats = function(stats){
+			stats.removeAllChildren();
 			let background = new createjs.Shape();
 
 			let text = new createjs.Text(this.name, '20px monospace', this.color);

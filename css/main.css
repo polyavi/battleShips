@@ -490,3 +490,7 @@ span.empty-list {
     padding: 10px;
     display: block;
 }
+.disabled {
+  color: #cdcdcd;
+  cursor: default;
+}

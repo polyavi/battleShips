@@ -31,9 +31,9 @@ const ConnectedGameMessage = (props) => {
       <div>
         <h3 className = 'title'> 
           { props.isAdmin ? 
-            'Hit start game when you are ready.' : 
+            ((props.numberOfPlayers < 2) ? 'Waiting for more players to join.' :'Hit start game when you are ready.') : 
             'Waiting for the game to start.'
-          } 
+          }
         </h3> 
       </div>
     }
