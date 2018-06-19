@@ -44,13 +44,13 @@ const removePendingTab = (tab) => ({
 	payload: tab
 });
 
-const addMessage = (message, isSystem) => ({
-	type: ADD_MESSAGE,
-	payload: { 
-		message,
-		isSystem
-	}
-});
+const addMessage = (message, isSystem) => {
+	message.isSystem = isSystem;
+	return {	
+		type: ADD_MESSAGE,
+		payload: message
+	};
+};
 
 export default {
 	toggleChat,
