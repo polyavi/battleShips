@@ -1,5 +1,5 @@
 import store from '../store/store';
-import Init from '../components/canvasActions/Init';
+import Init from '../components/Main/Game/canvasActions/Init';
 import gameActions from '../actions/gameActions';
 import roomsActions from '../actions/roomActions';
 import userActions from '../actions/userActions';

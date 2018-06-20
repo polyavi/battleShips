@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Init from '../../canvasActions/Init';
+import Init from './canvasActions/Init';
 import { connect } from 'react-redux';
 const mapStateToProps = state => {
   return { 
