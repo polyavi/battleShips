@@ -1,11 +1,13 @@
 /**
  * @module BattleShips
  */
-export default ()=>{
+export default (Data)=>{
   window.bts = window.bts || {};
 
 	(function () {
 		'use strict';
+
+		let stage = Data.stage;
 		/**
 		 * @namespace bts
 		 * @class bts.Ship
@@ -44,11 +46,11 @@ export default ()=>{
 		 * @param {Object} position x and y coordinates
 		 */
 		p.drawShip =  function (name, position) {
-			this.explosion = new createjs.Sprite(bts.explosionSpriteSheet);
+			this.explosion = new createjs.Sprite(Data.explosionSpriteSheet);
 			this.explosion.alpha = 0;
-			bts.stage.addChild(this.explosion);
+			stage.addChild(this.explosion);
 
-			let sprite = new createjs.Sprite(bts.shipSpritesheet);
+			let sprite = new createjs.Sprite(Data.shipSpritesheet);
 			sprite.regX = 55/2;
 			sprite.regY = 110/2;
 
@@ -64,7 +66,7 @@ export default ()=>{
 			stats.y = position.y - 120;
 			this.name = name;
 			this.drawStats(stats);
-			bts.stage.getChildByName('ships').addChild(this);
+			stage.getChildByName('ships').addChild(this);
 		};
 
 		/**
@@ -73,7 +75,7 @@ export default ()=>{
 		 * @method drawRangeMarker
 		 */
 		p.drawRangeMarker = function (){
-			bts.stage.removeChild(bts.stage.getChildByName('range'));
+			stage.removeChild(stage.getChildByName('range'));
 
 			this.rangeSection = new createjs.Shape();
 
@@ -81,7 +83,7 @@ export default ()=>{
 			this.rangeSection.alpha = 0.2;
 			this.rangeSection.name = 'range';
 
-			bts.stage.addChild(this.rangeSection);
+			stage.addChild(this.rangeSection);
 
 			this.markSectionsInRange();
 		};
@@ -180,10 +182,10 @@ export default ()=>{
 		 * @param {Object} endPos The position to move the ship
 		 */
 		bts.moveToNextPosition = function(ship, startPos, endPos){
-			if(ship.position.mine == true && ship.name == bts.me){
+			if(ship.position.mine == true && ship.name == Data.me){
 				ship.position.mine = false;
 				ship.explodingAnimation();
-				window.socket.emit('steped on mine', bts.me);
+				window.socket.emit('steped on mine', Data.me);
 				return;
 			}
 
@@ -201,7 +203,7 @@ export default ()=>{
 				moveShip(ship, nextSection, endPos);
 			}else{
 				ship.position = startSection;
-				if(ship.name != bts.me){
+				if(ship.name != Data.me){
 					ship.alpha = ship.position.alpha;
 				}
 				if(ship.sectionsInRange){
@@ -231,7 +233,7 @@ export default ()=>{
 		 */
 		p.attackOponent = function(targetShip){
 			if(targetShip){
-				if(bts.myship.monitions > 0 && targetShip.life > 0){
+				if(Data.myship.monitions > 0 && targetShip.life > 0){
 					window.socket.emit('hit', {name: targetShip.name});
 				}
 			}
@@ -244,12 +246,12 @@ export default ()=>{
 		 */
 		p.markSectionsInRange = function(){
 			this.sectionsInRange = [];
-			this.sectionsInRange = bts.sections.filter((section) => {
-				return bts.stage.getChildByName('range').hitTest(section.children[0].graphics.command.x, section.children[0].graphics.command.y);
+			this.sectionsInRange = Data.sections.filter((section) => {
+				return stage.getChildByName('range').hitTest(section.children[0].graphics.command.x, section.children[0].graphics.command.y);
 			});
 			
-			bts.sandBorder.forEach((sand) => { 
-				if(bts.stage.getChildByName('range').hitTest(sand.graphics.command.x, sand.graphics.command.y)){
+			Data.sandBorder.forEach((sand) => { 
+				if(stage.getChildByName('range').hitTest(sand.graphics.command.x, sand.graphics.command.y)){
 					createjs.Tween.get(sand).to({alpha: 1}, 100/this.speed, createjs.Ease.sinIn);
 				}
 			});

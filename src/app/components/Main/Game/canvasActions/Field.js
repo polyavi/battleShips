@@ -1,10 +1,10 @@
 /**
  * @module BattleShips
  */
-export default () => {
+export default (Data) => {
 	window.bts = window.bts || {};
 
-	(function() {
+	(function () {
 		'use strict';
 		/**
 		 * @namespace bts
@@ -12,14 +12,11 @@ export default () => {
 		 * @extends {createjs.Container}
 		 * @constructor
 		 */
-		let Field = function() {
+		let Field = function () {
 			// :properties
 
-			this.center = {
-				x: bts.stage.canvas.clientWidth / 2,
-				y: bts.stage.canvas.clientHeight / 2
-			};
-			this.size = bts.fieldSize;
+			this.center = Data.canvasCenter;
+			this.size = Data.fieldSize;
 
 			this.initialize();
 		};
@@ -33,7 +30,7 @@ export default () => {
 		 * @method init
 		 */
 
-		p.initialize = function() {
+		p.initialize = function () {
 			this.Container_initialize();
 			this.drawField();
 		};
@@ -43,7 +40,7 @@ export default () => {
 		 *
 		 * @method drawField
 		 */
-		p.drawField = function() {
+		p.drawField = function () {
 			let i = 0;
 			for (let j = 0; j < this.size * 2 + 2; j += 1) {
 				drawSand(-76, -44 + 87 * j);
@@ -62,10 +59,10 @@ export default () => {
 			for (let j = 0; j < this.size * 2 + 2; j += 1) {
 				drawSand(152 * this.size * 3 / 2 + 1, 87 * (j - 1));
 			}
-			this.addChild(...bts.sections);
+			this.addChild(...Data.sections);
 			this.name = 'field';
 
-			bts.stage.addChild(this);
+			Data.stage.addChild(this);
 		};
 
 		/**
@@ -76,7 +73,7 @@ export default () => {
 		 * @param {Number} numberofSections 
 		 * @param {Number} step Distance between each new position
 		 */
-		p.drawLineOfSections = function(startingPoint, numberofSections, step) {
+		p.drawLineOfSections = function (startingPoint, numberofSections, step) {
 			drawSand(startingPoint.x, startingPoint.y - step);
 			drawSand(startingPoint.x, startingPoint.y + step * numberofSections);
 
@@ -85,7 +82,7 @@ export default () => {
 					x: startingPoint.x,
 					y: startingPoint.y + step * i
 				});
-				bts.sections.push(section);
+				Data.sections.push(section);
 				section.alpha = 0;
 			}
 		};
@@ -96,7 +93,7 @@ export default () => {
 		 * @method setPowerUpsInField
 		 * @param {Object}  powerups  Object containing the section index and type of power up
 		 */
-		p.setPowerUpsInField = function(powerups) {
+		p.setPowerUpsInField = function (powerups) {
 			let length = powerups.length;
 			for (let i = 0; i < length; i += 1) {
 				let section = this.children[powerups[i].section];
@@ -110,7 +107,7 @@ export default () => {
 		 * @method setMines
 		 * @param {Array}  mines  Array of the section indexes
 		 */
-		p.setMines = function(mines) {
+		p.setMines = function (mines) {
 			let length = mines.length;
 			for (let i = 0; i < length; i += 1) {
 				let section = this.children[mines[i]];
@@ -127,9 +124,9 @@ export default () => {
 		 */
 		function drawSand(x, y) {
 			let sand = new createjs.Shape();
-			sand.graphics.beginBitmapFill(bts.sand).beginStroke('#E4B363').drawPolyStar(x, y, 50, 6, 0, 0);
+			sand.graphics.beginBitmapFill(Data.sand).beginStroke('#E4B363').drawPolyStar(x, y, 50, 6, 0, 0);
 			sand.alpha = 0;
-			bts.sandBorder.push(sand);
+			Data.sandBorder.push(sand);
 		}
 		bts.Field = Field;
 	}());

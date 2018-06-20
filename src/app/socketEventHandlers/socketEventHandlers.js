@@ -1,5 +1,5 @@
 import store from '../store/store';
-import Init from '../components/Main/Game/canvasActions/Init';
+import InitCanvas from '../components/Main/Game/canvasActions/InitCanvas';
 import gameActions from '../actions/gameActions';
 import roomsActions from '../actions/roomActions';
 import userActions from '../actions/userActions';
@@ -113,9 +113,8 @@ export default function() {
   });
 
   window.socket.on('restart', () => {
-  	window.bts = {};
-  	Init();
-  	window.bts.me = store.getState().userData.me.name;
+  	InitCanvas(store.getState().userData.me.name);
+  	
   	store.dispatch(gameActions.setGame());
   });
 

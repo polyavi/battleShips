@@ -1,7 +1,7 @@
 /**
  * @module BattleShips
  */
-export default () => {
+export default (Data) => {
 	window.bts = window.bts || {};
 
 	(function() {
@@ -41,7 +41,7 @@ export default () => {
 		 */
 		p.drawSection = function(position) {
 			let section = new createjs.Shape();
-			section.graphics.beginBitmapFill(bts.backgroundImage).beginStroke(bts.strokeColor).drawPolyStar(position.x, position.y, 50, 6, 0, 0);
+			section.graphics.beginBitmapFill(Data.backgroundImage).beginStroke(Data.strokeColor).drawPolyStar(position.x, position.y, 50, 6, 0, 0);
 			this.addChild(section);
 		};
 
@@ -52,19 +52,19 @@ export default () => {
 		 * @param {Object} e event object
 		 */
 		p.handleInteraction = function(e) {
-			if (bts.startPos.mouseX == bts.stage.mouseX && bts.startPos.mouseY == bts.stage.mouseY) {
+			if (Data.stagePosition.mouseX == Data.stage.mouseX && Data.stagePosition.mouseY == Data.stage.mouseY) {
 				let target = (e.target.parent.name == 'powerup') ? e.target.parent.parent.children[0] : e.target.parent.children[0];
 				let targetShip = target.parent.getTargetShip();
 				if (targetShip) {
-					if (isTargetInRange(targetShip.position) && bts.myship.monitions > 0) {
+					if (isTargetInRange(targetShip.position) && Data.myship.monitions > 0) {
 						targetShip.explodingAnimation();
-						bts.myship.attackOponent(targetShip);
+						Data.myship.attackOponent(targetShip);
 					}
 				} else {
-					bts.myship.prevPos = [];
-					bts.moveToNextPosition(bts.myship, {
-						x: bts.myship.children[0].x,
-						y: bts.myship.children[0].y
+					Data.myship.prevPos = [];
+					bts.moveToNextPosition(Data.myship, {
+						x:Data.myship.children[0].x,
+						y:Data.myship.children[0].y
 					}, {
 						x: target.graphics.command.x,
 						y: target.graphics.command.y
@@ -72,8 +72,8 @@ export default () => {
 
 					window.socket.emit(
 						'move', {
-							x: bts.myship.children[0].x,
-							y: bts.myship.children[0].y
+							x:Data.myship.children[0].x,
+							y:Data.myship.children[0].y
 						}, {
 							x: target.graphics.command.x,
 							y: target.graphics.command.y
@@ -91,7 +91,7 @@ export default () => {
 		 */
 		p.checkForPowerUp = function(ship) {
 			if (this.powerup) {
-				if (ship.name == bts.me) {
+				if (ship.name == Data.me) {
 					window.socket.emit('collect powerup', this.powerup);
 				}
 				this.removePowerUp();
@@ -136,8 +136,8 @@ export default () => {
 		 * @method getTargetShip
 		 */
 		p.getTargetShip = function() {
-			let ships = bts.stage.getChildByName('ships').children.filter((child) => {
-				return child.name != bts.me;
+			let ships = Data.stage.getChildByName('ships').children.filter((child) => {
+				return child.name != Data.me;
 			});
 
 			let self = this;
@@ -154,7 +154,7 @@ export default () => {
 		 */
 		function isTargetInRange(section) {
 			return !!(
-				bts.myship.sectionsInRange.find(section => {
+				Data.myship.sectionsInRange.find(section => {
 					return section.id == section.id;
 				})
 			);
@@ -187,17 +187,17 @@ export default () => {
 		 */
 		p.getNeighbors = function() {
 			let neighbors = [];
-			let sectionIndex = bts.sections.indexOf(this);
+			let sectionIndex = Data.sections.indexOf(this);
 			let neighborIndexes = [
 				sectionIndex - 1, 
 				sectionIndex + 1, 
-				sectionIndex - bts.fieldSize * 2, 
-				sectionIndex + bts.fieldSize * 2,
-				sectionIndex - (bts.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24))),
-				sectionIndex + (bts.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))
+				sectionIndex - Data.fieldSize * 2, 
+				sectionIndex + Data.fieldSize * 2,
+				sectionIndex - (Data.fieldSize * 2 + Math.pow(-1, Math.floor(sectionIndex / 24))),
+				sectionIndex + (Data.fieldSize * 2 - Math.pow(-1, Math.floor(sectionIndex / 24)))
 			];
 			neighborIndexes.forEach(neighbor => {
-				let section = bts.sections[neighbor];
+				let section = Data.sections[neighbor];
 				if(section && section instanceof bts.Section && section.occupied != true){
 					let neighborPosition = section.children[0].graphics.command;
 					let sectionPosition = this.children[0].graphics.command;
@@ -217,7 +217,7 @@ export default () => {
 			* @param {Number} y 
 			*/
 		bts.getSectionByCoordinates = function(x, y){
-			return bts.stage.getChildByName('field').children.find((section) => {
+			return Data.stage.getChildByName('field').children.find((section) => {
 			 return section.children[0].hitTest(x, y) == true;
 			});
 		};
@@ -229,7 +229,7 @@ export default () => {
 		 */
 		p.drawRock = function(){
 			let rock = new createjs.Container();
-			let bitmap = new createjs.Bitmap(bts.rock);
+			let bitmap = new createjs.Bitmap(Data.rock);
 			bitmap.scaleX = bitmap.scaleY = 0.1;
 
 			bitmap.x = this.children[0].graphics.command.x - bitmap.image.naturalWidth*0.1/2;

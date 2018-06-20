@@ -1,44 +1,53 @@
 /**
 * @module BattleShips
 */
-export default ()=>{
+export default (Data)=>{
   window.bts = window.bts || {};
 
 	(function () {
 		'use strict';
-
+		let stage = Data.stage;
 		/**
 		 * Initialize the game
 		 *
 		 * @method initGame
 		 */
-		bts.initGame = function () {
-			bts.stage.removeChild(bts.preloader);
+		Data.init = function () {
+			createjs.Ticker.on('tick', Data.stage);
+			Data.stage.enableMouseOver();
 
-			bts.backgroundImage = bts.queue.getResult('sea');
-			bts.rock = bts.queue.getResult('rock');
-			bts.sand = bts.queue.getResult('sand');
+			Data.preloader = new bts.Preloader('#666', '#fff');
+			Data.preloader.x = (Data.stage.canvas.width / 2) - (Data.preloader.width / 2);
+			Data.preloader.y = (Data.stage.canvas.height / 2) - (Data.preloader.height / 2);
+			Data.stage.addChild(Data.preloader);
 
-			bts.shipSpritesheet = new createjs.SpriteSheet(
+			Data.queue.addEventListener('complete', initGame);
+			Data.queue.addEventListener('progress', bts.onFileProgress);
+			Data.queue.load();
+		};
+
+		function initGame() {
+			stage.removeChild(Data.preloader);
+
+			Data.backgroundImage = Data.queue.getResult('sea');
+			Data.rock = Data.queue.getResult('rock');
+			Data.sand = Data.queue.getResult('sand');
+
+			Data.shipSpritesheet = new createjs.SpriteSheet(
 				{
-					images : [bts.queue.getResult('ships')],
-					frames: bts.shipsSpritesheetData.frames,
-					animations: bts.shipsSpritesheetData.animations
+					images : [Data.queue.getResult('ships')],
+					frames: Data.shipsSpritesheetData.frames,
+					animations: Data.shipsSpritesheetData.animations
 				}
 			);
 
-			bts.explosionSpriteSheet = new createjs.SpriteSheet(
+			Data.explosionSpriteSheet = new createjs.SpriteSheet(
 				{
-					images : [bts.queue.getResult('explosion')],
-					frames: bts.explosionSpritesheetData.frames,
-					animations: bts.explosionSpritesheetData.animations
+					images : [Data.queue.getResult('explosion')],
+					frames: Data.explosionSpritesheetData.frames,
+					animations: Data.explosionSpritesheetData.animations
 				}
 			);
-
-			bts.canvasCenter = {
-				x: bts.stage.canvas.clientWidth/2,
-				y: bts.stage.canvas.clientHeight/2
-			};
 
 			addSocketListeners();
 		};
@@ -47,38 +56,38 @@ export default ()=>{
 		 * Initiates drawing of sections, powerups, mines, ships and obsticles
 		 *
 		 * @method buidField
-		 * @param {Object} data The field data
+		 * @param {Object} fieldProps The field data
 		 */
-		function buidField(data) {
-			bts.fieldSize = data.size;
-			bts.stage.removeAllChildren();
+		function buidField(fieldProps) {
+			Data.fieldSize = fieldProps.size;
+			stage.removeAllChildren();
 
 			let field = new bts.Field();
 
-			drawObsticles(data.obsticles, field);
-			field.setPowerUpsInField(data.powerups);
-			field.setMines(data.mines);
-			bts.stage.addEventListener('stagemousedown', handleStageMovement);
+			drawObsticles(fieldProps.obsticles, field);
+			field.setPowerUpsInField(fieldProps.powerups);
+			field.setMines(fieldProps.mines);
+			stage.addEventListener('stagemousedown', handleStageMovement);
 
 			let sandSections = new createjs.Container();
-			sandSections.addChild(...bts.sandBorder);
-			bts.stage.addChild(sandSections);
+			sandSections.addChild(...Data.sandBorder);
+			stage.addChild(sandSections);
 
 			var ships = new createjs.Container();
 			ships.name = 'ships';
-			bts.stage.addChild(ships);
+			stage.addChild(ships);
 		}
 
 		/**
 		 * Draws obsticles
 		 *
 		 * @method drawObsticles
-		 * @param {Object} data the positions of the obsicles
+		 * @param {Object} obsticles the positions of the obsicles
 		 * @param {createjs.Container} field 
 		 */
-		function drawObsticles(data, field){
-			for(let i = 0; i< data.length; i+=1){
-			field.children[data[i]].drawRock();
+		function drawObsticles(obsticles, field){
+			for(let i = 0; i< obsticles.length; i+=1){
+			field.children[obsticles[i]].drawRock();
 			}
 		}
 
@@ -88,66 +97,66 @@ export default ()=>{
 		 * @method handleStageMovement
 		 */
 		function handleStageMovement (){
-			bts.startPos = {
-				mouseX: bts.stage.mouseX,
-				mouseY: bts.stage.mouseY,
-				x: bts.stage.x,
-				y: bts.stage.y 
+			Data.stagePosition = {
+				mouseX: stage.mouseX,
+				mouseY: stage.mouseY,
+				x: stage.x,
+				y: stage.y 
 			};
 
-			bts.stage.addEventListener('stagemousemove', function(e){
+			stage.addEventListener('stagemousemove', function(e){
 				let newPosition = {
-					x: (bts.startPos.x + (bts.stage.mouseX - bts.startPos.mouseX)),
-					y: (bts.startPos.y + (bts.stage.mouseY - bts.startPos.mouseY))
+					x: (Data.stagePosition.x + (stage.mouseX - Data.stagePosition.mouseX)),
+					y: (Data.stagePosition.y + (stage.mouseY - Data.stagePosition.mouseY))
 				};
-				if(newPosition.x > -88*(bts.fieldSize*3/2 + 2) && newPosition.x < 100){
-					bts.stage.x = newPosition.x;
+				if(newPosition.x > -88*(Data.fieldSize*3/2 + 2) && newPosition.x < 100){
+					stage.x = newPosition.x;
 				}
-				if(newPosition.y > -59*(bts.fieldSize*2 + 2) && newPosition.y < 80){
-					bts.stage.y = newPosition.y;
+				if(newPosition.y > -59*(Data.fieldSize*2 + 2) && newPosition.y < 80){
+					stage.y = newPosition.y;
 				}
 			});
 
-			bts.stage.addEventListener('stagemouseup', function (e) {
-				bts.stage.removeAllEventListeners();
-				bts.stage.addEventListener('stagemousedown', handleStageMovement);
+			stage.addEventListener('stagemouseup', function (e) {
+				stage.removeAllEventListeners();
+				stage.addEventListener('stagemousedown', handleStageMovement);
 			});
 		}
 
 		/**
 		 * @method positionShips
-		 * @param {Object} data the positions, stats and names of all ships
+		 * @param {Object} shipsProps the positions, stats and names of all ships
 		 */
-		function positionShips(data){
-			let ships = bts.stage.getChildByName('ships').children;
+		function positionShips(shipsProps){
+			let ships = stage.getChildByName('ships').children;
 
-			data.positions.forEach(item =>{
+			shipsProps.positions.forEach(item =>{
 				if(!ships.find(ship => { return ship.name == item.username;})){
 					let position = {
-						x: bts.sections[item.position].children[0].graphics.command.x,
-						y: bts.sections[item.position].children[0].graphics.command.y
+						x: Data.sections[item.position].children[0].graphics.command.x,
+						y: Data.sections[item.position].children[0].graphics.command.y
 					};
 					let section = bts.getSectionByCoordinates(position.x, position.y);
 
-					let newShip = new bts.Ship(item.username, item.color, position, data.props);
+					let newShip = new bts.Ship(item.username, item.color, position, shipsProps.props);
 					newShip.alpha = 0;
 
-					if(bts.me == item.username){
-						bts.myship = newShip;
-						bts.myship.alpha = 1;
-						bts.myship.drawRangeMarker();
+					if(Data.me == item.username){
+						Data.myship = newShip;
+						Data.myship.alpha = 1;
+						Data.myship.drawRangeMarker();
 
-						bts.stage.x = -position.x + 50;
-						bts.stage.y = -position.y + 50;
-						if(bts.stage.x < -88*(bts.fieldSize*3/2+2)){
-							bts.stage.x += bts.stage.canvas.clientWidth - 100;
-						}else if(bts.stage.x > 100){
-							bts.stage.x -= bts.stage.canvas.clientWidth;
+						stage.x = -position.x + 50;
+						stage.y = -position.y + 50;
+						if(stage.x < -88*(Data.fieldSize*3/2+2)){
+							stage.x += stage.canvas.clientWidth - 100;
+						}else if(stage.x > 100){
+							stage.x -= stage.canvas.clientWidth;
 						}
-						if(bts.stage.y < -59*(bts.fieldSize*2 + 2)){
-							bts.stage.y += bts.stage.canvas.clientHeight - 100;
-						}else if(bts.stage.y > 100){
-							bts.stage.y += bts.stage.canvas.clientHeight;
+						if(stage.y < -59*(Data.fieldSize*2 + 2)){
+							stage.y += stage.canvas.clientHeight - 100;
+						}else if(stage.y > 100){
+							stage.y += stage.canvas.clientHeight;
 						}
 					}
 				}
@@ -156,35 +165,35 @@ export default ()=>{
 
 		/**
 		 * @method positionShips
-		 * @param {Object} data new position and name of ship
+		 * @param {Object} shipsProps new position and name of ship
 		 */
-		function handleNewPosition(data){
-			let ship = bts.stage.getChildByName('ships').children.find(item =>{ return item.name == data.name;});
+		function handleNewPosition(shipsProps){
+			let ship = stage.getChildByName('ships').children.find(item =>{ return item.name == shipsProps.name;});
 				
 				bts.moveToNextPosition(
 					ship, 
 					{
-						x: data.start.x, 
-						y: data.start.y
+						x: shipsProps.start.x, 
+						y: shipsProps.start.y
 					}, 
 					{
-						x: data.end.x,
-						y: data.end.y
+						x: shipsProps.end.x,
+						y: shipsProps.end.y
 					}
 				);
 		}
 
 		/**
 		 * @method handlePropChanges
-		 * @param {Object} data names of ships and the name and value of changed props
+		 * @param {Object} changedProps names of ships and the name and value of changed props
 		 */
-		function handlePropChanges(data){
-			data.props.forEach( item =>{
-				let ship = bts.stage.getChildByName('ships').getChildByName(item.username);
+		function handlePropChanges(changedProps){
+			changedProps.props.forEach( item =>{
+				let ship = stage.getChildByName('ships').getChildByName(item.username);
 				let oldProp = ship[item.powerup];
 				ship[item.powerup] = item.amount;
-				if(bts.me == item.username && item.powerup == 'range'){
-					bts.myship.drawRangeMarker();
+				if(Data.me == item.username && item.powerup == 'range'){
+					Data.myship.drawRangeMarker();
 				}
 				if(item.powerup == 'life'){
 					if(oldProp > item.amount){
@@ -200,11 +209,11 @@ export default ()=>{
 		 * @param {String} shipName
 		 */
 		function handleSinking(shipName){
-			let ship = bts.stage.getChildByName('ships').getChildByName(shipName);
-				bts.stage.getChildByName('ships').removeChild(ship);
-				if(shipName == bts.me){
-					bts.stage.getChildByName('field').children.forEach(section =>{
-						bts.stage.removeChild(bts.stage.getChildByName('range'));
+			let ship = stage.getChildByName('ships').getChildByName(shipName);
+				stage.getChildByName('ships').removeChild(ship);
+				if(shipName == Data.me){
+					stage.getChildByName('field').children.forEach(section =>{
+						stage.removeChild(stage.getChildByName('range'));
 						section.removeAllEventListeners();
 					});
 				}
@@ -218,16 +227,16 @@ export default ()=>{
 		function addSocketListeners(){
 			window.socket.emit('canvas init');
 
-			window.socket.on('init field', function(data){
-				buidField(data);
+			window.socket.on('init field', function(fieldProps){
+				buidField(fieldProps);
 			});
 
-			window.socket.on('positions', function(data) {
-				positionShips(data);
+			window.socket.on('positions', function(shipsProps) {
+				positionShips(shipsProps);
 			});
 
 			window.socket.on('allow movement', function(){
-				bts.stage.getChildByName('field').children.forEach(section =>{
+				stage.getChildByName('field').children.forEach(section =>{
 					if(section instanceof bts.Section && !section.occupied){
 						section.addEventListener('click', section.handleInteraction);
 						section.neighbors = section.getNeighbors();
@@ -235,22 +244,22 @@ export default ()=>{
 				});
 			});
 
-			window.socket.on('new position', (data)=>{
-				handleNewPosition(data);
+			window.socket.on('new position', (shipsProps)=>{
+				handleNewPosition(shipsProps);
 			});
 
 			window.socket.on('remove powerup', (powerup)=>{
-				let section = bts.stage.getChildByName('field').children[powerup.section];
+				let section = stage.getChildByName('field').children[powerup.section];
 				section.removePowerUp();
 			});
 
 			window.socket.on('add powerup', (powerup)=>{
-				let section = bts.stage.getChildByName('field').children[powerup.section];
+				let section = stage.getChildByName('field').children[powerup.section];
 				section.addPowerUp(powerup);
 			});
 
-			window.socket.on('prop change', function(data){
-				handlePropChanges(data);
+			window.socket.on('prop change', function(changedProps){
+				handlePropChanges(changedProps);
 			});
 
 			window.socket.on('player sunk', function(shipName) {
@@ -258,8 +267,8 @@ export default ()=>{
 			});
 
 			window.socket.on('remove ship', function(shipName) {
-				let ship = bts.stage.getChildByName('ships').getChildByName(shipName);
-				bts.stage.getChildByName('ships').removeChild(ship);
+				let ship = stage.getChildByName('ships').getChildByName(shipName);
+				stage.getChildByName('ships').removeChild(ship);
 			});
 		}
 		

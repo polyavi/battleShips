@@ -1,14 +1,14 @@
-export default ()=>{
-  window.bts = window.bts || {};
+export default (Data) => {
+	window.bts = window.bts || {};
 
 	(function () {
 		'use strict';
-	/**
-	 * @namespace bts
-	 * @class bts.Preloader
-	 * @extends {createjs.Container}
-	 * @constructor
-	 */
+		/**
+		 * @namespace bts
+		 * @class bts.Preloader
+		 * @extends {createjs.Container}
+		 * @constructor
+		 */
 		var Preloader = function (fill, stroke) {
 			this.fillColor = fill;
 			this.strokeColor = stroke;
@@ -47,30 +47,15 @@ export default ()=>{
 			this.bar.scaleX = perc;
 		};
 
-		bts.init = function () {
-			bts.stage = new createjs.Stage(document.getElementById('canvas'));
-			createjs.Ticker.on('tick', bts.stage);
-			bts.stage.enableMouseOver();
-
-			bts.preloader = new bts.Preloader('#666','#fff');
-			bts.preloader.x = (bts.stage.canvas.width / 2) - (bts.preloader.width / 2);
-			bts.preloader.y = (bts.stage.canvas.height / 2) - (bts.preloader.height / 2);
-			bts.stage.addChild(bts.preloader);
-
-			bts.queue.addEventListener('complete', bts.initGame);
-			bts.queue.addEventListener('progress', bts.onFileProgress);
-			bts.queue.load();
-		};
-
 		bts.onFileProgress = function (e) {
-			bts.preloader.update(e.progress);
+			Data.preloader.update(e.progress);
 		};
 
 		bts.preload = function () {
-			bts.queue = new createjs.LoadQueue();
-			bts.queue.loadManifest(bts.images,false);
+			Data.queue = new createjs.LoadQueue();
+			Data.queue.loadManifest(Data.images, false);
 
-			bts.init();
+			Data.init();
 		};
 		// add to namespace
 		bts.Preloader = Preloader;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Init from './canvasActions/Init';
+import InitCanvas from './canvasActions/InitCanvas';
 import { connect } from 'react-redux';
 const mapStateToProps = state => {
   return { 
@@ -19,9 +19,7 @@ class ConnectedCanvas extends Component {
 
   componentDidMount() {
 
-    Init();
-
-    bts.me = this.props.me;
+    InitCanvas(this.props.me);
 
     window.onresize = () => {
       this.setState({
