@@ -95,3 +95,5 @@
   Fixed - When ship moves there is slow down on each section
   Fixed - Double rooms and users appear when log in
   Fixed - Ship range problem
+  Fixed - Reduce players in room when someone leaves
+  Fixed - Do checks if socket or room exists so sockets.io does not fire errors

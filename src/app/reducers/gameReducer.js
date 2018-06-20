@@ -1,4 +1,4 @@
-import { CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME, ADD_PLAYER } from '../actions/actionTypes';
+import { CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME, CHANGE_ROOM_LENGTH } from '../actions/actionTypes';
 
 const initialState = {
 	connectedRoom: '',
@@ -17,7 +17,7 @@ const gameReducer = (state = initialState,  action) => {
 				connectedRoom: action.payload.roomId,
 				numberOfPlayers: action.payload.length
 			};
-		case ADD_PLAYER:
+		case CHANGE_ROOM_LENGTH:
 			return { ...state,
 				numberOfPlayers: action.payload
 			};

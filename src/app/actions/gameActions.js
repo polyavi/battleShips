@@ -1,4 +1,4 @@
-import { CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME, ADD_PLAYER } from './actionTypes';
+import { CREATE_CONNECTION, SET_GAME, START_GAME, FINISH_GAME, CHANGE_ROOM_LENGTH } from './actionTypes';
 
 const createConnection = connection => ({
 	type: CREATE_CONNECTION,
@@ -17,13 +17,13 @@ const finishGame = (isWinner) => ({
 const setGame = () => ({
 	type: SET_GAME
 });
-const addPlayer = (length) => ({
-	type: ADD_PLAYER,
+const changeRoomLength = (length) => ({
+	type: CHANGE_ROOM_LENGTH,
 	payload: length
 });
 export default{
 	createConnection,
-	addPlayer,
+	changeRoomLength,
 	setGame,
 	startGame,
 	finishGame

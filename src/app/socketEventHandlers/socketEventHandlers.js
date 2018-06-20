@@ -59,8 +59,8 @@ export default function() {
 		store.dispatch(chatActions.addChatTab(store.getState().rooms.find(room => room.id == data.roomId).name));
 	});
 	
-	window.socket.on('add player to game', (length)=>{
-		store.dispatch(gameActions.addPlayer(length));
+	window.socket.on('change room length', (length)=>{
+		store.dispatch(gameActions.changeRoomLength(length));
 	});
 
 	window.socket.on('new room', (data) => {

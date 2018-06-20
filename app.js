@@ -60,9 +60,9 @@ io.on('connection', function(socket) {
 
 	socket.on('steped on mine', function() { if(socket) resetStats(socket);	});
 	
-	socket.on('hit', function(data) { initiateHitEvents(socket, data)});
+	socket.on('hit', function(data) { initiateHitEvents(socket, data); });
 
-	socket.on('play again', function() { if(socket) restartGame(socket);	});
+	socket.on('play again', function() { if(socket) restartGame(socket); });
 
 	socket.on('disconnect', function() {
 		if(socket){
@@ -82,7 +82,7 @@ io.on('connection', function(socket) {
 function addNewUser(socket, username){
 	if(socket){
 		let existingUser = getAllUsersData().find(user => {
-			return user.username == username
+			return user.username == username;
 		});
 		if (existingUser) {
 			socket.emit('taken username');
@@ -118,22 +118,24 @@ function createNewRoom(roomProps, socket){
 	if(socket){	
 		socket.join(roomProps.room);
 		let room = io.sockets.adapter.rooms[roomProps.room];
-		setRoom(roomProps, socket, room);
+		if(room){
+			setRoom(roomProps, socket, room);
 
-		socket.emit('created room', {
-			userId: socket.id,
-			roomId: room.id,
-			name: roomProps.room,
-			hasPass: room.hasPass,
-			admin: true
-		});
+			socket.emit('created room', {
+				userId: socket.id,
+				roomId: room.id,
+				name: roomProps.room,
+				hasPass: room.hasPass,
+				admin: true
+			});
 
-		socket.broadcast.emit('new room', {
-			roomId: room.id,
-			name: roomProps.room,
-			hasPass: room.hasPass,
-			admin: false
-		});
+			socket.broadcast.emit('new room', {
+				roomId: room.id,
+				name: roomProps.room,
+				hasPass: room.hasPass,
+				admin: false
+			});
+		}
 	}
 }
 
@@ -172,23 +174,25 @@ function setRoom(roomInpit, socket, room) {
 function leaveRoom(socket){
 	if(socket){
 		let room = io.sockets.adapter.rooms[socket.room];
+		if(room){
+			socket.to(socket.room).emit('system message', createMessage(
+					' left the game.',
+					socket,
+					socket.room
+				));
 
-		socket.to(socket.room).emit('system message', createMessage(
-				' left the game.',
-				socket,
-				socket.room
-			));
+			io.to(socket.room).emit('remove ship', socket.username);
 
-		io.to(socket.room).emit('remove ship', socket.username);
+			socket.emit('close room', {id: room.id, length: room.length - 1});
+			socket.broadcast.emit('room change', {id: room.id, length: room.length - 1});
+			socket.emit('system message', createMessage(' left ' + socket.room, socket, 'global'));
 
-		socket.emit('close room', {id: room.id, length: room.length - 1});
-		socket.broadcast.emit('room change', {id: room.id, length: room.length - 1});
-		socket.emit('system message', createMessage(' left ' + socket.room, socket, 'global'));
+			socket.leave(socket.room);
+			socket.room = '';
 
-		socket.leave(socket.room);
-		socket.room = '';
-
-		io.emit('rooms', getAllRoomsData());
+			socket.to(room.name).emit('change room length', room.length);
+			io.emit('rooms', getAllRoomsData());
+		}
 	}
 }
 
@@ -200,24 +204,26 @@ function leaveRoom(socket){
  * @param {Object} socket 
  */
 function removeRoom(socket) {
-	let room = io.sockets.adapter.rooms[socket.room];
-	if(socket && room){
-		let sockets = Object.keys(room.sockets);
+	if(socket){
+		let room = io.sockets.adapter.rooms[socket.room];
+		if(room){
+			let sockets = Object.keys(room.sockets);
 
-		io.to(socket.room).emit('system message', createMessage(
-				' left and the room was lost. Please choose another room to play.',
-				socket,
-				'global'
-			));
+			io.to(socket.room).emit('system message', createMessage(
+					' left and the room was lost. Please choose another room to play.',
+					socket,
+					'global'
+				));
 
-		sockets.forEach(socket => {
-			io.sockets.connected[socket].leave(socket.room);
-		});
+			sockets.forEach(socket => {
+				io.sockets.connected[socket].leave(socket.room);
+			});
 
-		socket.leave(socket.room);
-		socket.room = '';
+			socket.leave(socket.room);
+			socket.room = '';
 
-		io.emit('removed room', room.id);
+			io.emit('removed room', room.id);
+		}
 	}
 }
 
@@ -237,7 +243,7 @@ function getAllRoomsData() {
 				hasPass: room.hasPass,
 				length: room.length,
 				id: room.id
-			})
+			});
 		}
 	});
 	return roomsData;
@@ -264,7 +270,8 @@ function logInExistingRoom(roomProps, socket) {
 			length: room.length,
 			admin: false
 		});
-		socket.to(room.name).emit('add player to game', room.length);
+
+		io.to(room.name).emit('change room length', room.length);
 
 		socket.to(room.name).emit('system message', createMessage(
 			' joined the game.',
@@ -291,7 +298,7 @@ function getAllUsersData() {
 				username: socket.username,
 				id: socket.id,
 				color: socket.color
-			})
+			});
 		}
 	});
 	return usersData;
@@ -343,7 +350,7 @@ function createMessage(text, sender, receiver) {
 		to: receiver,
 		text: text,
 		time: formatTime(new Date())
-	}
+	};
 }
 
 /**
@@ -364,23 +371,24 @@ function formatTime(date) {
 	*/
 function initField(socket) {
 	let room = io.sockets.adapter.rooms[socket.room];
+	if(room){
+		socket.emit(
+			'init field', {
+				size: FIELD_SIZE,
+				powerups: room.powerups,
+				obsticles: room.obsticles,
+				occupied: room.occupiedSections,
+				mines: room.mines
+			});
 
-	socket.emit(
-		'init field', {
-			size: FIELD_SIZE,
-			powerups: room.powerups,
-			obsticles: room.obsticles,
-			occupied: room.occupiedSections,
-			mines: room.mines
+		io.to(room.name).emit('positions', {
+			positions: room.positions,
+			props: PLAYER_PROPS
 		});
 
-	io.to(room.name).emit('positions', {
-		positions: room.positions,
-		props: PLAYER_PROPS
-	});
-
-	if (room.gameStarted) {
-		socket.emit('allow movement');
+		if (room.gameStarted) {
+			socket.emit('allow movement');
+		}
 	}
 }
 
@@ -429,13 +437,14 @@ function setNewPlayer(socket, room) {
 	* @param {Object} socket 
 	*/
 function startGame(socket){
-	
-	let room = io.sockets.adapter.rooms[socket.room];
-	if(room.length > 1){
-		io.to(socket.room).emit('allow movement');
-		room.gameStarted = true;
+	if(socket){
+		let room = io.sockets.adapter.rooms[socket.room];
+		if(room && room.length > 1){
+			io.to(socket.room).emit('allow movement');
+			room.gameStarted = true;
 
-		io.to(socket.room).emit('system message', createMessage(' started the game.',socket, socket.room));
+			io.to(socket.room).emit('system message', createMessage(' started the game.',socket, socket.room));
+		}
 	}
 }
 
@@ -480,11 +489,12 @@ function collectPowerUp(socket, powerup){
 		});
 
 		let room = io.sockets.adapter.rooms[socket.room];
+		if(room){
+			io.to(room.name).emit('remove powerup', powerup);
 
-		io.to(room.name).emit('remove powerup', powerup);
-
-		io.to(room.name).emit('system message', createMessage(' collected ' + powerup.type + ' power up.', socket, room.name));
-		replacePowerup(powerup, room, socket);
+			io.to(room.name).emit('system message', createMessage(' collected ' + powerup.type + ' power up.', socket, room.name));
+			replacePowerup(powerup, room, socket);
+		}
 	}
 }
 
@@ -573,20 +583,20 @@ function resetStats(socket){
 	*/
 function sinkShip(attacker, attacked){
 	let room = io.sockets.adapter.rooms[attacker.room];
-
-	room.alivePlayers -=1;
-	io.to(attacker.room).emit('player sunk', attacked);
-	console.log(room.alivePlayers)
-	if (room.alivePlayers == 1) {
-		io.to(attacker.room).emit('game over', attacker.username);
-		room.restart = false;
-		room.gameStarted = false;
-	} else {
-		io.to(attacker.room).emit('system message', createMessage(
-				' atacked ' + attacked + ' and sunk their ship.',
-				attacker,
-				room.name
-			));
+	if(room){
+		room.alivePlayers -=1;
+		io.to(attacker.room).emit('player sunk', attacked);
+		if (room.alivePlayers == 1) {
+			io.to(attacker.room).emit('game over', attacker.username);
+			room.restart = false;
+			room.gameStarted = false;
+		} else {
+			io.to(attacker.room).emit('system message', createMessage(
+					' atacked ' + attacked + ' and sunk their ship.',
+					attacker,
+					room.name
+				));
+		}
 	}
 }
 
@@ -598,15 +608,16 @@ function sinkShip(attacker, attacked){
 	*/
 function restartGame(socket){
 	let room = io.sockets.adapter.rooms[socket.room];
+	if(room){
+		if (!room.restart) {
+			room.restart = true;
+			setFieldProps(room);
+			initField(socket);
+		}
+		setNewPlayer(socket, room);
 
-	if (!room.restart) {
-		room.restart = true;
-		setFieldProps(room);
-		initField(socket);
+		socket.emit('restart', socket.room);
 	}
-	setNewPlayer(socket, room);
-
-	socket.emit('restart', socket.room);
 }
 
 /**
@@ -658,7 +669,7 @@ function createPowerUp(type, room) {
 		return {
 			section: section,
 			type: type
-		}
+		};
 	}
 }
 
@@ -709,7 +720,7 @@ function generateMines(room) {
 function isOccupied(room, section) {
 	return !!room.occupiedSections.find(item => {
 		return section == item;
-	})
+	});
 }
 
 http.listen(port, function() {
