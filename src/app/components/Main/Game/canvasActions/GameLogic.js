@@ -50,7 +50,7 @@ export default (Data)=>{
 			);
 
 			addSocketListeners();
-		};
+		}
 
 		/**
 		 * Initiates drawing of sections, powerups, mines, ships and obsticles
@@ -91,6 +91,18 @@ export default (Data)=>{
 			}
 		}
 
+		function moveStage(stage){
+			let newPosition = {
+				x: (Data.stagePosition.x + (stage.mouseX - Data.stagePosition.mouseX)),
+				y: (Data.stagePosition.y + (stage.mouseY - Data.stagePosition.mouseY))
+			};
+			if(newPosition.x > -88*(Data.fieldSize*3/2 + 2) && newPosition.x < 100){
+				stage.x = newPosition.x;
+			}
+			if(newPosition.y > -59*(Data.fieldSize*2 + 2) && newPosition.y < 80){
+				stage.y = newPosition.y;
+			}
+		}
 		/**
 		 * Handles field draging
 		 *
@@ -105,16 +117,7 @@ export default (Data)=>{
 			};
 
 			stage.addEventListener('stagemousemove', function(e){
-				let newPosition = {
-					x: (Data.stagePosition.x + (stage.mouseX - Data.stagePosition.mouseX)),
-					y: (Data.stagePosition.y + (stage.mouseY - Data.stagePosition.mouseY))
-				};
-				if(newPosition.x > -88*(Data.fieldSize*3/2 + 2) && newPosition.x < 100){
-					stage.x = newPosition.x;
-				}
-				if(newPosition.y > -59*(Data.fieldSize*2 + 2) && newPosition.y < 80){
-					stage.y = newPosition.y;
-				}
+				moveStage(stage);
 			});
 
 			stage.addEventListener('stagemouseup', function (e) {
@@ -148,16 +151,12 @@ export default (Data)=>{
 
 						stage.x = -position.x + 50;
 						stage.y = -position.y + 50;
-						if(stage.x < -88*(Data.fieldSize*3/2+2)){
-							stage.x += stage.canvas.clientWidth - 100;
-						}else if(stage.x > 100){
-							stage.x -= stage.canvas.clientWidth;
-						}
-						if(stage.y < -59*(Data.fieldSize*2 + 2)){
-							stage.y += stage.canvas.clientHeight - 100;
-						}else if(stage.y > 100){
-							stage.y += stage.canvas.clientHeight;
-						}
+
+						if(stage.x < -88*(Data.fieldSize*3/2+2)) stage.x += stage.canvas.clientWidth - 100;
+						else if(stage.x > 100) stage.x -= stage.canvas.clientWidth; 
+
+						if(stage.y < -59*(Data.fieldSize*2 + 2)) stage.y += stage.canvas.clientHeight - 100;
+						else if(stage.y > 100) stage.y += stage.canvas.clientHeight;
 					}
 				}
 			});
@@ -227,13 +226,9 @@ export default (Data)=>{
 		function addSocketListeners(){
 			window.socket.emit('canvas init');
 
-			window.socket.on('init field', function(fieldProps){
-				buidField(fieldProps);
-			});
+			window.socket.on('init field', function(fieldProps){ buidField(fieldProps); });
 
-			window.socket.on('positions', function(shipsProps) {
-				positionShips(shipsProps);
-			});
+			window.socket.on('positions', function(shipsProps) { positionShips(shipsProps); });
 
 			window.socket.on('allow movement', function(){
 				stage.getChildByName('field').children.forEach(section =>{
@@ -244,9 +239,7 @@ export default (Data)=>{
 				});
 			});
 
-			window.socket.on('new position', (shipsProps)=>{
-				handleNewPosition(shipsProps);
-			});
+			window.socket.on('new position', (shipsProps)=>{ handleNewPosition(shipsProps); });
 
 			window.socket.on('remove powerup', (powerup)=>{
 				let section = stage.getChildByName('field').children[powerup.section];
@@ -258,13 +251,9 @@ export default (Data)=>{
 				section.addPowerUp(powerup);
 			});
 
-			window.socket.on('prop change', function(changedProps){
-				handlePropChanges(changedProps);
-			});
+			window.socket.on('prop change', function(changedProps){ handlePropChanges(changedProps); });
 
-			window.socket.on('player sunk', function(shipName) {
-				handleSinking(shipName);
-			});
+			window.socket.on('player sunk', function(shipName) { handleSinking(shipName); });
 
 			window.socket.on('remove ship', function(shipName) {
 				let ship = stage.getChildByName('ships').getChildByName(shipName);
