@@ -8,7 +8,7 @@ app.use('/dist/app', express.static(__dirname + '/dist/app'));
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/images', express.static(__dirname + '/images'));
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/index.html');
 });
 
@@ -20,13 +20,13 @@ function redirectUnmatched(req, res) {
 
 const FIELD_SIZE = 12;
 const NUMBER_OF_SECTIONS = FIELD_SIZE * 72;
-const SHIP_POSITIONS = [0, FIELD_SIZE*2 - 1, NUMBER_OF_SECTIONS / 2 - 1, NUMBER_OF_SECTIONS / 2 - FIELD_SIZE*2, NUMBER_OF_SECTIONS - FIELD_SIZE*2, NUMBER_OF_SECTIONS - 1];
+const SHIP_POSITIONS = [0, FIELD_SIZE * 2 - 1, NUMBER_OF_SECTIONS / 2 - 1, NUMBER_OF_SECTIONS / 2 - FIELD_SIZE * 2, NUMBER_OF_SECTIONS - FIELD_SIZE * 2, NUMBER_OF_SECTIONS - 1];
 const POWERUP_TYPES = ['speed', 'range', 'monitions', 'life'];
 const PLAYER_PROPS = {
-	speed: Math.floor(FIELD_SIZE/12),
+	speed: Math.floor(FIELD_SIZE / 12),
 	monitions: 3,
 	life: 3,
-	range: Math.floor(FIELD_SIZE/12)
+	range: Math.floor(FIELD_SIZE / 12)
 };
 /**
  * Creates listeners for all user queries
@@ -34,41 +34,73 @@ const PLAYER_PROPS = {
  * @param {Object} socket data for the connected user 
  */
 
-io.on('connection', function(socket) {
+io.on('connection', function (socket) {
 
-	socket.on('add user', function(username) { console.log(socket.conn.remoteAddress); addNewUser(socket, username); });
+	socket.on('add user', function (username) {
+		console.log(socket.conn.remoteAddress);
+		addNewUser(socket, username);
+	});
 
-	socket.on('join room', function(roomProps) { if(socket) logInExistingRoom(roomProps, socket);	});
+	socket.on('join room', function (roomProps) {
+		if (socket) logInExistingRoom(roomProps, socket);
+	});
 
-	socket.on('create room', function(roomProps) { createNewRoom(roomProps, socket); });
+	socket.on('create room', function (roomProps) {
+		createNewRoom(roomProps, socket);
+	});
 
-	socket.on('remove room', function(){if(socket) removeRoom(socket); });
+	socket.on('remove room', function () {
+		if (socket) removeRoom(socket);
+	});
 
-	socket.on('leave room', function() { leaveRoom(socket); });
+	socket.on('leave room', function () {
+		leaveRoom(socket);
+	});
 
-	socket.on('direct message', function({text, name}) { if(socket) sendDirectMessage(socket, text, name); });
+	socket.on('direct message', function ({
+		text,
+		name
+	}) {
+		if (socket) sendDirectMessage(socket, text, name);
+	});
 
-	socket.on('global message', function(text) { if(socket) io.emit('message', createMessage(text, socket, 'global')); });
+	socket.on('global message', function (text) {
+		if (socket) io.emit('message', createMessage(text, socket, 'global'));
+	});
 
-	socket.on('canvas init', function() { if(socket) initField(socket); });
+	socket.on('canvas init', function () {
+		if (socket) initField(socket);
+	});
 
-	socket.on('start game', function() { if(socket) startGame(socket);	});
+	socket.on('start game', function () {
+		if (socket) startGame(socket);
+	});
 
-	socket.on('move', function(start, end) { if(socket) sendNewPosition(socket, start, end); });
+	socket.on('move', function (start, end) {
+		if (socket) sendNewPosition(socket, start, end);
+	});
 
-	socket.on('collect powerup', function(powerup) {collectPowerUp(socket, powerup); });
+	socket.on('collect powerup', function (powerup) {
+		collectPowerUp(socket, powerup);
+	});
 
-	socket.on('steped on mine', function() { if(socket) resetStats(socket);	});
-	
-	socket.on('hit', function(data) { initiateHitEvents(socket, data); });
+	socket.on('steped on mine', function () {
+		if (socket) resetStats(socket);
+	});
 
-	socket.on('play again', function() { if(socket) restartGame(socket); });
+	socket.on('hit', function (data) {
+		initiateHitEvents(socket, data);
+	});
 
-	socket.on('disconnect', function() {
-		if(socket){
+	socket.on('play again', function () {
+		if (socket) restartGame(socket);
+	});
+
+	socket.on('disconnect', function () {
+		if (socket) {
 			io.emit('remove user', socket.id);
 			removeRoom(socket);
-		} 
+		}
 	});
 });
 
@@ -79,8 +111,8 @@ io.on('connection', function(socket) {
  * @method addNewUser
  * @param {Object} socket
  */
-function addNewUser(socket, username){
-	if(socket){
+function addNewUser(socket, username) {
+	if (socket) {
 		let existingUser = getAllUsersData().find(user => {
 			return user.username == username;
 		});
@@ -114,11 +146,11 @@ function addNewUser(socket, username){
  * @param {Object}  roomProps 
  * @param {Object}  socket 
  */
-function createNewRoom(roomProps, socket){
-	if(socket){	
+function createNewRoom(roomProps, socket) {
+	if (socket) {
 		socket.join(roomProps.room);
 		let room = io.sockets.adapter.rooms[roomProps.room];
-		if(room){
+		if (room) {
 			setRoom(roomProps, socket, room);
 
 			socket.emit('created room', {
@@ -171,20 +203,26 @@ function setRoom(roomInpit, socket, room) {
  * @method leaveRoom
  * @param {Object} socket 
  */
-function leaveRoom(socket){
-	if(socket){
+function leaveRoom(socket) {
+	if (socket) {
 		let room = io.sockets.adapter.rooms[socket.room];
-		if(room){
+		if (room) {
 			socket.to(socket.room).emit('system message', createMessage(
-					' left the game.',
-					socket,
-					socket.room
-				));
+				' left the game.',
+				socket,
+				socket.room
+			));
 
 			io.to(socket.room).emit('remove ship', socket.username);
 
-			socket.emit('close room', {id: room.id, length: room.length - 1});
-			socket.broadcast.emit('room change', {id: room.id, length: room.length - 1});
+			socket.emit('close room', {
+				id: room.id,
+				length: room.length - 1
+			});
+			socket.broadcast.emit('room change', {
+				id: room.id,
+				length: room.length - 1
+			});
 			socket.emit('system message', createMessage(' left ' + socket.room, socket, 'global'));
 
 			socket.leave(socket.room);
@@ -204,23 +242,21 @@ function leaveRoom(socket){
  * @param {Object} socket 
  */
 function removeRoom(socket) {
-	if(socket){
+	if (socket) {
 		let room = io.sockets.adapter.rooms[socket.room];
-		if(room){
+		if (room) {
 			let sockets = Object.keys(room.sockets);
 
 			io.to(socket.room).emit('system message', createMessage(
-					' left and the room was lost. Please choose another room to play.',
-					socket,
-					'global'
-				));
+				' left and the room was lost. Please choose another room to play.',
+				socket,
+				'global'
+			));
 
-			sockets.forEach(socket => {
-				io.sockets.connected[socket].leave(socket.room);
+			sockets.forEach(id => {
+				io.sockets.sockets[id].leave(room.name);
+				io.sockets.sockets[id].room = '';
 			});
-
-			socket.leave(socket.room);
-			socket.room = '';
 
 			io.emit('removed room', room.id);
 		}
@@ -235,7 +271,7 @@ function getAllRoomsData() {
 	let keys = Object.keys(io.sockets.adapter.rooms);
 	let roomsData = [];
 
-	keys.forEach(function(key) {
+	keys.forEach(function (key) {
 		let room = io.sockets.adapter.rooms[key];
 		if (room.name && room.length != 0) {
 			roomsData.push({
@@ -258,13 +294,12 @@ function getAllRoomsData() {
  */
 function logInExistingRoom(roomProps, socket) {
 	let room = io.sockets.adapter.rooms[roomProps.room];
-	if (room && room.hasPass && room.pass !== roomProps.pass) {
+	if (room && room.hasPass && room.pass !== roomProps.pass && room.length <= 6) {
 		socket.emit('wrong pass');
 	} else {
 		socket.join(room.name);
 
-		socket.emit('joined room',
-		{ 
+		socket.emit('joined room', {
 			userId: socket.id,
 			roomId: room.id,
 			length: room.length,
@@ -291,7 +326,7 @@ function getAllUsersData() {
 	let keys = Object.keys(io.sockets.sockets);
 	let usersData = [];
 
-	keys.forEach(function(key) {
+	keys.forEach(function (key) {
 		let socket = io.sockets.sockets[key];
 		if (socket.username) {
 			usersData.push({
@@ -312,7 +347,7 @@ function getAllUsersData() {
 function getSocketByUsername(name) {
 	let keys = Object.keys(io.sockets.sockets);
 
-	let socket = io.sockets.sockets[keys.find(function(key) {
+	let socket = io.sockets.sockets[keys.find(function (key) {
 		return io.sockets.sockets[key].username == name;
 	})];
 	return socket;
@@ -324,12 +359,12 @@ function getSocketByUsername(name) {
  * @param {String} text
  * @param {String} name The receiver name
  */
-function sendDirectMessage(socket, text, name){
+function sendDirectMessage(socket, text, name) {
 	let reciever = getSocketByUsername(name);
-	if(reciever){
+	if (reciever) {
 		io.to(reciever.id).emit('message', createMessage(text, socket, socket.username));
 		socket.emit('message', createMessage(text, socket, name));
-	}else{
+	} else {
 		io.to(name).emit('message', createMessage(text, socket, name));
 	}
 }
@@ -354,24 +389,24 @@ function createMessage(text, sender, receiver) {
 }
 
 /**
-	* @method formatTime 
-	* @param {Date} date
-	* @return {String} the formated hh:mm time  
-	*/
+ * @method formatTime 
+ * @param {Date} date
+ * @return {String} the formated hh:mm time  
+ */
 function formatTime(date) {
 	return date.getHours() + ':' + (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
 }
 
 // game logic methods
 /**
-	* Sends all the data for the field: mines, powerups, islands and position of ships to the socket
-	* 
-	* @method initField 
-	* @param {Object} socket 
-	*/
+ * Sends all the data for the field: mines, powerups, islands and position of ships to the socket
+ * 
+ * @method initField 
+ * @param {Object} socket 
+ */
 function initField(socket) {
 	let room = io.sockets.adapter.rooms[socket.room];
-	if(room){
+	if (room) {
 		socket.emit(
 			'init field', {
 				size: FIELD_SIZE,
@@ -393,13 +428,14 @@ function initField(socket) {
 }
 
 /**
-	* generates all the data for the field: mines, powerups, islands
-	*
-	* @method setFieldProps 
-	* @param {Object} room 
-	*/
-function setFieldProps(room) {			
-	room.availablePositions = SHIP_POSITIONS.slice();
+ * generates all the data for the field: mines, powerups, islands
+ *
+ * @method setFieldProps 
+ * @param {Object} room 
+ */
+function setFieldProps(room) {
+	room.availablePositions = getRandomizedShipPostions();
+	room.occupiedShipPositions = [];
 	room.positions = [];
 	room.occupiedSections = [];
 	room.alivePlayers = 0;
@@ -409,77 +445,73 @@ function setFieldProps(room) {
 }
 
 /**
-	* Sets new player position and stats
-	*
-	* @method setNewPlayer 
-	* @param {Object} socket 
-	* @param {Object} room 
-	*/
+ * Sets new player position and stats
+ *
+ * @method setNewPlayer 
+ * @param {Object} socket 
+ * @param {Object} room 
+ */
 function setNewPlayer(socket, room) {
 	socket.room = room.name;
 	socket.props = Object.assign({}, PLAYER_PROPS);
-
-	let randomPosition = Math.floor(Math.random() * room.availablePositions.length);
 	room.positions.push({
-		position: SHIP_POSITIONS[randomPosition],
+		position: room.availablePositions[room.length - 1],
 		username: socket.username,
 		color: socket.color
 	});
-	room.availablePositions.splice(randomPosition, 1);
-	room.alivePlayers +=1;
-
+	room.alivePlayers += 1;
 }
 
 /**
-	* Sets the game to started and sends message to the players
-	*
-	* @method startGame 
-	* @param {Object} socket 
-	*/
-function startGame(socket){
-	if(socket){
+ * Sets the game to started and sends message to the players
+ *
+ * @method startGame 
+ * @param {Object} socket 
+ */
+function startGame(socket) {
+	if (socket) {
 		let room = io.sockets.adapter.rooms[socket.room];
-		if(room && room.length > 1){
+		if (room && room.length > 1) {
 			io.to(socket.room).emit('allow movement');
 			room.gameStarted = true;
 
-			io.to(socket.room).emit('system message', createMessage(' started the game.',socket, socket.room));
+			io.to(socket.room).emit('system message', createMessage(' started the game.', socket, socket.room));
 		}
 	}
 }
 
 /**
-	* Sends the new position of the moved ship to the other players
-	*
-	* @method sendNewPosition 
-	* @param {Object} socket
-	* @param {Object} start
-	* @param {Object} end 
-	*/
-function sendNewPosition(socket, start, end){
+ * Sends the new position of the moved ship to the other players
+ *
+ * @method sendNewPosition 
+ * @param {Object} socket
+ * @param {Object} start
+ * @param {Object} end 
+ */
+function sendNewPosition(socket, start, end) {
 	socket.broadcast.to(socket.room).emit('new position', {
-			start: start,
-			end: end,
-			name: socket.username
-		});
+		start: start,
+		end: end,
+		name: socket.username
+	});
 }
 
 /**
-	* Changes player stats according to the collected powerup
-	* and sends message to all players with the changed props
-	*
-	* @method collectPowerUp 
-	* @param {Object} socket
-	* @param {Object} powerup
-	*/
-function collectPowerUp(socket, powerup){
-	if(socket && socket.props){
+ * Changes player stats according to the collected powerup
+ * and sends message to all players with the changed props
+ *
+ * @method collectPowerUp 
+ * @param {Object} socket
+ * @param {Object} powerup
+ */
+function collectPowerUp(socket, powerup) {
+	if (socket && socket.props) {
 		if (powerup.type == 'speed') {
 			socket.props.speed += 1;
 		} else if (powerup.type == 'range') {
 			socket.props.range += 1;
 		} else if (powerup.type == 'life') {
-				socket.props.life += 1;
+			socket.props.life += 1;
 		} else if (powerup.type == 'monitions') {
 			socket.props.monitions += 1;
 		}
@@ -489,7 +521,7 @@ function collectPowerUp(socket, powerup){
 		});
 
 		let room = io.sockets.adapter.rooms[socket.room];
-		if(room){
+		if (room) {
 			io.to(room.name).emit('remove powerup', powerup);
 
 			io.to(room.name).emit('system message', createMessage(' collected ' + powerup.type + ' power up.', socket, room.name));
@@ -499,65 +531,65 @@ function collectPowerUp(socket, powerup){
 }
 
 /**
-	* Replaces the old power up with new one on different position
-	* and sends message with the new powerup after 5 seconds
-	*
-	* @method replacePowerup 
-	* @param {Object} powerup
-	* @param {Object} room
-	* @param {Object} socket
-	*/
-function replacePowerup(powerup, room, socket){
+ * Replaces the old power up with new one on different position
+ * and sends message with the new powerup after 5 seconds
+ *
+ * @method replacePowerup 
+ * @param {Object} powerup
+ * @param {Object} room
+ * @param {Object} socket
+ */
+function replacePowerup(powerup, room, socket) {
 	let newPowerUp = createPowerUp(powerup.type, room);
-			while (!newPowerUp) {
-				newPowerUp = createPowerUp(powerup.type, room);
-			}
+	while (!newPowerUp) {
+		newPowerUp = createPowerUp(powerup.type, room);
+	}
 
-			room.powerups.splice(room.powerups.indexOf(powerup), 1, newPowerUp);
-			room.occupiedSections.splice(room.occupiedSections.indexOf(powerup.section), 1, newPowerUp.section);
+	room.powerups.splice(room.powerups.indexOf(powerup), 1, newPowerUp);
+	room.occupiedSections.splice(room.occupiedSections.indexOf(powerup.section), 1, newPowerUp.section);
 
-			setTimeout(() => {
-				io.to(socket.room).emit('add powerup', newPowerUp);
-			}, 5000);
+	setTimeout(() => {
+		io.to(socket.room).emit('add powerup', newPowerUp);
+	}, 5000);
 }
 
 /**
-	* Reduces life, sends message to players and checks if player is out of lifes and if so calls sinkShip
-	*
-	* @method initiateHitEvents 
-	* @param {Object} socket
-	* @param {Object} data
-	*/
-function initiateHitEvents(socket, data){
-			if (socket && socket.props && socket.props.monitions > 0) {
-			let target = getSocketByUsername(data.name);
-			if (target.props.life > 0) {
-				socket.props.monitions -= 1;
-				target.props.life -= 1;		
-				console.log(target.props);
-				io.to(socket.room).emit('prop change', {
-					props: [generateProp('monitions', socket), generateProp('life', target)],
-				});
+ * Reduces life, sends message to players and checks if player is out of lifes and if so calls sinkShip
+ *
+ * @method initiateHitEvents 
+ * @param {Object} socket
+ * @param {Object} data
+ */
+function initiateHitEvents(socket, data) {
+	if (socket && socket.props && socket.props.monitions > 0) {
+		let target = getSocketByUsername(data.name);
+		if (target.props.life > 0) {
+			socket.props.monitions -= 1;
+			target.props.life -= 1;
 
-				if (target.props.life == 0) {
-					sinkShip(socket, data.name);
-				} else {
-					io.to(socket.room).emit('system message', createMessage(
-							' atacked ' + data.name + ' and lost life.',
-							socket,
-							socket.room
-						));
-				}
+			io.to(socket.room).emit('prop change', {
+				props: [generateProp('monitions', socket), generateProp('life', target)],
+			});
+
+			if (target.props.life == 0) {
+				sinkShip(socket, data.name);
+			} else {
+				io.to(socket.room).emit('system message', createMessage(
+					' atacked ' + data.name + ' and lost life.',
+					socket,
+					socket.room
+				));
 			}
 		}
+	}
 }
 /**
-	* Resets thee speed and range stats and sends message to players
-	*
-	* @method resetStats 
-	* @param {Object} socket
-	*/
-function resetStats(socket){
+ * Resets thee speed and range stats and sends message to players
+ *
+ * @method resetStats 
+ * @param {Object} socket
+ */
+function resetStats(socket) {
 	socket.props.range = PLAYER_PROPS.range;
 	socket.props.speed = PLAYER_PROPS.speed;
 	socket.props.life -= 1;
@@ -575,16 +607,16 @@ function resetStats(socket){
 }
 
 /**
-	* Sends messages to the players of sunk ships and end of game
-	*
-	* @method sinkShip 
-	* @param {Object} attacker 
-	* @param {String} attacked 
-	*/
-function sinkShip(attacker, attacked){
+ * Sends messages to the players of sunk ships and end of game
+ *
+ * @method sinkShip 
+ * @param {Object} attacker 
+ * @param {String} attacked 
+ */
+function sinkShip(attacker, attacked) {
 	let room = io.sockets.adapter.rooms[attacker.room];
-	if(room){
-		room.alivePlayers -=1;
+	if (room) {
+		room.alivePlayers -= 1;
 		io.to(attacker.room).emit('player sunk', attacked);
 		if (room.alivePlayers == 1) {
 			io.to(attacker.room).emit('game over', attacker.username);
@@ -592,23 +624,23 @@ function sinkShip(attacker, attacked){
 			room.gameStarted = false;
 		} else {
 			io.to(attacker.room).emit('system message', createMessage(
-					' atacked ' + attacked + ' and sunk their ship.',
-					attacker,
-					room.name
-				));
+				' atacked ' + attacked + ' and sunk their ship.',
+				attacker,
+				room.name
+			));
 		}
 	}
 }
 
 /**
-	* Resets all field and player data and sends field redraw event to the player
-	*
-	* @method restartGame 
-	* @param {Object} socket
-	*/
-function restartGame(socket){
+ * Resets all field and player data and sends field redraw event to the player
+ *
+ * @method restartGame 
+ * @param {Object} socket
+ */
+function restartGame(socket) {
 	let room = io.sockets.adapter.rooms[socket.room];
-	if(room){
+	if (room) {
 		if (!room.restart) {
 			room.restart = true;
 			setFieldProps(room);
@@ -621,11 +653,28 @@ function restartGame(socket){
 }
 
 /**
-	* @method generateProp 
-	* @param {String} powerup 
-	* @param {Object} socket 
-	* @return {Object} prop change data to be send to the players
-	*/
+ * Randomizes posible positions of ships
+ *
+ * @method getRandomizedShipPostions 
+ * @return {Array}  Array of posible postions for ships
+ * 
+ */
+function getRandomizedShipPostions() {
+	let initialPositions = SHIP_POSITIONS.slice();
+	let randomizedPositions = [];
+	while(initialPositions.length > 0){
+		let index = Math.floor(Math.random() * initialPositions.length);
+		randomizedPositions.push(initialPositions[index]);
+		initialPositions.splice(index,1);
+	}
+	return randomizedPositions;
+}
+/**
+ * @method generateProp 
+ * @param {String} powerup 
+ * @param {Object} socket 
+ * @return {Object} prop change data to be send to the players
+ */
 function generateProp(powerup, socket) {
 	return {
 		powerup: powerup,
@@ -635,10 +684,10 @@ function generateProp(powerup, socket) {
 }
 
 /**
-	* @method generatePowerUps 
-	* @param {Object} room 
-	* @return {Array} the indexes of the sections containig powerups and the type of powerup 
-	*/
+ * @method generatePowerUps 
+ * @param {Object} room 
+ * @return {Array} the indexes of the sections containig powerups and the type of powerup 
+ */
 function generatePowerUps(room) {
 	let powerUps = [];
 	let count = POWERUP_TYPES.length * FIELD_SIZE;
@@ -657,11 +706,11 @@ function generatePowerUps(room) {
 }
 
 /**
-	* @method createPowerUp 
-	* @param {String} type The type of powerup to be created 
-	* @param {Object} room 
-	* @return {Object} powerup data
-	*/
+ * @method createPowerUp 
+ * @param {String} type The type of powerup to be created 
+ * @param {Object} room 
+ * @return {Object} powerup data
+ */
 function createPowerUp(type, room) {
 	let section = Math.floor(Math.random() * NUMBER_OF_SECTIONS);
 
@@ -674,13 +723,13 @@ function createPowerUp(type, room) {
 }
 
 /**
-	* @method generateObsticles 
-	* @param {Object} room 
-	* @return {Array} The indexes of the sections containig islands 
-	*/
+ * @method generateObsticles 
+ * @param {Object} room 
+ * @return {Array} The indexes of the sections containig islands 
+ */
 function generateObsticles(room) {
 	let obsticles = [];
-	let count = Math.max(6, Math.floor(Math.random() * FIELD_SIZE*3));
+	let count = Math.max(6, Math.floor(Math.random() * FIELD_SIZE * 3));
 	while (count > 0) {
 		let section = Math.floor(Math.random() * NUMBER_OF_SECTIONS);
 		if (!isOccupied(room, section)) {
@@ -692,13 +741,13 @@ function generateObsticles(room) {
 }
 
 /**
-	* @method generateMines 
-	* @param {Object} room 
-	* @return {Array} The indexes of the sections containig mines 
-	*/
+ * @method generateMines 
+ * @param {Object} room 
+ * @return {Array} The indexes of the sections containig mines 
+ */
 function generateMines(room) {
 	let mines = [];
-	let count = FIELD_SIZE*2;
+	let count = FIELD_SIZE * 2;
 
 	while (count > 0) {
 		let section = Math.floor(Math.random() * NUMBER_OF_SECTIONS);
@@ -712,17 +761,17 @@ function generateMines(room) {
 	return mines;
 }
 /**
-	* @method isOccupied 
-	* @param {Object} room 
-	* @param {Number} section 
-	* @return {Boolean} Does the section contain mine, powerup or island
-	*/
+ * @method isOccupied 
+ * @param {Object} room 
+ * @param {Number} section 
+ * @return {Boolean} Does the section contain mine, powerup or island
+ */
 function isOccupied(room, section) {
 	return !!room.occupiedSections.find(item => {
 		return section == item;
 	});
 }
 
-http.listen(port, function() {
+http.listen(port, function () {
 	console.log('listening on *:' + port);
 });
