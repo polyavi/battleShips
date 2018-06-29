@@ -9,6 +9,7 @@ class CreateRoom extends Component {
       pass: ''
     };
 
+    this.input = React.createRef();
     this.onSubmit = this.onSubmit.bind(this);
     this.updateRoomname = this.updateRoomname.bind(this);
     this.updatePass = this.updatePass.bind(this);
@@ -16,8 +17,7 @@ class CreateRoom extends Component {
 
   componentDidMount() {
     this._ismounted = true;
-    let roomnameInput = document.getElementsByClassName('roomnameInput')[0];
-    roomnameInput.focus();
+    this.input.current.focus();
     if(this.state.room != '' || this.state.pass != '')
     this.setState({
       room: '',
@@ -61,6 +61,7 @@ class CreateRoom extends Component {
             maxLength = '14'
             onChange = { this.updateRoomname }
             value = { this.state.room }
+            ref={this.input}
           /> 
           <h3 className = 'title'> Enter password </h3> 
           <input 

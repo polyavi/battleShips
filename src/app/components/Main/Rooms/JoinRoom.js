@@ -8,14 +8,14 @@ class JoinRoom extends Component {
       pass: ''
     };
 
+    this.input = React.createRef();
     this.onSubmit = this.onSubmit.bind(this);
     this.updatePass = this.updatePass.bind(this);
   }
 
   componentDidMount(){
-    let passwordInput = document.getElementsByClassName('passwordInput')[0];
-    if(passwordInput){
-      passwordInput.focus();
+    if(this.input.current){
+      this.input.current.focus();
     }
 
     window.socket.on('wrong pass', ()=>{
@@ -56,7 +56,9 @@ class JoinRoom extends Component {
               type='password' 
               maxLength='14' 
               onChange={this.updatePass} 
-              value={this.state.pass}/>
+              value={this.state.pass}
+              ref={this.input}/>
+              
           }
           <button className='submit'>Join room</button>
         </form>
