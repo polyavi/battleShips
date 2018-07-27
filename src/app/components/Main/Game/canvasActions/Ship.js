@@ -346,7 +346,7 @@ export default (Data) => {
 				.to({
 					rotation: angle
 				}, 10, createjs.Ease.sinIn)
-				.to(nexPos, hipotenuse * 10 / ship.speed, createjs.Ease.sinIn)
+				.to(nextPos, hipotenuse * 10 / ship.speed, createjs.Ease.sinIn)
 				.call(target.checkForPowerUp.bind(target), [ship])
 				.call(bts.moveToNextPosition, [ship, nextPos, endPos]);
 
