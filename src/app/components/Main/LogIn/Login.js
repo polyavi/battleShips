@@ -9,13 +9,14 @@ class Login extends Component {
       username: ''
     };
 
+    this.input = React.createRef();
     this.onSubmit = this.onSubmit.bind(this);
     this.update = this.update.bind(this);
   }
   
   componentDidMount() {
     this._ismounted = true;
-    document.getElementsByClassName('usernameInput')[0].focus();
+    this.input.current.focus();
 
     window.socket.on('taken username', () => {
       if (this._ismounted) this.setState({
@@ -59,6 +60,7 @@ class Login extends Component {
               onChange = { this.update }
               value = { this.state.username }
               tabIndex = '1' 
+              ref={this.input}
             />
           <button tabIndex = '2' className = 'submit'> Login </button> 
         </form> 
