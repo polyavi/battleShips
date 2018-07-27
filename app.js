@@ -554,7 +554,7 @@ function replacePowerup(powerup, room, socket) {
 }
 
 /**
- * Reduces life, sends message to players and checks if player is out of lifes and if so calls sinkShip
+ * Reduces life, sends message to players and checks if player is out of lifes and if so calls sinkShipOnAttack
  *
  * @method initiateHitEvents 
  * @param {Object} socket
@@ -572,7 +572,7 @@ function initiateHitEvents(socket, data) {
 			});
 
 			if (target.props.life == 0) {
-				sinkShip(socket, data.name);
+				sinkShipOnAttack(socket, data.name);
 			} else {
 				io.to(socket.room).emit('system message', createMessage(
 					' atacked ' + data.name + ' and lost life.',
@@ -597,23 +597,48 @@ function resetStats(socket) {
 	io.to(socket.room).emit('prop change', {
 		props: [generateProp('speed', socket), generateProp('range', socket), generateProp('life', socket)]
 	});
-
+	if(socket.props.life > 0){
 	io.to(socket.room).emit('system message', createMessage(
 		' steped on mine and lost all speed and range enhansments.',
 		socket,
 		socket.room
 	));
-
+	}else{
+		sinkShipOnMine(socket);
+	}
 }
-
 /**
  * Sends messages to the players of sunk ships and end of game
  *
- * @method sinkShip 
+ * @method sinkShipOnMine 
+ * @param {Object} socket 
+ */
+function sinkShipOnMine(socket) {
+	let room = io.sockets.adapter.rooms[socket.room];
+	if (room) {
+		room.alivePlayers -= 1;
+		io.to(room).emit('player sunk', socket);
+		if (room.alivePlayers == 1) {
+			io.to(attacker.room).emit('game over', attacker.username);
+			room.restart = false;
+			room.gameStarted = false;
+		} else {
+			io.to(room).emit('system message', createMessage(
+				socket + ' stepped on mine and their ship sunk.',
+				socket,
+				room.name
+			));
+		}
+	}
+}
+/**
+ * Sends messages to the players of sunk ships and end of game
+ *
+ * @method sinkShipOnAttack 
  * @param {Object} attacker 
  * @param {String} attacked 
  */
-function sinkShip(attacker, attacked) {
+function sinkShipOnAttack(attacker, attacked) {
 	let room = io.sockets.adapter.rooms[attacker.room];
 	if (room) {
 		room.alivePlayers -= 1;
